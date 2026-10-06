@@ -1,0 +1,45 @@
+---
+// Rose-star cursor that trails the pointer; persisted across client-side navigations.
+// (Shown only on devices with a real mouse: see #custom-cursor in global.css.)
+---
+
+<div id="custom-cursor" class="cursor" transition:persist>
+	<svg class="cursor-star" viewBox="0 0 24 24">
+		<path d="M12 0 L14.5 8.5 L23 12 L14.5 15.5 L12 24 L9.5 15.5 L1 12 L9.5 8.5 Z"></path>
+	</svg>
+</div>
+
+<style>
+	.cursor {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 100;
+		width: 1.5rem;
+		height: 1.5rem;
+		margin: -0.75rem 0 0 -0.75rem; /* centre the star on the pointer */
+		pointer-events: none;
+	}
+
+	.cursor-star {
+		display: block;
+		width: 100%;
+		height: 100%;
+		fill: var(--home-pink);
+		filter: drop-shadow(0 0 6px rgba(244, 114, 182, 0.7));
+		animation: cursor-spin 5s linear infinite;
+		will-change: transform;
+	}
+
+	@keyframes cursor-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+</style>
+
+<script>
+	import { initCursor } from "../scripts/cursor";
+
+	initCursor();
+</script>

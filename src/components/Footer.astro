@@ -1,0 +1,390 @@
+---
+// Full-height footer. It slides up over the section marked [data-footer-overlap]
+// (see src/scripts/footerReveal.ts); its liquid edge pokes over that section's edge.
+import LiquidEdge from "./LiquidEdge.astro";
+import Creature from "./creatures/Creature.astro";
+const year = new Date().getFullYear();
+
+const socials = [
+    { href: "#", label: "Instagram" },
+    { href: "#", label: "LinkedIn" },
+    { href: "#", label: "Behance" },
+];
+
+const pages = [
+    { href: "/", label: "Home" },
+    { href: "/projects", label: "Work" },
+    { href: "/about", label: "About" },
+];
+---
+
+<footer id="site-footer" class="footer">
+    <!-- Same style of edge as the homepage story section, but its own seed = its own shape -->
+    <LiquidEdge seed={23} color="var(--footer-bg)" grain />
+
+    <!-- Optional page-specific layer behind the footer content (e.g. the homepage scroll line) -->
+    <slot />
+
+    <div class="footer-inner">
+        <div class="intro">
+            <p class="kicker">Is it a match?</p>
+            <h2 class="title">
+                So, let's work <span class="highlight" data-footer-together
+                    >together?</span
+                >
+            </h2>
+            <p class="text">
+                Got a project in mind or just want to chat? I'm always open to
+                new ideas and creative challenges. Let's make something great.
+            </p>
+            <a href="mailto:indi.watte1@gmail.com" class="mail"
+                >indi.watte1@gmail.com</a
+            >
+        </div>
+
+        <div class="columns">
+            <div>
+                <p class="label">Pages</p>
+                <ul class="list">
+                    {
+                        pages.map(({ href, label }) => (
+                            <li>
+                                <a href={href} class="link">
+                                    {label}
+                                </a>
+                            </li>
+                        ))
+                    }
+                </ul>
+            </div>
+            <div>
+                <p class="label">Socials</p>
+                <ul class="list">
+                    {
+                        socials.map(({ href, label }) => (
+                            <li>
+                                <a href={href} class="link">
+                                    {label}
+                                </a>
+                            </li>
+                        ))
+                    }
+                </ul>
+            </div>
+            <div>
+                <p class="label">Based in</p>
+                <p class="value">Belgium</p>
+            </div>
+            <div>
+                <p class="label">Say hi</p>
+                <a href="mailto:indi.watte1@gmail.com" class="link"
+                    >indi.watte1@gmail.com</a
+                >
+            </div>
+        </div>
+
+        <div>
+            <!-- My name, with a few of the hero's creatures living around and behind it.
+                 Sizes and positions are in em, so they scale with the letters. -->
+            <div class="wordmark-wrap" aria-hidden="true">
+                <Creature
+                    name="bunny"
+                    index={1}
+                    class="behind"
+                    style="left: 2%; top: -0.4em; width: 0.62em; rotate: -10deg;"
+                />
+                <Creature
+                    name="cyclops"
+                    index={7}
+                    class="behind"
+                    style="left: 63%; top: -0.22em; width: 0.46em;"
+                />
+                <p class="wordmark">Indi Watté</p>
+                <Creature
+                    name="apple"
+                    index={3}
+                    class="front"
+                    style="left: 38%; top: -0.5em; width: 0.5em; rotate: 6deg;"
+                />
+                <Creature
+                    name="drop"
+                    index={6}
+                    class="front"
+                    style="left: 21%; bottom: -0.32em; width: 0.34em; rotate: 14deg;"
+                />
+                <Creature
+                    name="worm"
+                    index={4}
+                    class="front"
+                    style="right: -0.38em; bottom: -0.12em; width: 0.56em;"
+                />
+                <Creature
+                    name="squiggle"
+                    index={8}
+                    class="front"
+                    style="left: 78%; top: -0.36em; width: 0.4em; rotate: -12deg;"
+                />
+            </div>
+            <div class="bottom">
+                <span>© {year} Indi Watté</span>
+                <span>Creative Portfolio</span>
+                <a href="#" class="link">Back to top ↑</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    /* ============ FOOTER ============ */
+    .footer {
+        position: relative;
+        overflow-x: clip; /* creatures around the name may poke past the screen edge */
+        z-index: 40;
+        /* not flat: cobalt melting into violet, with grain on top */
+        background:
+            var(--grain-soft),
+            radial-gradient(
+                circle at 85% 90%,
+                rgba(255, 162, 182, 0.35),
+                transparent 45%
+            ),
+            linear-gradient(
+                180deg,
+                var(--footer-bg) 0%,
+                #4a45ee 55%,
+                #6a4cf0 100%
+            );
+        color: #fff; /* cobalt + white */
+    }
+
+    .footer-inner {
+        position: relative;
+        z-index: 1; /* above the slot layer */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 4rem;
+        min-height: 110svh;
+        max-width: 80rem;
+        margin-inline: auto;
+        padding: clamp(6rem, 12vh, 9rem) 1.5rem 2rem;
+    }
+
+    /* ============ INTRO ============ */
+    .intro {
+        max-width: 48rem;
+    }
+
+    .kicker {
+        margin: 0 0 1.5rem;
+        font-family: var(--display-font);
+        font-size: 1.125rem;
+        color: var(--home-sun);
+    }
+
+    .title {
+        margin: 0;
+        font-family: var(--body-font);
+        font-size: clamp(2.75rem, 8vw, 6.5rem);
+        font-weight: 900;
+        line-height: 0.95;
+        letter-spacing: -0.025em;
+        text-transform: uppercase;
+    }
+
+    .highlight {
+        color: var(--home-pink);
+    }
+
+    .text {
+        max-width: 36rem;
+        margin: 2rem 0 0;
+        font-size: clamp(1rem, 1.5vw, 1.2rem);
+        line-height: 1.625;
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    .mail {
+        display: inline-block;
+        margin-top: 2.5rem;
+        padding: 1rem 2.5rem;
+        border-radius: 999px;
+        background: var(--home-pink); /* secondary button: pink + maroon */
+        color: var(--home-text);
+        font-size: 0.875rem;
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow:
+            0 10px 15px -3px rgba(0, 0, 0, 0.1),
+            0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        transition:
+            transform 150ms ease,
+            background 150ms ease;
+    }
+
+    .mail:hover {
+        background: var(--home-sun);
+        transform: scale(1.05);
+    }
+
+    /* ============ LINK COLUMNS ============ */
+    .columns {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2.5rem;
+        font-size: 0.875rem;
+    }
+
+    .label {
+        margin: 0 0 1rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.72);
+    }
+
+    .list {
+        display: grid;
+        gap: 0.5rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .value {
+        margin: 0;
+    }
+
+    .link {
+        text-decoration: none;
+        transition: color 150ms ease;
+    }
+
+    .link:hover {
+        color: var(--home-pink);
+    }
+
+    /* ============ WORDMARK + BOTTOM ROW ============ */
+    /* The wrap carries the font size, so the creatures (sized in em) scale with the name.
+       It shrinks to the width of the name, so their % positions land on the letters. */
+    .wordmark-wrap {
+        position: relative;
+        width: fit-content;
+        margin-top: 0.3em; /* room for the creatures peeking over the letters */
+        font-size: clamp(3rem, 15vw, 15rem);
+    }
+
+    .wordmark-wrap :global(.creature) {
+        position: absolute;
+        filter: drop-shadow(0 0.04em 0.06em rgba(0, 0, 0, 0.3));
+    }
+
+    /* Behind the letters: only what sticks out above or between them shows */
+    .wordmark-wrap :global(.behind) {
+        z-index: 0;
+    }
+
+    .wordmark-wrap :global(.front) {
+        z-index: 2;
+    }
+
+    .wordmark {
+        position: relative;
+        z-index: 1;
+        margin: 0;
+        font-family: var(--body-font);
+        font-size: 1em;
+        font-weight: 900;
+        line-height: 0.8;
+        letter-spacing: -0.05em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        color: var(--home-pink);
+        user-select: none;
+    }
+
+    .bottom {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.72);
+    }
+
+    /* ============ TABLET + DESKTOP ============ */
+    @media (min-width: 768px) {
+        .footer-inner {
+            padding-inline: 2.5rem;
+        }
+
+        .columns {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .bottom {
+            flex-direction: row;
+        }
+    }
+</style>
+
+<script>
+    import "../scripts/footerReveal";
+    import { gsap } from "../scripts/gsap";
+
+    // The creatures around my name fly in from the nearest side of the screen as the
+    // footer scrolls into view, with a little spin, and land in place when the name is
+    // fully visible. Scrubbed, so scrolling back up sends them off again.
+    function initFooterCreatures() {
+        const wrap = document.querySelector<HTMLElement>(".wordmark-wrap");
+        if (!wrap) return;
+        const creatures = gsap.utils.toArray<SVGSVGElement>(
+            "[data-creature]",
+            wrap,
+        );
+
+        gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {
+            const fromSide = (el: Element) => {
+                const box = el.getBoundingClientRect();
+                const fromLeft =
+                    box.left + box.width / 2 < window.innerWidth / 2;
+                // Just past the edge of the screen on that side
+                return fromLeft
+                    ? -(box.right + 40)
+                    : window.innerWidth - box.left + 40;
+            };
+            const timeline = gsap.timeline({
+                scrollTrigger: {
+                    trigger: wrap,
+                    start: "top bottom",
+                    end: "bottom bottom-=40",
+                    scrub: 1,
+                    invalidateOnRefresh: true,
+                },
+            });
+            creatures.forEach((creature, i) => {
+                timeline.from(
+                    creature,
+                    {
+                        x: () => fromSide(creature),
+                        y: () => gsap.utils.random(-60, 60),
+                        rotation: () => gsap.utils.random(-120, 120),
+                        ease: "back.out(1.4)",
+                        duration: 1,
+                    },
+                    i * 0.12, // one after the other
+                );
+            });
+        });
+    }
+
+    initFooterCreatures();
+</script>
