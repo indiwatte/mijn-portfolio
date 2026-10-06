@@ -1,0 +1,60 @@
+/* view-transitions.css - morph between a project image on /projects and its detail page hero.
+   Loaded on both sides of the navigation (projects/index.astro and ProjectLayout).
+
+   The photo simply glides and resizes from the card to the hero (the group animation the
+   browser builds from both positions). The old and new snapshots are not scaled or rotated
+   themselves: animating them on top of the group's own resize is what made it glitch.
+   Both images carry view-transition-class: project-hero, so this covers every project. */
+
+::view-transition-group(.project-hero) {
+    animation-duration: 700ms;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+    overflow: hidden;
+}
+
+/* Card (4:3) and hero (its own ratio) differ: fill the moving box instead of stretching */
+::view-transition-old(.project-hero),
+::view-transition-new(.project-hero) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Hand over from the card photo to the hero early, and keep the hero fully opaque, so
+   the two never show half-transparent on top of each other */
+::view-transition-old(.project-hero) {
+    animation: vt-fade-out 250ms ease-out both;
+}
+
+::view-transition-new(.project-hero) {
+    animation: vt-fade-in 250ms ease-out both;
+}
+
+/* The rest of the page: a quick, clean crossfade underneath the moving photo */
+::view-transition-old(root) {
+    animation: vt-fade-out 300ms ease-out both;
+}
+
+::view-transition-new(root) {
+    animation: vt-fade-in 300ms 100ms ease-out both;
+}
+
+@keyframes vt-fade-out {
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes vt-fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation: none !important;
+    }
+}
