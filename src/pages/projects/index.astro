@@ -1,0 +1,426 @@
+---
+// Project overview: a full-width grid of project tiles in drifting columns (like the
+// homepage's work grid). Every tile is built from the project's own Markdown file, so it
+// shows the same image or video as the header of its detail page, and morphs into it
+// when clicked (view-transitions.css). The order and the "coming soon" projects come
+// from src/data/projects.ts.
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { projects } from "../../data/projects";
+import "../../styles/projects/view-transitions.css";
+
+interface Frontmatter {
+	title: string;
+	subtitle?: string;
+	year?: string;
+	tags?: string[];
+	heroImage?: string;
+	heroVideo?: string;
+	transitionId?: string;
+}
+
+const pages = Object.values(
+	import.meta.glob<{ frontmatter: Frontmatter; url: string }>("./*.md", { eager: true }),
+).filter((page) => page.url && !page.url.endsWith("/_template"));
+
+const order = (href: string) => {
+	const i = projects.findIndex((project) => project.href === href);
+	return i === -1 ? projects.length : i;
+};
+
+interface Tile {
+	href?: string;
+	title: string;
+	year?: string;
+	tags: string[];
+	image?: string;
+	video?: string;
+	poster?: string;
+	transitionId?: string;
+	upcoming?: boolean;
+}
+
+const tiles: Tile[] = [
+	...pages
+		.map(({ url, frontmatter: fm }) => ({
+			href: url,
+			title: fm.title,
+			year: fm.year,
+			tags: fm.tags ?? [],
+			image: fm.heroImage,
+			video: fm.heroVideo,
+			// Same first frame as the detail page's video (ProjectLayout)
+			poster: fm.heroImage ?? projects.find((project) => project.href === url)?.image,
+			transitionId: fm.transitionId,
+		}))
+		.sort((a, b) => order(a.href) - order(b.href)),
+	...projects
+		.filter((project) => project.isUpcoming)
+		.map((project) => ({
+			title: project.title,
+			year: project.year,
+			tags: [project.category],
+			image: project.image,
+			upcoming: true,
+		})),
+];
+
+// Three columns on desktop, dealt out left to right; the middle one drifts the other way.
+const COLUMNS = 3;
+const columns = Array.from({ length: COLUMNS }, (_, c) => tiles.filter((_, i) => i % COLUMNS === c));
+const pad = (n: number) => String(n).padStart(2, "0");
+---
+
+<BaseLayout title="Projects | Indi Watté" bodyClass="home-page" viewTransitions>
+	<main class="overview" data-footer-overlap>
+		<header class="overview-intro">
+			<span class="overview-eyebrow">Selected work</span>
+			<h1>All projects <sup>{pad(tiles.length)}</sup></h1>
+			<p>Brand identities, campaigns, websites and interactive experiences.</p>
+		</header>
+
+		<div class="overview-grid" data-overview-grid>
+			{
+				columns.map((column, c) => (
+					<div class="overview-col" data-direction={c === 1 ? "down" : "up"}>
+						{column.map((tile, i) => {
+							const Tag = tile.href ? "a" : "div";
+							return (
+								<Tag
+									href={tile.href}
+									class:list={["tile", { "is-upcoming": tile.upcoming }]}
+									style={`--tint: var(--tint-${(c + i) % 4})`}
+								>
+									<div class="tile-media">
+										{tile.video ? (
+											<video
+												src={tile.video}
+												poster={tile.poster}
+												autoplay
+												muted
+												loop
+												playsinline
+												preload="metadata"
+												aria-hidden="true"
+												transition:name={tile.transitionId}
+											/>
+										) : (
+											<img
+												src={tile.image}
+												alt=""
+												loading={c + i < 3 ? "eager" : "lazy"}
+												decoding="async"
+												transition:name={tile.transitionId}
+											/>
+										)}
+										{tile.upcoming && (
+											<span class="tile-badge">
+												<span class="tile-badge-dot" aria-hidden="true" />
+												Coming soon
+											</span>
+										)}
+									</div>
+									<div class="tile-info">
+										<h2 class="tile-title">
+											{tile.title}
+											{tile.href && <span class="tile-arrow" aria-hidden="true">→</span>}
+										</h2>
+										<ul class="tile-tags">
+											{tile.tags.map((tag) => <li>{tag}</li>)}
+											{tile.year && <li class="tile-year">{tile.year}</li>}
+										</ul>
+									</div>
+								</Tag>
+							);
+						})}
+					</div>
+				))
+			}
+		</div>
+	</main>
+</BaseLayout>
+
+<style>
+	.overview {
+		/* soft backgrounds behind the media, so transparent mockups sit on colour */
+		--tint-0: #e9e3fb;
+		--tint-1: #ffe8d2;
+		--tint-2: #f6dcef;
+		--tint-3: #dfe9fb;
+		padding: clamp(6.5rem, 14svh, 8.5rem) clamp(1rem, 2.5vw, 2.5rem) clamp(4rem, 8vw, 6rem);
+		background: var(--home-bg);
+		overflow-x: clip;
+	}
+
+	/* ============ INTRO ============ */
+	.overview-intro {
+		margin-bottom: clamp(2.5rem, 5vw, 4rem);
+	}
+
+	.overview-eyebrow {
+		font-family: var(--display-font);
+		font-size: 1rem;
+		color: var(--home-accent);
+	}
+
+	.overview-intro h1 {
+		margin: 0.4rem 0 0;
+		font-family: var(--body-font);
+		font-size: clamp(2.6rem, 7vw, 6rem);
+		font-weight: 900;
+		line-height: 0.95;
+		letter-spacing: -0.03em;
+		text-transform: uppercase;
+		color: var(--home-text);
+	}
+
+	.overview-intro sup {
+		font-size: 0.25em;
+		letter-spacing: 0.1em;
+		vertical-align: top;
+		color: var(--home-accent);
+	}
+
+	.overview-intro p {
+		max-width: 34rem;
+		margin: 0.9rem 0 0;
+		line-height: 1.6;
+		color: var(--home-muted);
+	}
+
+	/* ============ GRID: FULL WIDTH ============ */
+	.overview-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: clamp(1rem, 2vw, 1.75rem);
+		align-items: start;
+	}
+
+	.overview-col {
+		display: grid;
+		gap: clamp(1.5rem, 3vw, 2.75rem);
+	}
+
+	@media (min-width: 640px) {
+		.overview-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		/* two columns: let the third column's tiles flow into the first two */
+		.overview-col:nth-child(3) {
+			grid-column: 1 / -1;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.overview-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+
+		.overview-col:nth-child(3) {
+			grid-column: auto;
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		/* the middle column starts lower, like the homepage grid */
+		.overview-col:nth-child(2) {
+			margin-top: clamp(3rem, 8vw, 7rem);
+		}
+	}
+
+	/* ============ TILE ============ */
+	.tile {
+		display: block;
+		color: var(--home-text);
+		text-decoration: none;
+	}
+
+	.tile-media {
+		position: relative;
+		overflow: hidden;
+		border-radius: var(--radius-md);
+		background: var(--tint);
+	}
+
+	.tile-media :is(img, video) {
+		display: block;
+		width: 100%;
+		height: auto;
+		view-transition-class: project-hero; /* see view-transitions.css */
+		transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	/* Very tall images (posters, packaging layouts) are cropped so no column runs away */
+	.tile-media img {
+		max-height: min(34rem, 75vh);
+		object-fit: cover;
+		object-position: top;
+	}
+
+	.tile-media video {
+		aspect-ratio: 16 / 9;
+		object-fit: cover;
+	}
+
+	.tile:hover .tile-media :is(img, video) {
+		transform: scale(1.04);
+	}
+
+	.tile-badge {
+		position: absolute;
+		top: 1rem;
+		left: 1rem;
+		padding: 0.35rem 0.8rem;
+		border-radius: var(--radius-pill);
+		background: rgba(255, 255, 255, 0.92);
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	/* Coming soon: highlighted rather than faded, a sneak peek of what's next */
+	.tile.is-upcoming .tile-media {
+		background: #2b2b2f; /* the render's own dark backdrop */
+		box-shadow: 0 0 0 3px var(--home-sun);
+	}
+
+	/* Not revealed yet: blurred behind frosted glass; on hover it comes slightly into focus */
+	.tile.is-upcoming .tile-media img {
+		object-position: center;
+		filter: blur(10px);
+		scale: 1.08; /* hides the soft edge the blur leaves */
+		transition: filter 600ms ease;
+	}
+
+	.tile.is-upcoming .tile-media::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background:
+			var(--grain-soft),
+			linear-gradient(160deg, rgba(255, 255, 255, 0.28), rgba(243, 220, 247, 0.12));
+		pointer-events: none;
+	}
+
+	.tile.is-upcoming:hover .tile-media img {
+		filter: blur(6px);
+	}
+
+	.tile-badge {
+		z-index: 1; /* above the frosted layer */
+	}
+
+	.tile-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+	}
+
+	.tile-badge-dot {
+		width: 0.5rem;
+		height: 0.5rem;
+		border-radius: 50%;
+		background: var(--home-accent);
+		animation: pulse 1.4s ease-in-out infinite;
+	}
+
+	@keyframes pulse {
+		50% {
+			opacity: 0.3;
+			scale: 0.7;
+		}
+	}
+
+	.tile-info {
+		padding-top: 0.9rem;
+	}
+
+	.tile-title {
+		display: flex;
+		align-items: baseline;
+		gap: 0.5rem;
+		margin: 0;
+		font-family: var(--body-font);
+		font-size: clamp(1.25rem, 1.8vw, 1.6rem);
+		font-weight: 800;
+		line-height: 1.15;
+		letter-spacing: -0.01em;
+		text-transform: uppercase;
+	}
+
+	.tile-arrow {
+		color: var(--home-accent);
+		transition: translate 300ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.tile:hover .tile-arrow {
+		translate: 0.3rem 0;
+	}
+
+	.tile-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		margin: 0.6rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.tile-tags li {
+		padding: 0.3rem 0.7rem;
+		border-radius: var(--radius-pill);
+		background: var(--home-sun);
+		font-size: 0.7rem;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.tile-tags .tile-year {
+		background: transparent;
+		border: 1px solid rgba(23, 21, 58, 0.2);
+		color: var(--home-muted);
+	}
+
+	.tile:focus-visible {
+		outline: 3px solid var(--home-blue);
+		outline-offset: 6px;
+		border-radius: var(--radius-md);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.tile-media :is(img, video),
+		.tile-arrow {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	import { gsap } from "../../scripts/gsap";
+
+	// The columns drift at different speeds while you scroll (desktop only), like the
+	// homepage grid. Rebuilt after every client-side navigation (Astro's router).
+	let media: gsap.MatchMedia | undefined;
+
+	function initOverview() {
+		media?.revert();
+		const grid = document.querySelector<HTMLElement>("[data-overview-grid]");
+		if (!grid) return;
+
+		media = gsap.matchMedia();
+		media.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
+			const timeline = gsap.timeline({
+				scrollTrigger: { trigger: grid, start: "top bottom", end: "bottom top", scrub: 1 },
+			});
+			grid.querySelectorAll<HTMLElement>("[data-direction]").forEach((column) => {
+				const direction = column.dataset.direction === "down" ? 1 : -1;
+				timeline.to(column, { y: direction * 80, ease: "none" }, 0);
+			});
+		});
+	}
+
+	initOverview();
+	document.addEventListener("astro:page-load", initOverview);
+</script>

@@ -1,0 +1,75 @@
+---
+import ProjectCard from "./ProjectCard.astro";
+
+const F = "/images/featured";
+
+// Three parallax columns: the outer ones drift up, the middle one drifts down.
+// A mix of side work (drawings, paintings, collage: no link) and one image per project.
+const columns = [
+	{
+		direction: "up",
+		cards: [
+			{ image: `${F}/collage.webp`, alt: "Collage of a woman with a crown of flowers over her eyes", title: "Flower crown", desc: "Collage" },
+			{ href: "/projects/miles-meals", image: "/images/projects/miles-meals/box-mockup.webp", alt: "Miles & Meals packaging mockup", title: "Miles & Meals", desc: "Branding & packaging" },
+			{ image: `${F}/illustration1.webp`, alt: "Colourful line drawing of a face", title: "Face study", desc: "Digital drawing" },
+			{ href: "/projects/thrive", image: "/images/painting.JPG", alt: "Thrive campaign website: Fight your battle", title: "Thrive", desc: "Campaign website" },
+		],
+	},
+	{
+		direction: "down",
+		cards: [
+			{ href: "/projects/sounds-like-antwerp", video: "/images/projects/antwerp/brabo-fountain-web.mp4", alt: "Animated Sounds Like Antwerp poster with the Brabo fountain", title: "Sounds Like Antwerp", desc: "Motion poster" },
+			{ image: `${F}/octopus.webp`, alt: "Drawing an octopus on an iPad", title: "Octopus", desc: "Digital painting" },
+			{ href: "/projects/type-one", image: "/images/projects/type1.webp", alt: "TYPE01 conference website on a laptop", title: "Type One", desc: "Conference website" },
+			{ image: `${F}/painted-portrait.webp`, alt: "Painting of a green parrot", title: "Parrot", desc: "Digital painting" },
+		],
+	},
+	{
+		direction: "up",
+		cards: [
+			{ image: `${F}/papegaai.webp`, alt: "Indi next to her large colourful painted portrait", title: "Painted portrait", desc: "Painting" },
+			{ href: "/projects/mountains", image: "/images/projects/mountains/mountain-mock-still.webp", alt: "Hiking in the Alps interactive experience on a laptop", title: "Hiking in the Alps", desc: "Interactive experience" },
+			{ image: `${F}/illustration2.webp`, alt: "Illustrated figure in red, purple and gold lines", title: "Red figure", desc: "Digital illustration" },
+			{ href: "/projects/miles-meals", image: "/images/projects/miles-meals/miles&meals-drink.webp", alt: "Miles & Meals drink product shot", title: "Miles & Meals", desc: "Product shot" },
+		],
+	},
+];
+---
+
+<!-- data-footer-overlap: this section stays pinned while the footer slides over it -->
+<section id="work" class="home-work" data-footer-overlap>
+	<div class="home-work-header">
+		<div class="home-work-heading">
+			<span class="eyebrow-tag">WORK</span>
+			<h2>Some of my creative works</h2>
+		</div>
+		
+	</div>
+
+	<div id="parallax-grid" class="work-grid">
+		{
+			columns.map((col) => (
+				<div class="parallax-col" data-direction={col.direction}>
+					{col.cards.map((card) => (
+						<ProjectCard {...card} />
+					))}
+				</div>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	/* One column on phones, three parallax columns from tablet width */
+	.work-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1.5rem;
+	}
+
+	@media (min-width: 768px) {
+		.work-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+</style>

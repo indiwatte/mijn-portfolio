@@ -1,0 +1,205 @@
+---
+const links = [
+    { href: "/", label: "Home" },
+    { href: "/projects", label: "Work" },
+    { href: "/about", label: "About" },
+];
+
+const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+---
+
+<header id="site-header" class="header">
+    <div class="location">
+        <svg class="location-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        Based in Belgium
+    </div>
+
+    <nav class="nav" aria-label="Primary">
+        {
+            links.map(({ href, label }) => (
+                <a
+                    href={href}
+                    class="nav-link"
+                    aria-current={isActive(href) ? "page" : undefined}
+                >
+                    {href === "/" && (
+                        <img class="avatar" src="/images/projects/profilpic.webp" alt="" />
+                    )}
+                    {label}
+                </a>
+            ))
+        }
+    </nav>
+
+    <a href="mailto:hello@indiwatte.com" class="cta">
+        <!-- Envelope that opens on hover: the flap folds up and a letter peeks out -->
+        <svg class="envelope" width="18" height="16" viewBox="0 0 24 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+            <!-- open flap: behind the letter, folds up on hover -->
+            <path class="flap-back" d="M2.5 9.5L12 3.5l9.5 6" fill="#fff" />
+            <rect class="letter" x="6" y="10" width="12" height="8" rx="1" fill="#fff" stroke-width="1.6" />
+            <path class="letter-lines" d="M9 13h6M9 15.5h4" stroke-width="1.4" stroke-linecap="round" />
+            <rect class="body" x="2" y="9" width="20" height="11" rx="1.5" fill="#fff" />
+            <!-- closed flap: on top, folds away on hover -->
+            <path class="flap" d="M2.5 9.5L12 15.5l9.5-6" fill="#fff" />
+        </svg>
+        Work with me
+    </a>
+</header>
+
+<style>
+    /* ============ BAR ============ */
+    .header {
+        position: fixed;
+        inset: 0 0 auto;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    /* ============ LOCATION (left) ============ */
+    .location {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.025em;
+        text-transform: uppercase;
+        color: #fff;
+        mix-blend-mode: difference;
+    }
+
+    .location-icon {
+        color: var(--home-pink);
+    }
+
+    /* ============ NAV (centre) ============ */
+    .nav {
+        display: none; /* shown from tablet width, see below */
+        align-items: center;
+        gap: 1.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #fff;
+        mix-blend-mode: difference;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        transition: color 150ms ease;
+    }
+
+    .nav-link:hover,
+    .nav-link[aria-current="page"] {
+        color: var(--home-pink);
+    }
+
+    .avatar {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5);
+    }
+
+    /* ============ BUTTON (right) ============ */
+    .cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 999px;
+        background: #fff;
+        color: var(--home-text);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        transition: background 150ms ease;
+    }
+
+    .cta:hover {
+        background: var(--home-pink);
+    }
+
+    /* ---- Envelope micro animation ----
+       Hover: the closed flap folds up out of sight, the open flap rises behind the
+       letter, then the letter slides up out of the envelope. Leaving reverses it. */
+    .envelope {
+        overflow: visible;
+    }
+
+    .envelope .flap,
+    .envelope .flap-back,
+    .envelope .letter,
+    .envelope .letter-lines {
+        transform-box: fill-box;
+    }
+
+    .envelope .flap {
+        transform-origin: 50% 0; /* hinges on the top edge of the envelope */
+        transition: transform 180ms ease-in 220ms;
+    }
+
+    .envelope .flap-back {
+        transform-origin: 50% 100%;
+        transform: scaleY(0);
+        transition: transform 180ms ease-out 40ms;
+    }
+
+    .envelope .letter,
+    .envelope .letter-lines {
+        transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1) 0ms;
+    }
+
+    .cta:is(:hover, :focus-visible) .envelope .flap {
+        transform: scaleY(0);
+        transition-delay: 0ms;
+    }
+
+    .cta:is(:hover, :focus-visible) .envelope .flap-back {
+        transform: scaleY(1);
+        transition-delay: 160ms;
+    }
+
+    .cta:is(:hover, :focus-visible) .envelope .letter,
+    .cta:is(:hover, :focus-visible) .envelope .letter-lines {
+        transform: translateY(-7px);
+        transition-delay: 300ms;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .envelope * {
+            transition: none !important;
+        }
+    }
+
+    /* ============ TABLET + DESKTOP ============ */
+    @media (min-width: 768px) {
+        .header {
+            padding-inline: 2.5rem;
+        }
+
+        .location,
+        .cta {
+            font-size: 0.875rem;
+        }
+
+        .nav {
+            display: flex;
+        }
+    }
+</style>

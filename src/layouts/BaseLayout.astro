@@ -1,0 +1,72 @@
+---
+// Shared shell for every page: <head>, global styles, custom cursor, header and footer.
+import { ClientRouter } from "astro:transitions";
+import Cursor from "../components/Cursor.astro";
+import CreatureDefs from "../components/creatures/CreatureDefs.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import "../styles/tailwind.css";
+import "../styles/global.css";
+
+interface Props {
+	title: string;
+	bodyClass?: string;
+	/** Astro's client-side router, used by the project pages for the hero image morph. */
+	viewTransitions?: boolean;
+	/** Pages with their own fixed bottom bar (the project overview) can opt out. */
+	showFooter?: boolean;
+}
+
+const {
+	title,
+	bodyClass,
+	viewTransitions = false,
+	showFooter = true,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<!-- Favicon: my profile picture, cropped round -->
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="/favicon-32.png"
+		/>
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="192x192"
+			href="/favicon-192.png"
+		/>
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Rock+Salt&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="https://use.typekit.net/wrw4auj.css" />
+		{viewTransitions && <ClientRouter />}
+	</head>
+	<body class={bodyClass}>
+		<Cursor />
+		<!-- Gradients/filters for the creatures (hero, footer wordmark) -->
+		<CreatureDefs />
+		<Header />
+		<slot />
+		{
+			showFooter && (
+				<Footer>
+					<slot name="footer" />
+				</Footer>
+			)
+		}
+	</body>
+</html>

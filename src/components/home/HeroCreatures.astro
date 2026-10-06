@@ -1,0 +1,123 @@
+---
+// Hero background: funny, glossy and fuzzy creatures grouped around my photo (the portal).
+// The drawings and the eye tracking are shared (src/components/creatures/); this file only
+// places them, and makes them fly up when you scroll.
+//  - x/y:   position in the hero (share of its width/height); phoneX/phoneY override them on phones
+//  - size:  width on desktop (rem); phone: true also shows it on phones (at 60%),
+//           desktop: false hides it on larger screens
+//  - peek:  sits in front of my photo but behind the mirror's clouds, peeking out of them
+import Creature from "../creatures/Creature.astro";
+import type { CreatureName } from "../creatures/art";
+
+interface Placement {
+	name: CreatureName;
+	x: string;
+	y: string;
+	phoneX?: string;
+	phoneY?: string;
+	size: number;
+	rotate: number;
+	phone?: boolean;
+	desktop?: boolean;
+	peek?: boolean;
+}
+
+const placements: Placement[] = [
+	{ name: "rainbow", x: "59%", y: "31%", phoneX: "2%", phoneY: "50%", size: 10, rotate: -8, phone: true },
+	{ name: "bunny", x: "87%", y: "21%", size: 10, rotate: 8 },
+	{ name: "flower", x: "75%", y: "10%", size: 7.5, rotate: -6 },
+	{ name: "apple", x: "57%", y: "71%", size: 8.5, rotate: 4 },
+	{ name: "worm", x: "89%", y: "45%", size: 8.5, rotate: 0 },
+	{ name: "cloud", x: "67%", y: "68%", size: 7, rotate: -10, peek: true },
+	{ name: "drop", x: "86%", y: "69%", size: 6, rotate: 12, peek: true },
+	{ name: "cyclops", x: "87%", y: "8%", phoneX: "82%", phoneY: "52%", size: 5.5, rotate: 0, phone: true },
+	{ name: "squiggle", x: "57%", y: "22%", size: 6, rotate: -14 },
+];
+---
+
+<div class="creatures" aria-hidden="true" data-hero-creatures>
+	{
+		placements.map((c, i) => (
+			<Creature
+				name={c.name}
+				index={i}
+				class:list={["placed", { "is-desktop-only": !c.phone, "is-phone-only": c.desktop === false, "is-peeking": c.peek }]}
+				style={`--x: ${c.x}; --y: ${c.y}; --px: ${c.phoneX ?? c.x}; --py: ${c.phoneY ?? c.y}; --size: ${c.size}rem; --r: ${c.rotate}deg;`}
+			/>
+		))
+	}
+</div>
+
+<style>
+	/* No z-index on the container: each creature slots in between the layers of the mirror
+	   (Hero.astro): behind the photo frame (3), or, when peeking, between the frame and the
+	   clouds (4). The wavy edge of the next section covers the low ones too. */
+	.creatures {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+
+	.creatures :global(.placed) {
+		position: absolute;
+		z-index: 2;
+		left: min(var(--x), 100% - var(--size));
+		top: var(--y);
+		width: var(--size);
+		rotate: var(--r);
+	}
+
+	.creatures :global(.placed.is-peeking) {
+		z-index: 4;
+	}
+
+	/* Phones: smaller, and only the creatures marked phone: true */
+	@media (max-width: 767px) {
+		.creatures :global(.placed) {
+			top: var(--py);
+			width: calc(var(--size) * 0.6);
+			left: min(var(--px), 100% - var(--size) * 0.6);
+		}
+
+		.creatures :global(.is-desktop-only) {
+			display: none;
+		}
+	}
+
+	@media (min-width: 768px) {
+		.creatures :global(.is-phone-only) {
+			display: none;
+		}
+	}
+</style>
+
+<script>
+	import { gsap } from "../../scripts/gsap";
+
+	// While the hero is pinned and the next section slides over it (heroScroll.ts), the
+	// creatures fly up out of the hero, each at its own speed and with a little spin, so
+	// the ones hiding behind the clouds rise out of them first.
+	function initCreatureFlight() {
+		const creatures = gsap.utils.toArray<SVGSVGElement>("[data-hero-creatures] [data-creature]");
+		if (!creatures.length) return;
+		gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {
+			const flight = gsap.timeline({
+				scrollTrigger: { trigger: "#hero", start: "top top", end: "+=100%", scrub: 1 },
+			});
+			creatures.forEach((creature, i) => {
+				flight.to(
+					creature,
+					{
+						y: () => -window.innerHeight * gsap.utils.random(0.55, 1.1),
+						rotation: gsap.utils.random(-25, 25),
+						ease: "power1.in",
+						duration: 1,
+					},
+					(i % 4) * 0.08, // small head starts, so they don't all lift off together
+				);
+			});
+		});
+	}
+
+	initCreatureFlight();
+</script>

@@ -1,0 +1,296 @@
+---
+// The bee: drawn in the same glossy style as the hero creatures. It starts in the hero
+// (next to the intro line, see [data-bee-start] in Hero.astro), then flies along the
+// ScrollPath pieces as you scroll (placed by src/scripts/home/scrollPath.ts).
+// It lives outside the story section, positioned in page coordinates, so its z-index
+// can sit above the footer (40) and below the header (50): it lands on the footer.
+// Layers: position + rotation (script) > roll-over flip (script) > bob (CSS) > drawing.
+// Drawn facing right (+x), the direction of flight. Its googly eyes follow the mouse.
+// A busy bee on its way to work: a briefcase in one hand, a coffee to go in the other.
+const INK = "#17153a";
+---
+
+<div class="bird" data-scroll-bird aria-hidden="true">
+	<div class="bird-flip" data-bird-flip>
+		<div class="bird-bob">
+			<svg viewBox="0 0 160 120" overflow="visible">
+				<defs>
+					<radialGradient id="bee-body" cx="38%" cy="30%" r="80%">
+						<stop offset="0" stop-color="#fff3c4" />
+						<stop offset=".5" stop-color="#ffc93c" />
+						<stop offset="1" stop-color="#f08c00" />
+					</radialGradient>
+					<radialGradient id="bee-pupil" cx="40%" cy="35%" r="70%">
+						<stop offset="0" stop-color="#4a4670" />
+						<stop offset="1" stop-color="#05040f" />
+					</radialGradient>
+					<clipPath id="bee-clip">
+						<ellipse cx="76" cy="72" rx="50" ry="36" />
+					</clipPath>
+				</defs>
+
+				<!-- Legs, holding the briefcase (back) and the coffee (front) -->
+				<g fill="none" stroke={INK} stroke-width="4" stroke-linecap="round">
+					<path d="M62 104 Q60 112 64 118" />
+					<path d="M98 102 Q104 108 110 106" />
+				</g>
+
+				<!-- Briefcase, swinging a little -->
+				<g class="bag">
+					<path d="M56 120 V114 Q56 110 60 110 H70 Q74 110 74 114 V120" fill="none" stroke={INK} stroke-width="3.5" />
+					<rect x="46" y="119" width="38" height="27" rx="5" fill="#2a3be8" />
+					<rect x="46" y="119" width="38" height="8" rx="4" fill="#4a5af0" />
+					<rect x="61" y="125" width="8" height="5" rx="1.5" fill="#ffc93c" />
+				</g>
+
+				<!-- Coffee to go, with a sleeve and steam -->
+				<g class="coffee">
+					<path d="M106 104 L126 104 L123 132 L109 132 Z" fill="#fbf8f3" />
+					<rect x="104" y="98" width="24" height="7" rx="3" fill="#ffa2b6" />
+					<path d="M107.5 112 L124.5 112 L123.6 121 L108.4 121 Z" fill="#c77b4a" />
+					<g class="steam" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".85">
+						<path d="M112 94 q-4 -5 0 -10 q4 -5 0 -10" />
+						<path d="M120 94 q-4 -5 0 -10 q4 -5 0 -10" />
+					</g>
+				</g>
+
+				<!-- Wings (they buzz) -->
+				<g class="wings">
+					<ellipse cx="62" cy="34" rx="20" ry="30" transform="rotate(-24 62 34)" />
+					<ellipse cx="86" cy="30" rx="18" ry="28" transform="rotate(16 86 30)" />
+				</g>
+
+				<!-- Stinger -->
+				<path d="M28 70 L8 76 L28 82 Z" fill={INK} />
+
+				<!-- Body with stripes and a shine -->
+				<ellipse cx="76" cy="72" rx="50" ry="36" fill="url(#bee-body)" />
+				<g clip-path="url(#bee-clip)" fill={INK}>
+					<path d="M44 30 Q54 72 44 112 L58 112 Q68 72 58 30 Z" />
+					<path d="M70 30 Q80 72 70 112 L84 112 Q94 72 84 30 Z" />
+				</g>
+				<ellipse cx="62" cy="52" rx="16" ry="7" fill="#fff" opacity=".5" transform="rotate(-12 62 52)" />
+
+				<!-- Antennae -->
+				<g fill="none" stroke={INK} stroke-width="4" stroke-linecap="round">
+					<path d="M106 42 Q108 22 118 14" />
+					<path d="M118 46 Q128 30 142 26" />
+				</g>
+				<circle cx="118" cy="14" r="5" fill={INK} />
+				<circle cx="142" cy="26" r="5" fill={INK} />
+
+				<!-- Googly eyes (pupils follow the mouse) -->
+				<g class="eyes">
+					{
+						[
+							[104, 62, 15],
+							[130, 64, 13],
+						].map(([x, y, r]) => (
+							<g>
+								<circle cx={x} cy={y} r={r} fill="#fff" data-bee-eye />
+								<g data-bee-pupil data-max={(r * 0.36).toFixed(1)}>
+									<circle cx={x} cy={y} r={(r * 0.62).toFixed(1)} fill="url(#bee-pupil)" />
+									<circle cx={x - r * 0.2} cy={y - r * 0.22} r={r * 0.16} fill="#fff" />
+								</g>
+							</g>
+						))
+					}
+				</g>
+
+				<!-- Cheek and smile -->
+				<ellipse cx="112" cy="88" rx="7" ry="4" fill="#ff6f91" opacity=".7" />
+				<path d="M118 90 Q126 96 133 88" fill="none" stroke={INK} stroke-width="4" stroke-linecap="round" />
+			</svg>
+		</div>
+	</div>
+</div>
+
+<style>
+	.bird {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: 45;
+		width: 140px;
+		height: 105px;
+		pointer-events: none;
+		will-change: transform;
+	}
+
+	@media (max-width: 767px) {
+		.bird {
+			width: 100px;
+			height: 75px;
+		}
+	}
+
+	.bird-flip,
+	.bird-bob {
+		width: 100%;
+		height: 100%;
+	}
+
+	/* Gentle bob, in the bee's own frame so it never fights the path rotation */
+	.bird-bob {
+		animation: bird-bob 1.4s ease-in-out infinite alternate;
+		will-change: transform;
+	}
+
+	svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+		filter: drop-shadow(0 10px 12px rgba(23, 21, 58, 0.25));
+	}
+
+	.wings {
+		fill: #fff;
+		fill-opacity: 0.6;
+		stroke: #fff;
+		stroke-width: 2;
+		transform-box: fill-box;
+		transform-origin: 50% 100%;
+		animation: buzz 0.12s ease-in-out infinite alternate;
+	}
+
+	.bag {
+		transform-box: fill-box;
+		transform-origin: 50% 0;
+		animation: swing 1.4s ease-in-out infinite alternate;
+	}
+
+	.steam path {
+		animation: steam 1.6s ease-in-out infinite;
+	}
+
+	.steam path:last-child {
+		animation-delay: -0.8s;
+	}
+
+	@keyframes swing {
+		from {
+			transform: rotate(-8deg);
+		}
+		to {
+			transform: rotate(8deg);
+		}
+	}
+
+	@keyframes steam {
+		0% {
+			opacity: 0;
+			transform: translateY(4px);
+		}
+		50% {
+			opacity: 0.9;
+		}
+		100% {
+			opacity: 0;
+			transform: translateY(-6px);
+		}
+	}
+
+	[data-bee-pupil] {
+		transition: transform 140ms ease-out;
+	}
+
+	.eyes {
+		transform-box: fill-box;
+		transform-origin: center;
+		animation: blink 6s 2s infinite;
+	}
+
+	@keyframes bird-bob {
+		from {
+			transform: translateY(-3px);
+		}
+		to {
+			transform: translateY(3px);
+		}
+	}
+
+	@keyframes buzz {
+		from {
+			transform: scaleY(1);
+		}
+		to {
+			transform: scaleY(0.75);
+		}
+	}
+
+	@keyframes blink {
+		0%,
+		96%,
+		100% {
+			transform: scaleY(1);
+		}
+		98% {
+			transform: scaleY(0.1);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.bird {
+			display: none;
+		}
+	}
+</style>
+
+<script>
+	import { gsap } from "../../scripts/gsap";
+
+	// The bee's pupils look at the pointer. The bee itself is rotated (and sometimes
+	// flipped) along its flight path, so the screen direction is turned back into the
+	// drawing's own frame before moving the pupils.
+	function initBeeEyes() {
+		const bee = document.querySelector<HTMLElement>("[data-scroll-bird]");
+		const flip = bee?.querySelector<HTMLElement>("[data-bird-flip]");
+		if (!bee || !flip || bee.dataset.eyesReady) return;
+		bee.dataset.eyesReady = "true";
+
+		const pupils = [...bee.querySelectorAll<SVGGElement>("[data-bee-pupil]")].map((el) => ({
+			el,
+			eye: el.parentElement!.querySelector<SVGCircleElement>("[data-bee-eye]")!,
+			max: Number(el.dataset.max),
+		}));
+
+		let pointerX: number | null = null;
+		let pointerY: number | null = null;
+		let frame = 0;
+
+		const update = () => {
+			frame = 0;
+			if (pointerX === null || pointerY === null) return;
+			const angle = (Number(gsap.getProperty(bee, "rotation")) * Math.PI) / 180;
+			const flipped = Number(gsap.getProperty(flip, "scaleY")) < 0;
+			for (const { el, eye, max } of pupils) {
+				const box = eye.getBoundingClientRect();
+				const dx = pointerX - (box.left + box.width / 2);
+				const dy = pointerY - (box.top + box.height / 2);
+				const distance = Math.hypot(dx, dy) || 1;
+				const reach = max * Math.min(1, distance / 80);
+				// Screen direction -> the bee's own (rotated, maybe flipped) frame
+				const lx = (dx * Math.cos(angle) + dy * Math.sin(angle)) / distance;
+				let ly = (-dx * Math.sin(angle) + dy * Math.cos(angle)) / distance;
+				if (flipped) ly = -ly;
+				el.style.transform = `translate(${(lx * reach).toFixed(2)}px, ${(ly * reach).toFixed(2)}px)`;
+			}
+		};
+
+		const schedule = () => {
+			if (!frame) frame = requestAnimationFrame(update);
+		};
+		window.addEventListener(
+			"pointermove",
+			(event) => {
+				pointerX = event.clientX;
+				pointerY = event.clientY;
+				schedule();
+			},
+			{ passive: true },
+		);
+		window.addEventListener("scroll", schedule, { passive: true });
+	}
+
+	initBeeEyes();
+</script>

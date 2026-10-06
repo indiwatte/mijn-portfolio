@@ -1,0 +1,213 @@
+---
+// Layout for project case studies written in Markdown (frontmatter: layout: ../../layouts/ProjectLayout.astro).
+// Header: hero photo (or video) on the left, title + concept + project info on the right.
+// Below it a split screen: the chapters stay in view on the left, the photos scroll by on the right.
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+import { imageMetadata } from "astro/assets/utils";
+import BaseLayout from "./BaseLayout.astro";
+import { projects } from "../data/projects";
+import "../styles/projects/project.css";
+import "../styles/projects/view-transitions.css";
+
+interface GalleryImage {
+    /** An image, or a video (.mp4/.webm/.mov) that plays silently on a loop. */
+    src: string;
+    alt?: string;
+    caption?: string;
+    /** Width inside the photo column; halves and thirds sit side by side. */
+    size?: "full" | "half" | "third";
+}
+
+interface ProjectLink {
+    label: string;
+    href: string;
+}
+
+const { frontmatter } = Astro.props;
+const {
+    title = "Project",
+    subtitle,
+    concept = [],
+    type,
+    year,
+    client,
+    services = [],
+    tags = [],
+    heroImage,
+    heroVideo,
+    transitionId,
+    gallery = [],
+    links = [],
+} = frontmatter;
+
+// Read each image's real size (from /public) so the page doesn't jump while photos load.
+async function withSize(image: GalleryImage) {
+    try {
+        const file = await readFile(join(process.cwd(), "public", decodeURIComponent(image.src)));
+        const { width, height } = await imageMetadata(file, image.src);
+        return { ...image, width, height };
+    } catch {
+        return { ...image, width: undefined, height: undefined };
+    }
+}
+
+const isVideo = (src: string) => /\.(mp4|webm|mov)$/i.test(src);
+
+const hero = heroImage ? await withSize({ src: heroImage, alt: title }) : undefined;
+const photos = await Promise.all((gallery as GalleryImage[]).map(withSize));
+
+// Same "01 / 04" counter as the carousel on /projects.
+const pathname = Astro.url.pathname.replace(/\/$/, "");
+const position = projects.findIndex((project) => project.href === pathname) + 1;
+// A video hero shows the overview card's photo until it plays, so the morph from the
+// card (view-transitions.css) lands on a picture instead of an empty frame.
+const poster = hero?.src ?? projects[position - 1]?.image;
+const pad = (n: number) => String(n).padStart(2, "0");
+
+// The small print of the project, listed under the concept.
+const meta = [
+    { label: "Type", value: type },
+    { label: "Year", value: year },
+    { label: "Tags", value: tags.join(" · ") },
+    { label: "Client", value: client },
+    { label: "Services", value: services.join(" · ") },
+].filter(({ value }) => value);
+
+const isExternal = (href: string) => /^https?:\/\//.test(href);
+---
+
+<BaseLayout title={`${title} | Indi Watté`} viewTransitions>
+    <main class="project" data-footer-overlap>
+        <!-- ============ HEADER: PHOTO LEFT, TEXT RIGHT ============ -->
+        <header class="project-header">
+            {
+                (hero || heroVideo) && (
+                    <div class="project-hero">
+                        {heroVideo ? (
+                            <video
+                                src={heroVideo}
+                                poster={poster}
+                                aria-label={title}
+                                autoplay
+                                muted
+                                loop
+                                playsinline
+                                transition:name={transitionId}
+                            />
+                        ) : (
+                            <img
+                                src={hero.src}
+                                alt={hero.alt}
+                                width={hero.width}
+                                height={hero.height}
+                                fetchpriority="high"
+                                transition:name={transitionId}
+                            />
+                        )}
+                    </div>
+                )
+            }
+
+            <div class="project-intro">
+                {
+                    position > 0 && (
+                        <p class="project-kicker">
+                            <span class="project-counter">
+                                <span>{pad(position)}</span> / {pad(projects.length)}
+                            </span>
+                        </p>
+                    )
+                }
+
+                <h1 class="project-title">{title}</h1>
+                {subtitle && <p class="project-subtitle">{subtitle}</p>}
+
+                {
+                    concept.length > 0 && (
+                        <div class="project-description">
+                            {(concept as string[]).map((paragraph) => (
+                                <p set:html={paragraph} />
+                            ))}
+                        </div>
+                    )
+                }
+
+                {
+                    meta.length > 0 && (
+                        <dl class="project-meta">
+                            {meta.map(({ label, value }) => (
+                                <div>
+                                    <dt>{label}</dt>
+                                    <dd>{value}</dd>
+                                </div>
+                            ))}
+                        </dl>
+                    )
+                }
+            </div>
+        </header>
+
+        <div class="project-split">
+            <!-- ============ LEFT: CHAPTERS (sticky on desktop) ============ -->
+            <div class="project-info" data-project-info>
+                <!-- Markdown body: <details name="chapter"> chapters -->
+                <div class="project-description">
+                    <slot />
+                </div>
+
+                <div class="project-actions">
+                    {
+                        (links as ProjectLink[]).map(({ label, href }) => (
+                            <a
+                                href={href}
+                                class="project-button"
+                                target={isExternal(href) ? "_blank" : undefined}
+                                rel={isExternal(href) ? "noopener noreferrer" : undefined}
+                            >
+                                {label} ↗
+                            </a>
+                        ))
+                    }
+                    <a href="/projects" class="project-button project-button--ghost">← All projects</a>
+                </div>
+            </div>
+
+            <!-- ============ RIGHT: PHOTO SCROLL ============ -->
+            <div class="project-gallery" data-project-gallery>
+                {
+                    photos.map((photo) => (
+                        <figure class="project-photo" data-size={photo.size ?? "full"}>
+                            {isVideo(photo.src) ? (
+                                <video
+                                    src={photo.src}
+                                    aria-label={photo.alt}
+                                    autoplay
+                                    muted
+                                    loop
+                                    playsinline
+                                    controls
+                                    preload="metadata"
+                                />
+                            ) : (
+                                <img
+                                    src={photo.src}
+                                    alt={photo.alt ?? ""}
+                                    width={photo.width}
+                                    height={photo.height}
+                                    loading="lazy"
+                                    decoding="async"
+                                />
+                            )}
+                            {photo.caption && <figcaption>{photo.caption}</figcaption>}
+                        </figure>
+                    ))
+                }
+            </div>
+        </div>
+    </main>
+</BaseLayout>
+
+<script>
+    import "../scripts/projects/projectDetail";
+</script>

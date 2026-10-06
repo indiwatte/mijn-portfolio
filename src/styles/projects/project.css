@@ -1,0 +1,390 @@
+/* project.css - shared styles for every project detail page (ProjectLayout)
+   Header: hero photo left, title + concept + info right.
+   Below: sticky chapters on the left, photo scroll on the right. */
+
+/* ============ PAGE ============ */
+.project {
+    background: var(--bg-color);
+    padding: clamp(6rem, 12svh, 7.5rem) clamp(1.25rem, 3vw, 3rem) clamp(4rem, 8vw, 7rem);
+    box-sizing: border-box;
+    color: var(--home-text);
+}
+
+.project-header,
+.project-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 1760px;
+    margin-inline: auto;
+}
+
+/* ============ HEADER: PHOTO LEFT, TEXT RIGHT ============ */
+.project-header {
+    gap: clamp(2rem, 6vw, 3rem);
+}
+
+.project-hero img,
+.project-hero video {
+    view-transition-class: project-hero; /* see view-transitions.css */
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.project-intro {
+    max-width: 34rem;
+}
+
+/* ============ SPLIT: CHAPTERS + PHOTO SCROLL ============ */
+.project-split {
+    gap: clamp(3rem, 8vw, 4.5rem);
+    margin-top: clamp(3.5rem, 9vw, 8rem);
+}
+
+.project-info {
+    max-width: 34rem;
+}
+
+.project-info .project-description {
+    margin-top: 0;
+}
+
+.project-kicker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 1.25rem;
+    margin: 0 0 clamp(1.25rem, 2vw, 1.75rem);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--home-muted);
+}
+
+.project-counter span {
+    color: var(--home-accent);
+}
+
+.project-title {
+    margin: 0;
+    font-family: var(--body-font);
+    font-size: clamp(2.6rem, 4.6vw, 4.75rem);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+    text-wrap: balance;
+}
+
+.project-subtitle {
+    margin: 1rem 0 0;
+    font-family: var(--display-font);
+    font-size: clamp(1.5rem, 1vw, 1.95rem);
+    line-height: 1.9;
+    color: var(--home-accent);
+}
+
+/* ---- Text: the concept in the header, the <details> chapters (Markdown body) below ---- */
+.project-description {
+    margin-top: clamp(1.5rem, 2.5vw, 2.25rem);
+    interpolate-size: allow-keywords; /* lets the chapters animate open where supported */
+    counter-reset: chapter;
+}
+
+.project-description p {
+    margin: 0 0 1em;
+    font-size: 1.3rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--home-muted);
+}
+
+.project-description p strong {
+    font-weight: 600;
+    color: var(--home-text);
+}
+
+.project-description > p:first-child {
+    font-size: clamp(1.05rem, 1.3vw, 1.2rem);
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--home-text);
+}
+
+.project-description > p:last-of-type {
+    margin-bottom: clamp(1.25rem, 2vw, 1.75rem);
+}
+
+/* Chapters open and close with the scroll (projectDetail.ts). The accent line on top of
+   the open chapter fills up as you scroll through it (--chapter-progress, 0 to 1). */
+.project-description details {
+    position: relative;
+    border-top: 1px solid var(--border-soft);
+    counter-increment: chapter;
+}
+
+.project-description details::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--home-accent);
+    transform: scaleX(var(--chapter-progress, 0));
+    transform-origin: left;
+}
+
+.project-description details:last-of-type {
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.project-description summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.8rem 0;
+    list-style: none;
+    font-size: clamp(1rem, 1vw, 1.2rem);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    transition: color 200ms ease;
+}
+
+.project-description summary::-webkit-details-marker {
+    display: none;
+}
+
+/* Chapter number instead of a +/- toggle */
+.project-description summary::after {
+    content: counter(chapter, decimal-leading-zero);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--home-muted);
+}
+
+.project-description summary:hover,
+.project-description details[open] > summary {
+    color: var(--home-accent);
+}
+
+.project-description summary:focus-visible {
+    outline: 2px solid var(--home-accent);
+    outline-offset: 2px;
+}
+
+.project-description details::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+        block-size 450ms cubic-bezier(0.22, 1, 0.36, 1),
+        content-visibility 450ms allow-discrete;
+}
+
+.project-description details[open]::details-content {
+    block-size: auto;
+}
+
+/* Lists inside a chapter (Tailwind's reset removes numbers and bullets) */
+.project-description details :is(ol, ul) {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0 0 1.4rem;
+    padding-left: 1.3rem;
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--home-muted);
+}
+
+.project-description details ol {
+    list-style: decimal;
+}
+
+.project-description details ul {
+    list-style: disc;
+}
+
+.project-description details li::marker {
+    font-weight: 600;
+    color: var(--home-accent);
+}
+
+.project-description details li strong {
+    font-weight: 600;
+    color: var(--home-text);
+}
+
+.project-description details > p:last-child {
+    margin-bottom: 1.4rem;
+}
+
+/* ---- Meta: type, year, tags, client, services ---- */
+.project-meta {
+    margin: 0;
+}
+
+.project-meta > div {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border-top: 1px solid var(--border-soft);
+}
+
+.project-meta > div:last-child {
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.project-meta dt {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    line-height: 1.9;
+    text-transform: uppercase;
+    color: var(--home-muted);
+}
+
+.project-meta dd {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+/* ---- Buttons ---- */
+.project-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: clamp(1.5rem, 2.5vw, 2rem);
+}
+
+.project-button {
+    display: inline-block;
+    padding: 0.65rem 1.4rem;
+    border: 1px solid var(--home-blue);
+    border-radius: var(--radius-pill);
+    background: var(--home-blue); /* primary: navy + off-white */
+    color: var(--home-bg);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 200ms ease, border-color 200ms ease, color 200ms ease;
+}
+
+.project-button:hover {
+    border-color: var(--home-text);
+    background: var(--home-text);
+}
+
+.project-button--ghost {
+    border-color: var(--home-pink);
+    background: var(--home-pink); /* secondary: pink + maroon */
+    color: var(--home-text);
+}
+
+.project-button--ghost:hover {
+    border-color: var(--home-sun);
+    background: var(--home-sun);
+    color: var(--home-text);
+}
+
+.project-button:focus-visible {
+    outline: 2px solid var(--home-accent);
+    outline-offset: 3px;
+}
+
+/* ============ RIGHT: PHOTO SCROLL ============ */
+.project-gallery {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: clamp(0.75rem, 1.2vw, 1.25rem);
+    align-items: start;
+}
+
+.project-photo {
+    grid-column: span 6;
+    margin: 0;
+}
+
+.project-photo img,
+.project-photo video {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.project-photo figcaption {
+    margin-top: 0.6rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--home-muted);
+}
+
+/* Photos ease in as they scroll into view; [data-reveal] is set by projectDetail.ts,
+   so they simply stay visible without JavaScript. */
+.project-gallery[data-reveal] .project-photo {
+    opacity: 0;
+    transform: translateY(2.5rem);
+    transition:
+        opacity 900ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.project-gallery[data-reveal] .project-photo.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* ============ FROM LARGE PHONES: photos side by side ============ */
+@media (min-width: 640px) {
+    .project-photo[data-size="half"] {
+        grid-column: span 3;
+    }
+
+    .project-photo[data-size="third"] {
+        grid-column: span 2;
+    }
+}
+
+/* ============ DESKTOP: SPLIT SCREEN ============ */
+@media (min-width: 1024px) {
+    .project-header {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        column-gap: clamp(3rem, 6vw, 7.5rem);
+        align-items: start;
+    }
+
+    .project-split {
+        grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+        column-gap: clamp(3rem, 6vw, 7.5rem);
+        align-items: start;
+    }
+
+    /* Room to scroll through every chapter, even next to a short photo column
+       (--chapter-count is set by projectDetail.ts). */
+    .project-split {
+        min-height: calc(var(--chapter-count, 0) * 60svh);
+    }
+
+    .project-info {
+        position: sticky;
+        top: var(--sticky-top, 6rem); /* refined by projectDetail.ts for tall columns */
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .project-gallery[data-reveal] .project-photo {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .project-description details::details-content {
+        transition: none;
+    }
+}
