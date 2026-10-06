@@ -1,17 +1,60 @@
 ---
-
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/home/Hero.astro";
+import About from "../components/About.astro";
+import FeaturedWork from "../components/home/FeaturedWork.astro";
+import ScrollPath from "../components/home/ScrollPath.astro";
+import ScrollBird from "../components/home/ScrollBird.astro";
+import LiquidEdge from "../components/LiquidEdge.astro";
+import "../styles/home.css";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="Indi Watté | Creative Portfolio" bodyClass="home-page">
+	<main id="top">
+		<Hero />
+
+		<!-- Pulled up over the pinned hero (see heroScroll.ts), with a liquid top edge -->
+		<div id="story" class="story">
+			<!-- Liquid, organic edge that slides over the hero -->
+			<LiquidEdge seed={7} color="var(--home-bg)" />
+
+			<!-- The scroll line runs through About and stops right next to the "Featured work" heading -->
+			<div class="about-wrap">
+				<ScrollPath name="about" endAt="#work h2" />
+				<About />
+			</div>
+			<FeaturedWork />
+		</div>
+
+		<ScrollBird />
+	</main>
+
+	<!-- …and starts again in the footer, where the bird lands right after "together?" -->
+	<ScrollPath
+		slot="footer"
+		name="footer"
+		variant="landing"
+		endAt="[data-footer-together]"
+		color="var(--home-pink)"
+		background="var(--footer-bg)"
+	/>
+
+	<script>
+		import "../scripts/home";
+	</script>
+</BaseLayout>
+
+<style>
+	/* Pulled up over the pinned hero (see heroScroll.ts), so it slides over it */
+	.story {
+		position: relative;
+		z-index: 30;
+		margin-top: calc(-100vh - 3rem);
+		background: var(--home-bg);
+	}
+
+	/* Holds the About scroll line (ScrollPath covers this box) */
+	.about-wrap {
+		position: relative;
+	}
+</style>

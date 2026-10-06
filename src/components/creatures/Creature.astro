@@ -1,0 +1,104 @@
+---
+// One creature (drawing from art.ts) with googly eyes that follow the mouse, blink now and
+// then and open wide when the pointer comes close (src/scripts/creatures.ts). It floats
+// gently. Where it sits is up to the parent: pass a class and/or style.
+import { creatureArt, type CreatureName } from "./art";
+
+interface Props {
+	name: CreatureName;
+	class?: string;
+	style?: string;
+	/** Stagger for the float and blink, so creatures don't move in sync. */
+	index?: number;
+	[key: `data-${string}`]: string | boolean | undefined;
+}
+
+const { name, class: className, style = "", index = 0, ...attrs } = Astro.props;
+const { body, eyes } = creatureArt[name];
+const over = "over" in creatureArt[name] ? creatureArt[name].over : undefined;
+---
+
+<svg
+	class:list={["creature", className]}
+	viewBox="0 0 160 160"
+	style={`--delay: ${(index * -0.9).toFixed(1)}s; --blink-delay: ${((index * 1.7) % 7).toFixed(1)}s; ${style}`}
+	aria-hidden="true"
+	data-creature
+	{...attrs}
+>
+	<g set:html={body} />
+	<g class="eyes">
+		{
+			eyes.map(([x, y, r]) => (
+				<g>
+					<circle class="sclera" cx={x} cy={y} r={r} data-eye />
+					<g class="pupil" data-pupil data-max={(r * 0.36).toFixed(1)}>
+						<circle cx={x} cy={y} r={(r * 0.62).toFixed(1)} fill="url(#cr-pupil)" />
+						<circle cx={(x - r * 0.2).toFixed(1)} cy={(y - r * 0.22).toFixed(1)} r={(r * 0.16).toFixed(1)} fill="#fff" />
+					</g>
+				</g>
+			))
+		}
+	</g>
+	{over && <g set:html={over} />}
+</svg>
+
+<style>
+	.creature {
+		height: auto;
+		overflow: visible;
+		filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.3));
+		animation: float 6s ease-in-out var(--delay) infinite alternate;
+	}
+
+	.sclera {
+		fill: #fff;
+	}
+
+	.pupil {
+		transition: transform 140ms ease-out; /* moved by src/scripts/creatures.ts */
+	}
+
+	/* Blink now and then; open wide when the pointer comes close */
+	.eyes {
+		transform-box: fill-box;
+		transform-origin: center;
+		animation: blink 7s var(--blink-delay) infinite;
+		transition: scale 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+
+	.creature:global(.is-near) .eyes {
+		scale: 1.18;
+	}
+
+	@keyframes float {
+		from {
+			translate: 0 0;
+		}
+		to {
+			translate: 0 -12px;
+		}
+	}
+
+	@keyframes blink {
+		0%,
+		96%,
+		100% {
+			transform: scaleY(1);
+		}
+		98% {
+			transform: scaleY(0.1);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.creature,
+		.eyes {
+			animation: none;
+		}
+	}
+</style>
+
+<script>
+	import "../../scripts/creatures";
+</script>

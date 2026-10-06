@@ -1,0 +1,730 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import LiquidEdge from "../components/LiquidEdge.astro";
+import "../styles/home.css";
+
+const disciplines = [
+	"Brand identity",
+	"Packaging",
+	"Web & UI design",
+	"Typography",
+	"Illustration",
+];
+
+// Polaroids scattered over the board; x/y = starting spot (share of the board), rotate = tilt.
+const polaroids = [
+	{
+		src: "/images/selfie.jpg",
+		alt: "Portrait of Indi Watté on a boat",
+		caption: "Hi, that's me",
+		x: "4%",
+		y: "8%",
+		rotate: -9,
+		position: "center 20%",
+	},
+	{
+		src: "/images/projects/dessert.jpg",
+		alt: "Making dessert's at work",
+		caption: "Out on the water",
+		x: "50%",
+		y: "0%",
+		rotate: 6,
+	},
+	{
+		src: "/images/me-mountain.JPG",
+		alt: "Up in the mountains",
+		caption: "Up in the mountains",
+		x: "24%",
+		y: "27%",
+		rotate: -2,
+	},
+	{
+		src: "/images/food.jpg",
+		alt: "Making dinner for friends",
+		caption: "Making dinner for friends",
+		x: "6%",
+		y: "50%",
+		rotate: 11,
+	},
+	{
+		src: "/images/dessert.jpg",
+		alt: "Illustrated portrait in red and purple",
+		caption: "Making desserts at work",
+		x: "46%",
+		y: "45%",
+		rotate: -7,
+	},
+];
+
+// Experience layer (peach).
+// The first item of the first group starts open.
+const experience = [
+	{
+		title: "Experience",
+		// What I can do; "period" shows how big a part of my work it is.
+		// Items with an href get a link to a project that shows it.
+		items: [
+			{
+				place: "Frontend development",
+				role: "HTML, CSS, JavaScript",
+				period: "Main focus",
+				summary:
+					"Most of my development work happens in the frontend: turning designs into responsive, animated websites that feel good to use.",
+				highlights: [
+					"Responsive layouts and interactions that work from phone to desktop.",
+					"Scroll and motion animations, like the ones on this portfolio (built with Astro and GSAP).",
+				],
+			},
+			{
+				place: "Brand identity & logos",
+				role: "Logo design, visual identity, packaging",
+				period: "Core skill",
+				summary:
+					"I design logos and complete brand identities: colours, typography, illustrations and how it all comes together on packaging and screens.",
+				highlights: [
+					"Miles & Meals: brand strategy, visual identity, packaging and digital design for a street-food meal kit.",
+				],
+				href: "/projects/miles-meals",
+			},
+			{
+				place: "Visual storytelling on the web",
+				role: "Concept, art direction, web design",
+				period: "Core skill",
+				summary:
+					"I like to bring stories visually alive in websites, so visitors don't just read the story but experience it.",
+				highlights: [
+					"Sounds Like Antwerp: a website that turns live city data into music and visuals, for Visit Antwerp.",
+				],
+				href: "/projects/sounds-like-antwerp",
+			},
+			{
+				place: "UI design in Figma",
+				role: "Wireframes, UI design, prototypes",
+				period: "Core skill",
+				summary:
+					"I design interfaces in Figma, from the first wireframes to detailed screens and clickable prototypes.",
+				highlights: [],
+			},
+			{
+				place: "Backend development",
+				role: "The basics",
+				period: "Some experience",
+				summary:
+					"I have done a bit of backend work as well, enough to understand how the frontend connects to data and to build simple features end to end.",
+				highlights: [],
+			},
+		],
+	},
+	{
+		title: "Education",
+		items: [
+			{
+				place: "Devine, Howest Kortrijk",
+				role: "Bachelor Digital Design & Development · in progress",
+				period: "2024 – now (2027)",
+				summary:
+					"My bachelor is still ongoing. It's the programme where design and code come together: branding, web design, UI/UX research and building interactive experiences.",
+				highlights: [],
+			},
+			{
+				place: "Tekenacademie Zottegem",
+				role: "Digital atelier (diploma)",
+				period: "20XX – 2024",
+				summary:
+					"In my free time, next to high school, I followed the digital atelier at the drawing academy, where my drawing and painting moved to the screen.",
+				highlights: [],
+			},
+			{
+				place: "KAZ Zottegem",
+				role: "Latin – Mathematics",
+				period: "2018 – 2024",
+				summary:
+					"Secondary school in Latin and mathematics, while I kept exploring art through drawing and painting.",
+				highlights: [],
+			},
+		],
+	},
+];
+---
+
+<BaseLayout title="About | Indi Watté" bodyClass="home-page">
+	<main class="about-page">
+		<!-- Stays put while the peach experience layer slides over it (layerReveal.ts) -->
+		<div class="about-intro" data-layer-under>
+			<div class="about-grid">
+				<!-- ============ TEXT ============ -->
+				<section class="about-text">
+					<p class="about-kicker">About me</p>
+					<h1 class="about-title">
+						Hi, I'm <span class="accent">Indi.</span>
+					</h1>
+
+					<p class="about-lead">
+						I started as a creative drawer and painter exploring art
+						in highschool, then turned to the world of digital
+						design, seeking to combine my artistic instincts with
+						interactive experiences.
+					</p>
+					<p>
+						My work moves between branding, web design and UI/UX
+						research. What connects it is curiosity and color. I
+						look for the story first, then give it a shape people
+						actually want to click or keep.
+					</p>
+					<p>
+						Offline, I recharge by hiking mountains,
+						swimming, dancing, and experimenting with fresh
+						ingredients in the kitchen. For me, living a healthy and
+						happy life beyond the screen is the best interactive
+						experience over all.
+					</p>
+
+					<ul class="about-disciplines" aria-label="What I do">
+						{disciplines.map((discipline) => <li>{discipline}</li>)}
+					</ul>
+
+					<div class="about-actions">
+						<a href="/projects" class="about-button">See my work</a>
+						<a
+							href="mailto:hello@indiwatte.com"
+							class="about-button about-button--ghost">Say hi</a
+						>
+					</div>
+				</section>
+
+				<!-- ============ POLAROID BOARD (drag the photos around) ============ -->
+				<section
+					class="about-board"
+					data-polaroid-board
+					aria-label="Photos"
+				>
+					{
+						polaroids.map(
+							({ src, alt, caption, x, y, rotate, position }) => (
+								<figure
+									class="polaroid"
+									data-polaroid
+									data-rotate={rotate}
+									style={`--x: ${x}; --y: ${y}`}
+								>
+									<img
+										src={src}
+										alt={alt}
+										style={
+											position &&
+											`object-position: ${position}`
+										}
+										draggable="false"
+										loading="lazy"
+										decoding="async"
+									/>
+									<figcaption>{caption}</figcaption>
+								</figure>
+							),
+						)
+					}
+					<p class="about-hint" aria-hidden="true">
+						Drag the photos around ↝
+					</p>
+				</section>
+			</div>
+		</div>
+
+		<!-- ============ EXPERIENCE: PEACH LAYER ============ -->
+		<!-- data-footer-overlap: this layer stays pinned while the footer slides over it -->
+		<section class="about-experience" data-layer-over data-footer-overlap>
+			<LiquidEdge seed={41} color="var(--home-lilac)" grain />
+
+			<div class="experience-inner">
+				<p class="experience-intro">
+					Currently studying Digital Design & Development at Devine and{" "}
+					<strong>looking for an internship.</strong>{" "}
+					<a href="mailto:hello@indiwatte.com">Let's talk →</a>
+				</p>
+
+				{
+					experience.map((group, g) => (
+						<div class="experience-group">
+							<h2 class="experience-heading">{group.title}</h2>
+
+							<div class="experience-list">
+								{group.items.map((item, i) => (
+									<details
+										class="experience-item"
+										open={g === 0 && i === 0}
+									>
+										<summary>
+											<span class="experience-head">
+												<span class="experience-place">
+													{item.place}
+												</span>
+												<span class="experience-role">
+													{item.role}
+												</span>
+											</span>
+											<span class="experience-period">
+												{item.period}
+											</span>
+											<span
+												class="experience-toggle"
+												aria-hidden="true"
+											/>
+										</summary>
+
+										<div class="experience-body">
+											<p>{item.summary}</p>
+											{item.highlights.length > 0 && (
+												<ul>
+													{item.highlights.map(
+														(highlight) => (
+															<li>{highlight}</li>
+														),
+													)}
+												</ul>
+											)}
+											{item.href && (
+												<a href={item.href} class="experience-link">
+													View the project →
+												</a>
+											)}
+										</div>
+									</details>
+								))}
+							</div>
+						</div>
+					))
+				}
+			</div>
+		</section>
+	</main>
+</BaseLayout>
+
+<script>
+	import "../scripts/about/polaroids";
+	import "../scripts/about/layerReveal";
+	import "../scripts/about/experienceHeadings";
+</script>
+
+<style>
+	.about-page {
+		color: var(--home-text);
+	}
+
+	.about-intro {
+		position: relative;
+		z-index: 1;
+		min-height: 100vh;
+		box-sizing: border-box;
+		/* generous bottom: the peach layer's liquid edge pokes up over this section */
+		padding: clamp(6.5rem, 14svh, 8.5rem) clamp(1.25rem, 4vw, 3.5rem)
+			clamp(7rem, 12vw, 10rem);
+		background: var(--home-bg);
+	}
+
+	.about-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: clamp(3rem, 8vw, 5rem);
+		max-width: 1440px;
+		margin-inline: auto;
+	}
+
+	/* ============ TEXT ============ */
+	.about-text {
+		max-width: 44rem;
+	}
+
+	.about-kicker {
+		margin: 0 0 0.75rem;
+		font-family: var(--display-font);
+		font-size: 1rem;
+		color: var(--home-accent);
+	}
+
+	.about-title {
+		margin: 0 0 clamp(1.5rem, 3vw, 2.25rem);
+		font-family: var(--body-font);
+		font-size: clamp(2.75rem, 6vw, 5.5rem);
+		font-weight: 900;
+		line-height: 0.92;
+		letter-spacing: -0.03em;
+		text-transform: uppercase;
+	}
+
+	.about-title .accent {
+		color: var(--home-accent);
+	}
+
+	.about-text p {
+		margin: 0 0 1.1em;
+		font-size: 1rem;
+		font-weight: 300;
+		line-height: 1.8;
+		color: var(--home-muted);
+	}
+
+	.about-text .about-lead {
+		font-size: clamp(1.15rem, 1.6vw, 1.35rem);
+		font-weight: 400;
+		line-height: 1.55;
+		color: var(--home-text);
+	}
+
+	.about-disciplines {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin: 2rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	/* Tags: butter + maroon */
+	.about-disciplines li {
+		padding: 0.4rem 0.9rem;
+		background: var(--home-sun);
+		color: var(--home-text);
+		border-radius: var(--radius-pill);
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.about-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 2.25rem;
+	}
+
+	.about-button {
+		display: inline-block;
+		padding: 0.7rem 1.5rem;
+		border: 1px solid var(--home-blue);
+		border-radius: var(--radius-pill);
+		background: var(--home-blue); /* primary: navy + off-white */
+		color: var(--home-bg);
+		font-size: 0.85rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition:
+			background 200ms ease,
+			border-color 200ms ease,
+			color 200ms ease;
+	}
+
+	.about-button:hover {
+		border-color: var(--home-text);
+		background: var(--home-text);
+	}
+
+	.about-button--ghost {
+		border-color: var(--home-pink);
+		background: var(--home-pink); /* secondary: pink + maroon */
+		color: var(--home-text);
+	}
+
+	.about-button--ghost:hover {
+		border-color: var(--home-sun);
+		background: var(--home-sun);
+		color: var(--home-text);
+	}
+
+	/* ============ POLAROID BOARD ============ */
+	.about-board {
+		--polaroid-w: clamp(9rem, 15vw, 13.5rem);
+		position: relative;
+		height: clamp(34rem, 72vh, 46rem);
+		isolation: isolate; /* dragged photos stack above each other, never above the header */
+		touch-action: pan-y; /* the page still scrolls when you swipe next to a photo */
+	}
+
+	.polaroid {
+		position: absolute;
+		/* never start outside the board on narrow screens */
+		left: min(var(--x), 100% - var(--polaroid-w));
+		top: min(var(--y), 100% - var(--polaroid-w) * 1.3);
+		width: var(--polaroid-w);
+		margin: 0;
+		padding: 0.6rem 0.6rem 0;
+		box-sizing: border-box;
+		background: #fff;
+		box-shadow:
+			0 1px 2px rgba(0, 0, 0, 0.08),
+			0 10px 24px rgba(0, 0, 0, 0.12);
+		transition: box-shadow 250ms ease;
+		user-select: none;
+		will-change: transform;
+	}
+
+	.polaroid.is-lifted {
+		box-shadow:
+			0 2px 4px rgba(0, 0, 0, 0.08),
+			0 28px 50px rgba(0, 0, 0, 0.22);
+	}
+
+	.polaroid img {
+		display: block;
+		width: 100%;
+		aspect-ratio: 1;
+		object-fit: cover;
+		background: #eee;
+		pointer-events: none;
+	}
+
+	.polaroid figcaption {
+		padding: 0.7rem 0.2rem 0.9rem;
+		font-family: var(--display-font);
+		font-size: clamp(0.65rem, 0.9vw, 0.8rem);
+		line-height: 1.3;
+		text-align: center;
+		color: var(--home-muted);
+	}
+
+	.about-hint {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		z-index: -1; /* the photos slide over it */
+		margin: 0;
+		font-family: var(--display-font);
+		font-size: 0.8rem;
+		color: var(--home-accent);
+		pointer-events: none;
+	}
+
+	/* ============ EXPERIENCE: PEACH LAYER ============ */
+	.about-experience {
+		position: relative;
+		z-index: 2; /* slides over the pinned intro */
+		min-height: 100svh; /* covers the intro completely */
+		box-sizing: border-box;
+		padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 4vw, 3.5rem)
+			clamp(7rem, 12vw, 10rem);
+		/* not flat: lilac melting into a soft pink, with grain on top */
+		background:
+			var(--grain-soft),
+			linear-gradient(180deg, var(--home-lilac) 0%, #f7d6ec 60%, #ffd9e2 100%);
+		color: var(--home-text); /* peach + maroon */
+	}
+
+	.experience-inner {
+		display: grid;
+		gap: clamp(4rem, 8vw, 7rem);
+		max-width: 1440px;
+		margin-inline: auto;
+	}
+
+	.experience-group {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.5rem;
+	}
+
+	/* "Looking for an internship" line above the lists */
+	.experience-intro {
+		max-width: 48rem;
+		margin: 0;
+		font-size: clamp(1.3rem, 2.4vw, 2.1rem);
+		font-weight: 400;
+		line-height: 1.35;
+		letter-spacing: -0.01em;
+	}
+
+	.experience-intro strong {
+		font-weight: 800;
+	}
+
+	.experience-intro a {
+		display: inline-block;
+		font-weight: 700;
+		text-decoration: underline;
+		text-decoration-thickness: 2px;
+		text-underline-offset: 0.2em;
+		transition: color 200ms ease;
+	}
+
+	.experience-intro a:hover {
+		color: var(--home-accent);
+	}
+
+	.experience-heading {
+		margin: 0;
+		font-family: var(--body-font);
+		font-size: clamp(2.5rem, 5vw, 5rem);
+		font-weight: 900;
+		line-height: 0.9;
+		letter-spacing: -0.02em;
+		text-transform: uppercase;
+		color: var(--home-text);
+		transition: color 500ms ease;
+	}
+
+	/* The group you are reading lights up (experienceHeadings.ts) */
+	.experience-heading:global(.is-active) {
+		color: var(--home-accent);
+	}
+
+	.experience-list {
+		border-top: 1px solid rgba(23, 21, 58, 0.25);
+		interpolate-size: allow-keywords; /* lets the items animate open where supported */
+	}
+
+	.experience-item {
+		border-bottom: 1px solid rgba(23, 21, 58, 0.25);
+	}
+
+	.experience-item summary {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto auto;
+		align-items: center;
+		gap: 1rem clamp(1rem, 3vw, 2.5rem);
+		padding: clamp(1.25rem, 2.5vw, 2rem) 0;
+		list-style: none;
+	}
+
+	.experience-item summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.experience-item summary:focus-visible {
+		outline: 2px solid currentColor;
+		outline-offset: 4px;
+	}
+
+	.experience-head {
+		display: grid;
+		gap: 0.3rem;
+	}
+
+	.experience-place {
+		font-size: clamp(1.3rem, 2.4vw, 2rem);
+		font-weight: 600;
+		line-height: 1.15;
+		letter-spacing: -0.01em;
+	}
+
+	.experience-role {
+		font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+		color: rgba(23, 21, 58, 0.75);
+	}
+
+	.experience-period {
+		font-size: clamp(0.85rem, 1.2vw, 1.05rem);
+		white-space: nowrap;
+	}
+
+	/* A plus that turns into a cross when the item is open */
+	.experience-toggle {
+		position: relative;
+		width: 1.5rem;
+		height: 1.5rem;
+		transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.experience-toggle::before,
+	.experience-toggle::after {
+		content: "";
+		position: absolute;
+		top: 50%;
+		left: 0;
+		width: 100%;
+		height: 2px;
+		background: currentColor;
+		translate: 0 -50%;
+	}
+
+	.experience-toggle::after {
+		rotate: 90deg;
+	}
+
+	.experience-item[open] .experience-toggle {
+		transform: rotate(45deg);
+	}
+
+	.experience-item::details-content {
+		block-size: 0;
+		overflow: clip;
+		transition:
+			block-size 500ms cubic-bezier(0.22, 1, 0.36, 1),
+			content-visibility 500ms allow-discrete;
+	}
+
+	.experience-item[open]::details-content {
+		block-size: auto;
+	}
+
+	.experience-body {
+		max-width: 62rem;
+		padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
+	}
+
+	.experience-body p,
+	.experience-body li {
+		font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+		line-height: 1.75;
+	}
+
+	.experience-body p {
+		margin: 0 0 1rem;
+	}
+
+	.experience-body ul {
+		display: grid;
+		gap: 0.5rem;
+		margin: 0;
+		padding-left: 1.25rem;
+		list-style: disc; /* Tailwind's reset removes the bullets */
+	}
+
+	.experience-link {
+		display: inline-block;
+		margin-top: 1.25rem;
+		font-size: 0.95rem;
+		font-weight: 700;
+		text-decoration: underline;
+		text-decoration-thickness: 2px;
+		text-underline-offset: 0.2em;
+		transition: color 200ms ease;
+	}
+
+	.experience-link:hover {
+		color: var(--home-accent);
+	}
+
+	.experience-body li::marker {
+		color: rgba(23, 21, 58, 0.45);
+	}
+
+	/* ============ DESKTOP ============ */
+	@media (min-width: 1024px) {
+		/* text left, board right */
+		.about-grid {
+			grid-template-columns: minmax(0, 7fr) minmax(0, 6fr);
+			align-items: center;
+		}
+
+		/* vertical heading that stays in view next to its list */
+		.experience-group {
+			grid-template-columns: clamp(5rem, 8vw, 8rem) minmax(0, 1fr);
+			gap: clamp(2rem, 5vw, 5rem);
+			align-items: start;
+		}
+
+		.experience-heading {
+			position: sticky;
+			top: 6.5rem;
+			writing-mode: vertical-rl;
+			rotate: 180deg;
+			justify-self: center;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.experience-toggle,
+		.experience-item::details-content {
+			transition: none;
+		}
+	}
+</style>

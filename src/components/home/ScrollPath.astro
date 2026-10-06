@@ -1,0 +1,75 @@
+---
+// One piece of the thin striped scroll line (behaviour: src/scripts/home/scrollPath.ts).
+// Place it inside a position:relative wrapper: it covers that wrapper, sits behind
+// the wrapper's content, and its curve is generated in pixels (never stretched).
+// The ScrollBird flies along every piece in turn.
+interface Props {
+	/** Which piece this is, so the script can find it. */
+	name: "about" | "footer";
+	/** "wander" swings left-right down the section; "landing" curves to a stop on the right. */
+	variant?: "wander" | "landing";
+	/** Colour of the stripes and of the background they sit on. */
+	color?: string;
+	background?: string;
+	/** Optional selector: end the line just to the right of this element (e.g. a heading). */
+	endAt?: string;
+}
+
+const {
+	name,
+	variant = "wander",
+	color = "var(--home-text)",
+	background = "var(--home-bg)",
+	endAt,
+} = Astro.props;
+---
+
+<div
+	class="scroll-path"
+	data-scroll-path={name}
+	data-variant={variant}
+	data-end-at={endAt}
+	style={`--path-color: ${color}; --path-bg: ${background}`}
+	aria-hidden="true"
+>
+	<svg>
+		<path data-line class="line" fill="none"></path>
+		<!-- A stroke in the background colour covers the not-yet-drawn part; it pulls
+		     back (stroke-dashoffset) as you scroll. Cheaper than a page-tall mask. -->
+		<path data-cover class="cover" fill="none"></path>
+	</svg>
+</div>
+
+<style>
+	.scroll-path {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+	}
+
+	svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+	}
+
+	.line,
+	.cover {
+		fill: none;
+	}
+
+	.line {
+		stroke: var(--path-color);
+		stroke-width: 1.5;
+		stroke-dasharray: 6 8; /* thin stripes */
+		stroke-linecap: round;
+		opacity: 0.35;
+	}
+
+	.cover {
+		stroke: var(--path-bg);
+		stroke-width: 8;
+	}
+</style>
