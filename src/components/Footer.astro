@@ -6,9 +6,12 @@ import Creature from "./creatures/Creature.astro";
 const year = new Date().getFullYear();
 
 const socials = [
-    { href: "#", label: "Instagram" },
-    { href: "#", label: "LinkedIn" },
-    { href: "#", label: "Behance" },
+    {
+        href: "https://www.linkedin.com/in/indi-watt%C3%A9-9428bb3b1/",
+        label: "LinkedIn",
+    },
+    { href: "https://www.behance.net/indiwatt", label: "Behance" },
+    { href: "https://github.com/indiwatte", label: "GitHub" },
 ];
 
 const pages = [
@@ -27,15 +30,16 @@ const pages = [
 
     <div class="footer-inner">
         <div class="intro">
-            <p class="kicker">Is it a match?</p>
+            <p class="kicker">Looking for an intern or a designer?</p>
             <h2 class="title">
                 So, let's work <span class="highlight" data-footer-together
                     >together?</span
                 >
             </h2>
             <p class="text">
-                Got a project in mind or just want to chat? I'm always open to
-                new ideas and creative challenges. Let's make something great.
+                I'm looking for an internship from February to May 2027, the
+                second semester of my bachelor. Got a place for me, a project in
+                mind or just want to chat? Let's make something great.
             </p>
             <a href="mailto:indi.watte1@gmail.com" class="mail"
                 >indi.watte1@gmail.com</a
@@ -49,7 +53,12 @@ const pages = [
                     {
                         pages.map(({ href, label }) => (
                             <li>
-                                <a href={href} class="link">
+                                <a
+                                    href={href}
+                                    class="link"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
                                     {label}
                                 </a>
                             </li>
@@ -63,7 +72,12 @@ const pages = [
                     {
                         socials.map(({ href, label }) => (
                             <li>
-                                <a href={href} class="link">
+                                <a
+                                    href={href}
+                                    class="link"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
                                     {label}
                                 </a>
                             </li>

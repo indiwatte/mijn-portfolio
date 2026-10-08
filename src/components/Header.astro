@@ -5,6 +5,12 @@ const links = [
     { href: "/about", label: "About" },
 ];
 
+const socials = [
+    { href: "https://www.linkedin.com/in/indi-watt%C3%A9-9428bb3b1/", label: "LinkedIn" },
+    { href: "https://www.behance.net/indiwatt3", label: "Behance" },
+    { href: "https://github.com/indiwatte", label: "GitHub" },
+];
+
 const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
 const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -25,7 +31,7 @@ const isActive = (href: string) =>
                     aria-current={isActive(href) ? "page" : undefined}
                 >
                     {href === "/" && (
-                        <img class="avatar" src="/images/projects/profilpic.webp" alt="" />
+                        <img class="avatar" src="/images/projects/profilpic.webp" alt="" aria-hidden="true" />
                     )}
                     {label}
                 </a>
@@ -33,7 +39,7 @@ const isActive = (href: string) =>
         }
     </nav>
 
-    <a href="mailto:hello@indiwatte.com" class="cta">
+    <a href="mailto:indi.watte1@gmail.com" class="cta">
         <!-- Envelope that opens on hover: the flap folds up and a letter peeks out -->
         <svg class="envelope" width="18" height="16" viewBox="0 0 24 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
             <!-- open flap: behind the letter, folds up on hover -->
@@ -46,7 +52,59 @@ const isActive = (href: string) =>
         </svg>
         Work with me
     </a>
+
+    <!-- Phones: opens the full-screen menu below -->
+    <button
+        type="button"
+        class="burger"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        data-menu-open
+    >
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
 </header>
+
+<!-- Full-screen menu for phones. Outside the header: the header's backdrop-filter would
+     otherwise trap this fixed panel inside the header bar. -->
+<div id="mobile-menu" class="menu" data-menu inert>
+    <div class="menu-top">
+        <div>
+            <p class="menu-name">Indi Watté<span aria-hidden="true">*</span></p>
+            <p class="menu-role">Designer & front-end developer<br />Based in Belgium</p>
+        </div>
+        <button type="button" class="menu-close" aria-label="Close menu" data-menu-close>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+
+    <nav class="menu-links" aria-label="Menu">
+        {
+            links.map(({ href, label }, i) => (
+                <a
+                    href={href}
+                    class="menu-link"
+                    style={`--i: ${i}`}
+                    aria-current={isActive(href) ? "page" : undefined}
+                >
+                    <span class="menu-index">0{i + 1}</span>
+                    {label}
+                </a>
+            ))
+        }
+    </nav>
+
+    <div class="menu-bottom">
+        <a href="mailto:indi.watte1@gmail.com" class="menu-mail">Work with me ↗</a>
+        <ul class="menu-socials">
+            {socials.map(({ href, label }) => <li><a href={href} target="_blank" rel="noopener noreferrer">{label}</a></li>)}
+        </ul>
+    </div>
+</div>
 
 <style>
     /* ============ BAR ============ */
@@ -187,8 +245,244 @@ const isActive = (href: string) =>
         }
     }
 
+    /* ============ PHONES: HAMBURGER + FULL-SCREEN MENU ============ */
+    /* On phones the bar shows the location and the hamburger; the CTA moves into the menu */
+    @media (max-width: 767px) {
+        .header > .cta {
+            display: none;
+        }
+    }
+
+    .burger {
+        display: grid;
+        place-content: center;
+        gap: 5px;
+        width: 2.9rem;
+        height: 2.9rem;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: var(--home-blue); /* cobalt + white lines: 7:1 */
+        box-shadow: 0 6px 16px rgba(23, 21, 58, 0.25);
+        transition: transform 200ms ease;
+    }
+
+    .burger span {
+        display: block;
+        width: 1.15rem;
+        height: 2.5px;
+        border-radius: 2px;
+        background: #fff;
+        transition: width 250ms ease;
+    }
+
+    .burger span:nth-child(2) {
+        width: 0.8rem;
+        justify-self: end;
+    }
+
+    .burger:hover span:nth-child(2) {
+        width: 1.15rem;
+    }
+
+    .burger:active {
+        transform: scale(0.94);
+    }
+
+    .burger:focus-visible,
+    .menu-close:focus-visible,
+    .menu a:focus-visible {
+        outline: 3px solid var(--home-sun);
+        outline-offset: 3px;
+    }
+
+    .menu {
+        position: fixed;
+        inset: 0;
+        z-index: 70; /* above the header, the bee and the grain */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 2rem;
+        box-sizing: border-box;
+        padding: 1.4rem 1.5rem max(2rem, env(safe-area-inset-bottom));
+        overflow-y: auto;
+        background:
+            var(--grain-soft),
+            radial-gradient(circle at 90% 100%, rgba(255, 162, 182, 0.4), transparent 50%),
+            linear-gradient(180deg, var(--home-blue) 0%, #4a45ee 70%, #6a4cf0 100%);
+        color: #fff;
+        /* opens as a circle growing out of the hamburger (top right) */
+        clip-path: circle(0% at calc(100% - 2.95rem) 2.45rem);
+        visibility: hidden;
+        transition:
+            clip-path 550ms cubic-bezier(0.65, 0, 0.35, 1),
+            visibility 0s 550ms;
+    }
+
+    .menu.is-open {
+        clip-path: circle(150% at calc(100% - 2.95rem) 2.45rem);
+        visibility: visible;
+        transition: clip-path 650ms cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    .menu-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .menu-name {
+        margin: 0.6rem 0 0;
+        font-family: var(--title-font);
+        font-weight: 100;
+        font-size: clamp(2.8rem, 13vw, 4rem);
+        line-height: 0.9;
+        text-transform: uppercase;
+    }
+
+    .menu-name span {
+        color: var(--home-sun);
+    }
+
+    .menu-role {
+        margin: 0.8rem 0 0;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.78); /* still 5:1 on cobalt */
+    }
+
+    .menu-close {
+        position: relative;
+        flex: none;
+        width: 2.9rem;
+        height: 2.9rem;
+        margin-top: -0.25rem;
+        border: 0;
+        border-radius: 50%;
+        background: #fff;
+    }
+
+    .menu-close span {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 1.2rem;
+        height: 2.5px;
+        border-radius: 2px;
+        background: var(--home-blue);
+        translate: -50% -50%;
+        rotate: 45deg;
+        transition: rotate 400ms cubic-bezier(0.34, 1.56, 0.64, 1) 200ms;
+    }
+
+    .menu-close span + span {
+        rotate: -45deg;
+    }
+
+    .menu:not(.is-open) .menu-close span {
+        rotate: 0deg;
+    }
+
+    .menu-links {
+        display: grid;
+        gap: 0.2rem;
+    }
+
+    .menu-link {
+        display: flex;
+        align-items: baseline;
+        gap: 0.8rem;
+        font-family: var(--body-font);
+        font-size: clamp(3rem, 15vw, 4.5rem);
+        font-weight: 900;
+        line-height: 1.02;
+        letter-spacing: -0.03em;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: #fff;
+        /* slide up one after the other when the menu opens */
+        opacity: 0;
+        translate: 0 1.5rem;
+        transition:
+            opacity 300ms ease,
+            translate 500ms cubic-bezier(0.22, 1, 0.36, 1),
+            color 200ms ease;
+    }
+
+    .menu.is-open .menu-link {
+        opacity: 1;
+        translate: 0 0;
+        transition-delay: calc(250ms + var(--i) * 80ms), calc(250ms + var(--i) * 80ms), 0ms;
+    }
+
+    .menu-link[aria-current="page"],
+    .menu-link:hover {
+        color: var(--home-sun); /* sunflower on cobalt: 5.5:1 */
+    }
+
+    .menu-index {
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        color: var(--home-pink);
+        translate: 0 -1.6em;
+    }
+
+    .menu-bottom {
+        display: grid;
+        gap: 1.4rem;
+    }
+
+    .menu-mail {
+        justify-self: start;
+        padding: 0.9rem 1.6rem;
+        border-radius: 999px;
+        background: var(--home-pink); /* pink + ink */
+        color: var(--home-text);
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .menu-socials {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem 1.4rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .menu-socials a {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .menu-socials a:hover {
+        color: var(--home-sun);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .menu,
+        .menu.is-open,
+        .menu-link,
+        .menu-close span {
+            transition: none;
+        }
+    }
+
     /* ============ TABLET + DESKTOP ============ */
     @media (min-width: 768px) {
+        .burger,
+        .menu {
+            display: none;
+        }
+
         .header {
             padding-inline: 2.5rem;
         }
@@ -203,3 +497,35 @@ const isActive = (href: string) =>
         }
     }
 </style>
+
+<script>
+    // Phone menu: open/close, lock the page scroll while open, close on Escape or after
+    // picking a link. Re-run after every client-side navigation (Astro's router).
+    function initMenu() {
+        const menu = document.querySelector<HTMLElement>("[data-menu]");
+        const openButton = document.querySelector<HTMLButtonElement>("[data-menu-open]");
+        const closeButton = menu?.querySelector<HTMLButtonElement>("[data-menu-close]");
+        if (!menu || !openButton || !closeButton || menu.dataset.ready) return;
+        menu.dataset.ready = "true";
+
+        const setOpen = (open: boolean) => {
+            menu.classList.toggle("is-open", open);
+            menu.inert = !open;
+            openButton.setAttribute("aria-expanded", String(open));
+            document.documentElement.style.overflow = open ? "hidden" : "";
+            (open ? closeButton : openButton).focus({ preventScroll: true });
+        };
+
+        openButton.addEventListener("click", () => setOpen(true));
+        closeButton.addEventListener("click", () => setOpen(false));
+        menu.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => setOpen(false)));
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && menu.classList.contains("is-open")) setOpen(false);
+        });
+        // Leaving the page with the menu open: never keep the scroll locked.
+        document.addEventListener("astro:before-swap", () => (document.documentElement.style.overflow = ""), { once: true });
+    }
+
+    initMenu();
+    document.addEventListener("astro:page-load", initMenu);
+</script>
