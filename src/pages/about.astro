@@ -1,7 +1,30 @@
 ---
+import { existsSync } from "node:fs";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import LiquidEdge from "../components/LiquidEdge.astro";
 import "../styles/home.css";
+
+// Brush colours for the paint layer on the intro (paint.ts)
+// Where the paint blobs sit on the palette: [x %, y %, tilt]
+const paintSpots = [
+	[22, 60, -8],
+	[45, 33, 12],
+	[42, 70, 4],
+	[64, 55, -14],
+	[83, 66, 9],
+];
+
+const paintColors = [
+	{ color: "#ff5a1f", label: "Orange paint" },
+	{ color: "#2a3be8", label: "Cobalt paint" },
+	{ color: "#ff8fb1", label: "Pink paint" },
+	{ color: "#ffc93c", label: "Sunflower paint" },
+	{ color: "#17153a", label: "Ink paint" },
+];
+
+// CV: put the PDF at public/cv-indi-watte.pdf and the "Download CV" button appears.
+const CV = "/cv-indi-watte.pdf";
+const hasCv = existsSync(`public${CV}`);
 
 const disciplines = [
 	"Brand identity",
@@ -15,7 +38,7 @@ const disciplines = [
 const polaroids = [
 	{
 		src: "/images/selfie.jpg",
-		alt: "Portrait of Indi Watté on a boat",
+		alt: "Selfie of Indi smiling at sunset",
 		caption: "Hi, that's me",
 		x: "4%",
 		y: "8%",
@@ -24,7 +47,7 @@ const polaroids = [
 	},
 	{
 		src: "/images/projects/dessert.jpg",
-		alt: "Making dessert's at work",
+		alt: "Indi kayaking on a lake between the mountains",
 		caption: "Out on the water",
 		x: "50%",
 		y: "0%",
@@ -32,7 +55,7 @@ const polaroids = [
 	},
 	{
 		src: "/images/me-mountain.JPG",
-		alt: "Up in the mountains",
+		alt: "Indi with a backpack on a mountain trail by a lake",
 		caption: "Up in the mountains",
 		x: "24%",
 		y: "27%",
@@ -40,7 +63,7 @@ const polaroids = [
 	},
 	{
 		src: "/images/food.jpg",
-		alt: "Making dinner for friends",
+		alt: "A table full of homemade dishes for friends",
 		caption: "Making dinner for friends",
 		x: "6%",
 		y: "50%",
@@ -48,7 +71,7 @@ const polaroids = [
 	},
 	{
 		src: "/images/dessert.jpg",
-		alt: "Illustrated portrait in red and purple",
+		alt: "A plated chocolate dessert with strawberries, made at work",
 		caption: "Making desserts at work",
 		x: "46%",
 		y: "45%",
@@ -129,7 +152,7 @@ const experience = [
 			{
 				place: "Tekenacademie Zottegem",
 				role: "Digital atelier (diploma)",
-				period: "20XX – 2024",
+				period: "Until 2024",
 				summary:
 					"In my free time, next to high school, I followed the digital atelier at the drawing academy, where my drawing and painting moved to the screen.",
 				highlights: [],
@@ -147,10 +170,19 @@ const experience = [
 ];
 ---
 
-<BaseLayout title="About | Indi Watté" bodyClass="home-page">
+<BaseLayout
+	title="About | Indi Watté"
+	description="About Indi Watté: from drawing and painting to digital design. Bachelor Digital Design & Development at Devine, looking for an internship."
+	bodyClass="home-page"
+>
 	<main class="about-page">
 		<!-- Stays put while the peach experience layer slides over it (layerReveal.ts) -->
-		<div class="about-intro" data-layer-under>
+		<div class="about-intro" data-layer-under data-paint-area>
+			<!-- Paint layer: sketch on the background, behind the text and photos (paint.ts) -->
+			<canvas class="paint-canvas" data-paint-canvas aria-hidden="true"></canvas>
+			<!-- Every stroke becomes a floating figure in here when you let go -->
+			<div class="paint-figures" data-paint-figures aria-hidden="true"></div>
+
 			<div class="about-grid">
 				<!-- ============ TEXT ============ -->
 				<section class="about-text">
@@ -183,12 +215,91 @@ const experience = [
 						{disciplines.map((discipline) => <li>{discipline}</li>)}
 					</ul>
 
-					<div class="about-actions">
-						<a href="/projects" class="about-button">See my work</a>
-						<a
-							href="mailto:hello@indiwatte.com"
-							class="about-button about-button--ghost">Say hi</a
-						>
+					<!-- Buttons and the hint on the left, the paint palette next to them -->
+					<div class="about-play">
+						<div class="about-play-text">
+							<div class="about-actions">
+								<a href="/projects" class="about-button">See my work</a>
+								<a
+									href="mailto:indi.watte1@gmail.com"
+									class="about-button about-button--ghost">Say hi</a
+								>
+								{hasCv && (
+									<a href={CV} class="about-button about-button--ghost" download>
+										Download CV ↓
+									</a>
+								)}
+								<a
+									href="https://github.com/indiwatte"
+									class="about-button about-button--ghost"
+									target="_blank"
+									rel="noopener noreferrer">GitHub ↗</a
+								>
+							</div>
+							<p class="about-availability">
+								<span class="about-availability-dot" aria-hidden="true"></span>
+								Open to an internship · Feb – May 2027
+							</p>
+
+							<p class="paint-label">Grab a colour and draw on the page ↝</p>
+							<!-- Appears after your first figure -->
+							<p class="paint-message" data-paint-message aria-live="polite">
+								See? Everybody can do it, as long as they want to.
+							</p>
+						</div>
+						<!-- Painter's palette: grab a colour from a paint blob, then draw (paint.ts) -->
+						<div class="paint-toolbar" data-paint-toolbar role="toolbar" aria-label="Paint palette: pick a colour and draw on the page">
+							<svg class="palette-board" viewBox="0 0 320 220" aria-hidden="true">
+								<defs>
+									<linearGradient id="palette-wood" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#f3c896" />
+										<stop offset=".55" stop-color="#e2a86a" />
+										<stop offset="1" stop-color="#c8864a" />
+									</linearGradient>
+									<filter id="palette-grain" x="0" y="0" width="100%" height="100%">
+										<feTurbulence type="fractalNoise" baseFrequency="0.02 0.6" numOctaves="2" seed="3" result="wood" />
+										<feColorMatrix in="wood" type="matrix" values="0 0 0 0 0.45  0 0 0 0 0.25  0 0 0 0 0.1  0 0 0 0.35 -0.05" result="grain" />
+										<feComposite in="grain" in2="SourceAlpha" operator="in" result="lines" />
+										<feMerge><feMergeNode in="SourceGraphic" /><feMergeNode in="lines" /></feMerge>
+									</filter>
+								</defs>
+								<path
+									fill="url(#palette-wood)"
+									fill-rule="evenodd"
+									filter="url(#palette-grain)"
+									d="M160 8 C250 8 314 52 314 112 C314 172 252 212 170 212 C96 212 30 188 14 136 C4 102 20 74 52 70 C80 66 92 84 110 70 C128 56 96 24 160 8 Z M238 48 a18 22 0 1 0 0.1 0 Z"
+								/>
+								<!-- A few dried paint smears for character -->
+								<g opacity=".55">
+									<path d="M60 150 q20 -14 44 -4 q-10 18 -40 14 Z" fill="#ff8fb1" />
+									<path d="M180 30 q26 -4 40 10 q-24 10 -40 -10 Z" fill="#f3dcf7" />
+									<path d="M268 178 q20 -16 30 -40 q8 30 -30 40 Z" fill="#ffc93c" />
+								</g>
+							</svg>
+
+							{paintColors.map(({ color, label }, i) => (
+								<button
+									type="button"
+									class="paint-swatch"
+									style={`--swatch: ${color}; --x: ${paintSpots[i][0]}%; --y: ${paintSpots[i][1]}%; --tilt: ${paintSpots[i][2]}deg`}
+									data-color={color}
+									aria-label={label}
+									aria-pressed={i === 0 ? "true" : "false"}
+								/>
+							))}
+							{[6, 14, 28].map((size, i) => (
+								<button
+									type="button"
+									class="paint-size"
+									style={`--dot: ${Math.round(size / 2.5 + 3)}px; --x: ${57 + i * 8}%; --y: 86%`}
+									data-size={size}
+									aria-label={["Thin", "Medium", "Thick"][i] + " brush"}
+									aria-pressed={i === 1 ? "true" : "false"}
+								/>
+							))}
+							<button type="button" class="paint-clear" data-paint-clear>Wipe</button>
+							<button type="button" class="paint-toggle" data-paint-toggle aria-pressed="false">Paint</button>
+						</div>
 					</div>
 				</section>
 
@@ -238,8 +349,9 @@ const experience = [
 			<div class="experience-inner">
 				<p class="experience-intro">
 					Currently studying Digital Design & Development at Devine and{" "}
-					<strong>looking for an internship.</strong>{" "}
-					<a href="mailto:hello@indiwatte.com">Let's talk →</a>
+					<strong>looking for an internship from February to May 2027</strong>{" "}
+					(second semester).{" "}
+					<a href="mailto:indi.watte1@gmail.com">Let's talk →</a>
 				</p>
 
 				{
@@ -297,9 +409,21 @@ const experience = [
 			</div>
 		</section>
 	</main>
+	<!-- Pencil attached to the mouse while it's over the drawing area (paint.ts) -->
+	<div class="paint-pencil" data-paint-pencil aria-hidden="true">
+		<svg viewBox="0 0 64 64">
+			<path class="pencil-lead" d="M3 61 L8 46 L18 56 Z" />
+			<path d="M8 46 L13 41 L23 51 L18 56 Z" fill="#f3c896" />
+			<path d="M13 41 L46 8 L56 18 L23 51 Z" fill="#2a3be8" />
+			<path d="M13 41 L46 8 L49 11 L16 44 Z" fill="#5868f0" />
+			<path d="M46 8 L50 4 Q53 1 56 4 L60 8 Q63 11 60 14 L56 18 Z" fill="#ffa2b6" />
+			<path d="M44 10 L54 20" stroke="#ffc93c" stroke-width="3" />
+		</svg>
+	</div>
 </BaseLayout>
 
 <script>
+	import "../scripts/about/paint";
 	import "../scripts/about/polaroids";
 	import "../scripts/about/layerReveal";
 	import "../scripts/about/experienceHeadings";
@@ -315,10 +439,333 @@ const experience = [
 		z-index: 1;
 		min-height: 100vh;
 		box-sizing: border-box;
-		/* generous bottom: the peach layer's liquid edge pokes up over this section */
+		/* bottom: as tall as the experience layer's wavy edge (LiquidEdge: 20.8vw, min 130px,
+		   92% of it above the layer), so it never covers the palette or the buttons */
 		padding: clamp(6.5rem, 14svh, 8.5rem) clamp(1.25rem, 4vw, 3.5rem)
-			clamp(7rem, 12vw, 10rem);
+			calc(max(130px, 20.8vw) * 0.92 + 1.5rem);
 		background: var(--home-bg);
+	}
+
+	/* ============ PAINT LAYER ============ */
+	.paint-canvas {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		width: 100%;
+		height: 100%;
+		pointer-events: none; /* the intro itself listens (paint.ts) */
+	}
+
+	.paint-figures {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+	}
+
+	.paint-figures :global(.painted-figure) {
+		position: absolute;
+		overflow: visible;
+		filter: drop-shadow(0 12px 14px rgba(23, 21, 58, 0.22));
+	}
+
+	.paint-figures :global(.painted-figure.is-floating) {
+		animation: painted-float var(--float-time) ease-in-out var(--float-delay) infinite alternate;
+	}
+
+	.paint-figures :global(.painted-pupil) {
+		transition: transform 140ms ease-out;
+	}
+
+	.paint-figures :global(.painted-eyes) {
+		transform-box: fill-box;
+		transform-origin: center;
+		animation: painted-blink 6s var(--float-delay) infinite;
+	}
+
+	@keyframes painted-float {
+		from {
+			translate: 0 0;
+			rotate: 0deg;
+		}
+		to {
+			translate: 0 -14px;
+			rotate: var(--float-rotate);
+		}
+	}
+
+	@keyframes painted-blink {
+		0%,
+		96%,
+		100% {
+			transform: scaleY(1);
+		}
+		98% {
+			transform: scaleY(0.1);
+		}
+	}
+
+	.paint-message {
+		margin: 1rem 0 0;
+		font-family: var(--display-font);
+		font-size: clamp(1rem, 1.6vw, 1.25rem);
+		line-height: 1.5;
+		color: var(--home-accent);
+		opacity: 0;
+		translate: 0 0.6rem;
+		transition:
+			opacity 500ms ease 300ms,
+			translate 600ms cubic-bezier(0.34, 1.56, 0.64, 1) 300ms;
+	}
+
+	.paint-message:global(.is-shown) {
+		opacity: 1;
+		translate: 0 0;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.paint-figures :global(.painted-figure.is-floating),
+		.paint-figures :global(.painted-eyes) {
+			animation: none;
+		}
+	}
+
+	.about-intro :global(.about-grid) {
+		position: relative;
+		z-index: 1; /* text and photos stay on top of the paint */
+	}
+
+	/* While painting: no text selection, and on touch screens the page stops scrolling */
+	.about-intro:global(.is-painting) {
+		user-select: none;
+	}
+
+	.about-intro:global(.is-touch-painting) {
+		touch-action: none;
+	}
+
+	/* ---- Painter's palette (the toolbar) ---- */
+	.about-availability {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin: 1rem 0 0;
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--home-text);
+	}
+
+	.about-availability-dot {
+		flex: none;
+		width: 0.6rem;
+		height: 0.6rem;
+		border-radius: 50%;
+		background: #2fbf71;
+		box-shadow: 0 0 0 4px rgba(47, 191, 113, 0.2);
+	}
+
+	.about-play {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-start;
+		gap: 1.5rem clamp(1.5rem, 3vw, 3rem);
+	}
+
+	.about-play-text {
+		flex: 1 1 14rem;
+	}
+
+	.about-play .about-actions {
+		margin-top: 2.25rem;
+	}
+
+	.paint-toolbar {
+		--brush: #ff5a1f;
+		position: relative;
+		flex: none;
+		width: clamp(14rem, 18vw, 17rem);
+		aspect-ratio: 320 / 220;
+		margin-top: 1.5rem;
+		transform-style: preserve-3d;
+		filter: drop-shadow(0 18px 22px rgba(23, 21, 58, 0.22)) drop-shadow(0 4px 4px rgba(23, 21, 58, 0.12));
+		will-change: transform;
+	}
+
+	.palette-board {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+	}
+
+	.paint-swatch,
+	.paint-size,
+	.paint-clear,
+	.paint-toggle {
+		position: absolute;
+		left: var(--x);
+		top: var(--y);
+		translate: -50% -50%;
+	}
+
+	/* Paint blobs: thick, textured dabs of paint */
+	.paint-swatch {
+		width: 17%;
+		aspect-ratio: 1.15;
+		padding: 0;
+		border: 0;
+		border-radius: 52% 48% 57% 43% / 47% 58% 42% 53%;
+		background:
+			radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.65), transparent 32%),
+			radial-gradient(circle at 70% 75%, rgba(0, 0, 0, 0.18), transparent 45%),
+			var(--swatch);
+		box-shadow:
+			inset 0 -3px 0 rgba(0, 0, 0, 0.12),
+			0 3px 5px rgba(23, 21, 58, 0.25);
+		rotate: var(--tilt);
+		transition: transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 200ms ease;
+	}
+
+	.paint-swatch:hover {
+		transform: scale(1.12);
+	}
+
+	.paint-swatch[aria-pressed="true"] {
+		transform: scale(1.18);
+		box-shadow:
+			inset 0 -3px 0 rgba(0, 0, 0, 0.12),
+			0 0 0 3px #fff,
+			0 0 0 5px var(--home-text),
+			0 6px 10px rgba(23, 21, 58, 0.3);
+	}
+
+	.paint-size {
+		display: grid;
+		place-items: center;
+		width: 1.6rem;
+		height: 1.6rem;
+		padding: 0;
+		border: 2px solid transparent;
+		border-radius: 50%;
+		background: transparent;
+	}
+
+	.paint-size::before {
+		content: "";
+		width: var(--dot);
+		height: var(--dot);
+		border-radius: 50%;
+		background: var(--brush);
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+	}
+
+	.paint-size[aria-pressed="true"] {
+		border-color: var(--home-text);
+	}
+
+	.paint-clear,
+	.paint-toggle {
+		padding: 0.3rem 0.65rem;
+		border: 0;
+		border-radius: 999px;
+		background: var(--home-text);
+		color: #fff;
+		font-size: 0.7rem;
+		font-weight: 700;
+	}
+
+	.paint-clear {
+		--x: 87%;
+		--y: 40%;
+		display: none; /* only once there is something to wipe */
+	}
+
+	.paint-toolbar:global(.has-painted) .paint-clear {
+		display: block;
+	}
+
+	/* The Paint toggle is only needed on touch screens */
+	.paint-toggle {
+		--x: 25%;
+		--y: 85%;
+		display: none;
+		background: var(--home-sun);
+		color: var(--home-text);
+	}
+
+	.paint-toggle[aria-pressed="true"] {
+		background: var(--home-blue);
+		color: #fff;
+	}
+
+	@media (pointer: coarse) {
+		.paint-toggle {
+			display: block;
+		}
+	}
+
+	.paint-toolbar button:focus-visible {
+		outline: 3px solid var(--home-blue);
+		outline-offset: 2px;
+	}
+
+	.paint-label {
+		margin: 0.6rem 0 0;
+		font-family: var(--display-font);
+		font-size: 0.85rem;
+		color: var(--home-muted);
+	}
+
+	/* ---- Pencil cursor ---- */
+	.paint-pencil {
+		--pencil: #ff5a1f;
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 65;
+		width: 4.6rem;
+		height: 4.6rem;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 150ms ease;
+	}
+
+	.paint-pencil svg {
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+		transform-origin: 5% 95%; /* the tip */
+		transition: scale 120ms ease;
+		filter: drop-shadow(3px 6px 4px rgba(23, 21, 58, 0.25));
+	}
+
+	.pencil-lead {
+		fill: var(--pencil);
+	}
+
+	.paint-pencil:global(.is-visible) {
+		opacity: 1;
+	}
+
+	.paint-pencil:global(.is-down) svg {
+		scale: 0.88; /* pressed onto the page */
+	}
+
+	/* The star cursor steps aside while the pencil is out */
+	:global(body.is-pencil #custom-cursor) {
+		opacity: 0;
+	}
+
+	/* Phones: a smaller palette */
+	@media (max-width: 767px) {
+		.paint-toolbar {
+			width: min(16rem, 80vw);
+		}
+
+		.paint-pencil {
+			display: none;
+		}
 	}
 
 	.about-grid {
