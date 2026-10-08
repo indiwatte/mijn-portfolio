@@ -344,7 +344,7 @@ const experience = [
 		<!-- ============ EXPERIENCE: PEACH LAYER ============ -->
 		<!-- data-footer-overlap: this layer stays pinned while the footer slides over it -->
 		<section class="about-experience" data-layer-over data-footer-overlap>
-			<LiquidEdge seed={41} color="var(--home-lilac)" grain />
+			<LiquidEdge seed={41} color="var(--home-lilac)" />
 
 			<div class="experience-inner">
 				<p class="experience-intro">
@@ -949,9 +949,8 @@ const experience = [
 		box-sizing: border-box;
 		padding: clamp(4rem, 8vw, 7rem) clamp(1.25rem, 4vw, 3.5rem)
 			clamp(7rem, 12vw, 10rem);
-		/* not flat: lilac melting into a soft pink, with grain on top */
+		/* not flat: lilac melting into a soft pink, no grain (clean, modern) */
 		background:
-			var(--grain-soft),
 			linear-gradient(180deg, var(--home-lilac) 0%, #f7d6ec 60%, #ffd9e2 100%);
 		color: var(--home-text); /* peach + maroon */
 	}
