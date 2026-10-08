@@ -11,6 +11,21 @@ export function initHeroScroll() {
         pin: true,
     });
 
+    // The sun sets under the white layer as you scroll down (and rises again scrolling
+    // up): it sinks a little faster than the layer rises, while its glow on the white
+    // layer grows, so the light still shines through once the sun itself is hidden.
+    gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {
+        const sun = document.querySelector("[data-hero-sun]");
+        const glow = document.querySelector("[data-sun-glow]");
+        if (!sun || !glow) return;
+        gsap.timeline({
+            defaults: { ease: "none" },
+            scrollTrigger: { trigger: "#hero", start: "top top", end: "+=70%", scrub: 0.8 },
+        })
+            .to(sun, { yPercent: 60, scale: 0.92 }, 0)
+            .to(glow, { opacity: 1, scaleX: 1.15 }, 0);
+    });
+
     // The manifesto headline slowly reveals as it scrolls into view (transform +
     // opacity only). With reduced motion it simply stays visible.
     gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {

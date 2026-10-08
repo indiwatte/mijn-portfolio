@@ -5,23 +5,28 @@ import HeroCreatures from "./HeroCreatures.astro";
 ---
 
 <section id="hero" class="hero">
+	<!-- Flowing, watery sky (WebGL, heroWater.ts); the CSS gradient below is the fallback -->
+	<canvas class="hero-water" data-hero-water aria-hidden="true"></canvas>
+	<!-- The sun: rises from behind the white layer at the bottom; sinks under it on scroll
+	     (heroScroll.ts). Its glow also shines through the white layer (index.astro). -->
+	<div class="hero-sun" data-hero-sun aria-hidden="true"></div>
 	<!-- Grain over the gradient sky -->
 	<div class="hero-grain" aria-hidden="true"></div>
 
 	<!-- The mirror: my photo framed in a tall arch, floating on clouds -->
-	<div class="hero-portal" aria-hidden="true" data-portal>
+	<div class="hero-portal" data-portal>
 		<div class="portal-frame" data-depth="12">
 			<img
 				class="portal-me"
-				src="/images/selfie2.jpg "
+				src="/images/selfie2.webp"
 				width="1400"
-				height="1867"
-				alt=""
+				height="1657"
+				alt="Portrait of Indi Watté"
 				fetchpriority="high"
 			/>
 		</div>
 		<!-- Puffy clouds in front of the bottom of the frame, spilling over its edges -->
-		<svg class="portal-clouds" viewBox="0 0 520 150" data-depth="26">
+		<svg class="portal-clouds" viewBox="0 0 520 150" data-depth="26" aria-hidden="true">
 			<defs>
 				<radialGradient id="cloud-shade" cx="45%" cy="30%" r="75%">
 					<stop offset="0" stop-color="#ffffff" />
@@ -39,8 +44,8 @@ import HeroCreatures from "./HeroCreatures.astro";
 				<rect x="40" y="100" width="440" height="50" rx="25" />
 			</g>
 		</svg>
-		<svg class="portal-sparkle portal-sparkle--1" viewBox="0 0 40 40" data-depth="34"><path d="M20 0 C22 14 26 18 40 20 C26 22 22 26 20 40 C18 26 14 22 0 20 C14 18 18 14 20 0 Z" /></svg>
-		<svg class="portal-sparkle portal-sparkle--2" viewBox="0 0 40 40" data-depth="28"><path d="M20 0 C22 14 26 18 40 20 C26 22 22 26 20 40 C18 26 14 22 0 20 C14 18 18 14 20 0 Z" /></svg>
+		<svg class="portal-sparkle portal-sparkle--1" viewBox="0 0 40 40" data-depth="34" aria-hidden="true"><path d="M20 0 C22 14 26 18 40 20 C26 22 22 26 20 40 C18 26 14 22 0 20 C14 18 18 14 20 0 Z" /></svg>
+		<svg class="portal-sparkle portal-sparkle--2" viewBox="0 0 40 40" data-depth="28" aria-hidden="true"><path d="M20 0 C22 14 26 18 40 20 C26 22 22 26 20 40 C18 26 14 22 0 20 C14 18 18 14 20 0 Z" /></svg>
 	</div>
 
 	<!-- Little creatures whose eyes follow the mouse -->
@@ -51,7 +56,7 @@ import HeroCreatures from "./HeroCreatures.astro";
 			Hi, I'm Indi Watté, a<!-- the bee (ScrollBird) starts right after this line -->
 			<span class="bee-anchor" data-bee-start>
 				<!-- What the bee is about: shown while it waits in the hero, gone once it flies -->
-				<span class="bee-bubble" data-bee-bubble><span class="bee-bubble-pop">Busy bee at work ☕</span></span>
+				<span class="bee-bubble" data-bee-bubble aria-hidden="true"><span class="bee-bubble-pop">Busy bee at work ☕</span></span>
 			</span>
 		</p>
 
@@ -72,12 +77,8 @@ import HeroCreatures from "./HeroCreatures.astro";
 	/* ============ SECTION: GRADIENT SKY + GRAIN ============ */
 	.hero {
 		position: relative;
-		/* not flat: cobalt sky melting into violet, pink and a warm orange horizon,
-		   with a soft pink glow behind the portal */
-		background:
-			radial-gradient(ellipse at 80% 55%, rgba(255, 214, 230, 0.35), transparent 45%),
-			radial-gradient(ellipse at 10% 5%, rgba(160, 176, 255, 0.35), transparent 50%),
-			linear-gradient(180deg, #3d4fec 0%, #4f5ef0 32%, #8c86f4 60%, #dcaee6 82%, #ffd3c2 100%);
+		/* fallback when WebGL is off: the same soft sky as heroWater.ts */
+		background: linear-gradient(180deg, #9eadfa 0%, #bdc4fc 30%, #ded1f7 55%, #ffd1de 72%, #ffc2a8 84%, #fff2eb 100%);
 		display: flex;
 		align-items: center;
 		justify-content: flex-start;
@@ -85,6 +86,32 @@ import HeroCreatures from "./HeroCreatures.astro";
 		height: 100vh;
 		min-height: 640px;
 		overflow: hidden;
+	}
+
+	.hero-water {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+	/* ============ SUN ============ */
+	.hero-sun {
+		position: absolute;
+		left: 50%;
+		bottom: 2vw; /* half of it peeks above the white wave at rest */
+		z-index: 1;
+		width: clamp(14rem, 26vw, 26rem);
+		aspect-ratio: 1;
+		translate: -50% 50%;
+		border-radius: 50%;
+		background: radial-gradient(circle at 50% 45%, #fffbe6 0%, #ffe28a 28%, #ffb35c 58%, #ff8a5b 78%, rgba(255, 138, 91, 0) 100%);
+		box-shadow:
+			0 0 60px 20px rgba(255, 214, 140, 0.55),
+			0 0 160px 80px rgba(255, 170, 120, 0.35),
+			0 0 320px 160px rgba(255, 190, 170, 0.25);
+		pointer-events: none;
 	}
 
 	.hero-grain {

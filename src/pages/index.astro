@@ -17,6 +17,8 @@ import "../styles/home.css";
 		<div id="story" class="story">
 			<!-- Liquid, organic edge that slides over the hero -->
 			<LiquidEdge seed={7} color="var(--home-bg)" />
+			<!-- The sun's light shining through the white layer from below (heroScroll.ts) -->
+			<div class="sun-glow" data-sun-glow aria-hidden="true"></div>
 
 			<!-- The scroll line runs through About and stops right next to the "Featured work" heading -->
 			<div class="about-wrap">
@@ -51,6 +53,20 @@ import "../styles/home.css";
 		z-index: 30;
 		margin-top: calc(-100vh - 3rem);
 		background: var(--home-bg);
+	}
+
+	/* Warm light from the sun under this layer, centred on the sun, over the wavy edge */
+	.sun-glow {
+		position: absolute;
+		left: 50%;
+		top: -14vw;
+		z-index: 11; /* above the LiquidEdge (10) */
+		width: min(90vw, 70rem);
+		height: 34vw;
+		translate: -50% 0;
+		background: radial-gradient(ellipse 50% 50% at 50% 42%, rgba(255, 186, 100, 0.75), rgba(255, 160, 130, 0.3) 45%, rgba(255, 160, 130, 0) 72%);
+		opacity: 0.35;
+		pointer-events: none;
 	}
 
 	/* Holds the About scroll line (ScrollPath covers this box) */

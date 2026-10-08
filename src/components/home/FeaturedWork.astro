@@ -1,36 +1,66 @@
 ---
+// Homepage work section.
+//  1. Case studies: the two strongest projects, built from their own Markdown files
+//     (image, one-line summary, my role, tools), so they always match the project page.
+//  2. Play: drawings and paintings in three drifting columns (projectsGallery.ts).
 import ProjectCard from "./ProjectCard.astro";
+import { projects } from "../../data/projects";
+
+interface Frontmatter {
+	title: string;
+	summary?: string;
+	role?: string;
+	team?: string;
+	stack?: string[];
+	tags?: string[];
+	heroImage?: string;
+}
+
+// Which projects lead, in this order
+const FEATURED = ["sounds-like-antwerp", "type-one"];
+
+const pages = import.meta.glob<{ frontmatter: Frontmatter }>("../../pages/projects/*.md", { eager: true });
+const cases = FEATURED.map((slug) => {
+	const page = pages[`../../pages/projects/${slug}.md`];
+	if (!page) return undefined;
+	const fm = page.frontmatter;
+	const href = `/projects/${slug}`;
+	return {
+		href,
+		title: fm.title,
+		summary: fm.summary,
+		role: fm.role,
+		team: fm.team,
+		// Tools if filled in, otherwise the project's tags
+		pills: fm.stack?.length ? fm.stack : (fm.tags ?? []),
+		image: fm.heroImage ?? projects.find((project) => project.href === href)?.image,
+	};
+}).filter((c) => c !== undefined);
 
 const F = "/images/featured";
 
-// Three parallax columns: the outer ones drift up, the middle one drifts down.
-// A mix of side work (drawings, paintings, collage: no link) and one image per project.
+// Side work: drawings and paintings (no project page behind them)
 const columns = [
 	{
 		direction: "up",
 		cards: [
 			{ image: `${F}/collage.webp`, alt: "Collage of a woman with a crown of flowers over her eyes", title: "Flower crown", desc: "Collage" },
-			{ href: "/projects/miles-meals", image: "/images/projects/miles-meals/box-mockup.webp", alt: "Miles & Meals packaging mockup", title: "Miles & Meals", desc: "Branding & packaging" },
-			{ image: `${F}/illustration1.webp`, alt: "Colourful line drawing of a face", title: "Face study", desc: "Digital drawing" },
-			{ href: "/projects/thrive", image: "/images/painting.JPG", alt: "Thrive campaign website: Fight your battle", title: "Thrive", desc: "Campaign website" },
+			{ image: `${F}/illustration1.webp`, alt: "Colourful line drawing of a crying face", title: "Face study", desc: "Digital drawing" },
 		],
 	},
 	{
 		direction: "down",
 		cards: [
-			{ href: "/projects/sounds-like-antwerp", video: "/images/projects/antwerp/brabo-fountain-web.mp4", alt: "Animated Sounds Like Antwerp poster with the Brabo fountain", title: "Sounds Like Antwerp", desc: "Motion poster" },
-			{ image: `${F}/octopus.webp`, alt: "Drawing an octopus on an iPad", title: "Octopus", desc: "Digital painting" },
-			{ href: "/projects/type-one", image: "/images/projects/type1.webp", alt: "TYPE01 conference website on a laptop", title: "Type One", desc: "Conference website" },
-			{ image: `${F}/painted-portrait.webp`, alt: "Painting of a green parrot", title: "Parrot", desc: "Digital painting" },
+			{ image: `${F}/octopus.webp`, alt: "Painting an octopus on an iPad with a stylus", title: "Octopus", desc: "Digital painting" },
+			{ image: `${F}/headwrap-portrait.webp`, alt: "Painting of a woman in a colourful headwrap, hanging on a wall", title: "Headwrap portrait", desc: "Painting" },
+			{ image: `${F}/papegaai.webp`, alt: "Digital painting of a green parrot", title: "Parrot", desc: "Digital painting" },
 		],
 	},
 	{
 		direction: "up",
 		cards: [
-			{ image: `${F}/papegaai.webp`, alt: "Indi next to her large colourful painted portrait", title: "Painted portrait", desc: "Painting" },
-			{ href: "/projects/mountains", image: "/images/projects/mountains/mountain-mock-still.webp", alt: "Hiking in the Alps interactive experience on a laptop", title: "Hiking in the Alps", desc: "Interactive experience" },
+			{ image: `${F}/painted-portrait.webp`, alt: "Indi next to her large, colourful painted portrait", title: "Painted portrait", desc: "Painting" },
 			{ image: `${F}/illustration2.webp`, alt: "Illustrated figure in red, purple and gold lines", title: "Red figure", desc: "Digital illustration" },
-			{ href: "/projects/miles-meals", image: "/images/projects/miles-meals/miles&meals-drink.webp", alt: "Miles & Meals drink product shot", title: "Miles & Meals", desc: "Product shot" },
 		],
 	},
 ];
@@ -41,9 +71,44 @@ const columns = [
 	<div class="home-work-header">
 		<div class="home-work-heading">
 			<span class="eyebrow-tag">WORK</span>
-			<h2>Some of my creative works</h2>
+			<h2>Selected case studies</h2>
 		</div>
-		
+		<a href="/projects" class="all-link">All projects →</a>
+	</div>
+
+	<!-- ============ CASE STUDIES ============ -->
+	<div class="cases">
+		{
+			cases.map((c) => (
+				<a href={c.href} class="case">
+					<div class="case-media">
+						<img src={c.image} alt={`${c.title}: project image`} loading="lazy" decoding="async" />
+					</div>
+					<div class="case-info">
+						<h3 class="case-title">
+							{c.title} <span aria-hidden="true">→</span>
+						</h3>
+						{c.summary && <p class="case-summary">{c.summary}</p>}
+						{c.role && (
+							<p class="case-role">
+								<span>My role</span> {c.role}
+								{c.team && ` · ${c.team}`}
+							</p>
+						)}
+						<ul class="tag-pills case-pills" aria-label="Tools and tags">
+							{c.pills.map((pill) => <li>{pill}</li>)}
+						</ul>
+					</div>
+				</a>
+			))
+		}
+	</div>
+
+	<!-- ============ PLAY: DRAWINGS & PAINTINGS ============ -->
+	<div class="play-header">
+		<span class="eyebrow-tag">PLAY</span>
+		<h3>Drawings &amp; paintings</h3>
+		<p>Where it all started: I still draw and paint next to my design work.</p>
 	</div>
 
 	<div id="parallax-grid" class="work-grid">
@@ -60,6 +125,147 @@ const columns = [
 </section>
 
 <style>
+	.all-link {
+		font-weight: 700;
+		color: var(--home-text);
+		text-decoration: none;
+	}
+
+	.all-link:hover {
+		color: var(--home-accent);
+	}
+
+	/* ============ CASE STUDIES ============ */
+	.cases {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 3vw, 2.5rem);
+	}
+
+	@media (min-width: 768px) {
+		.cases {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	/* White cards, so they read as one solid deck while stacked (projectsGallery.ts) */
+	.case {
+		display: block;
+		padding: 0.75rem 0.75rem 1.4rem;
+		border-radius: 1.6rem;
+		background: #fff;
+		box-shadow:
+			0 1px 2px rgba(23, 21, 58, 0.06),
+			0 18px 40px rgba(23, 21, 58, 0.12);
+		color: var(--home-text);
+		text-decoration: none;
+	}
+
+	.case-info {
+		padding-inline: 0.6rem;
+	}
+
+	.case-media {
+		overflow: hidden;
+		aspect-ratio: 4 / 3;
+		border-radius: 1.1rem;
+		background: #ece4f6;
+	}
+
+	.case:nth-child(2) .case-media {
+		background: #ffe8d2;
+	}
+
+
+	.case-media img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.case:hover .case-media img {
+		transform: scale(1.04);
+	}
+
+	.case-info {
+		padding-top: 1rem;
+	}
+
+	.case-title {
+		margin: 0;
+		font-size: clamp(1.4rem, 2.2vw, 1.9rem);
+		font-weight: 800;
+		letter-spacing: -0.01em;
+		text-transform: uppercase;
+	}
+
+	.case-title span {
+		display: inline-block;
+		color: var(--home-accent);
+		transition: translate 300ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.case:hover .case-title span {
+		translate: 0.3rem 0;
+	}
+
+	.case-summary {
+		margin: 0.4rem 0 0;
+		line-height: 1.55;
+		color: var(--home-muted);
+	}
+
+	.case-role {
+		margin: 0.5rem 0 0;
+		font-size: 0.9rem;
+		font-weight: 600;
+	}
+
+	.case-role span {
+		margin-right: 0.3rem;
+		font-size: 0.7rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--home-muted);
+	}
+
+	.case-pills {
+		margin-top: 0.75rem;
+	}
+
+	.case:focus-visible {
+		outline: 3px solid var(--home-blue);
+		outline-offset: 6px;
+		border-radius: var(--radius-md);
+	}
+
+	/* ============ PLAY ============ */
+	.play-header {
+		margin: clamp(4rem, 9vw, 7rem) 0 clamp(1.5rem, 3vw, 2.25rem);
+	}
+
+	.play-header .eyebrow-tag {
+		display: block;
+		margin-bottom: 0.4rem;
+		font-family: var(--display-font);
+		color: var(--home-accent);
+	}
+
+	.play-header h3 {
+		margin: 0;
+		font-size: clamp(1.6rem, 3vw, 2.4rem);
+		font-weight: 900;
+		text-transform: uppercase;
+		color: var(--home-text);
+	}
+
+	.play-header p {
+		margin: 0.4rem 0 0;
+		color: var(--home-muted);
+	}
+
 	/* One column on phones, three parallax columns from tablet width */
 	.work-grid {
 		display: grid;
