@@ -5,6 +5,10 @@ subtitle: "Conference website"
 type: "School project"
 year: "2026"
 client: "Lorem ipsum"
+# One line for cards (homepage): what it is.
+summary: "A bold, mobile-first conference website for TYPE01 magazine."
+# Tools / tech stack, shown as pills on the homepage card. Fill in, e.g. ["Figma", "Astro", "GSAP"]
+# stack: []
 transitionId: "project-type-one-hero"
 
 services:

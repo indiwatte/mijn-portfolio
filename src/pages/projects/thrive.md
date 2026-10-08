@@ -5,6 +5,10 @@ subtitle: "Digital marketing campaign"
 type: "School project"
 year: "2025"
 client: "Thrive Belgium (school project)"
+# One line for cards (homepage): what it is.
+summary: "An interactive campaign website that links a real boxing challenge to an online battle card."
+# Tools / tech stack, shown as pills on the homepage card. Fill in, e.g. ["Figma", "Astro", "GSAP"]
+# stack: []
 transitionId: "project-thrive-hero"
 
 services:

@@ -8,6 +8,11 @@ subtitle: "Lorem ipsum dolor sit amet."
 type: "School project"
 year: "2026"
 client: "Lorem ipsum"
+# One line for cards (homepage): what it is.
+summary: "Lorem ipsum dolor sit amet."
+# Your role and the tools / tech stack (role shows in the info block and on homepage cards).
+# role: "Visual designer"
+# stack: ["Figma", "Astro"]
 transitionId: "project-<project-slug>-hero"
 
 services:

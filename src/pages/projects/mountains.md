@@ -4,6 +4,10 @@ title: "Hiking in the alps"
 subtitle: "digital interactive experience"
 type: "School project"
 year: "2025"
+# One line for cards (homepage): what it is.
+summary: "An interactive hiking experience you play with your own body and voice."
+# Tools / tech stack, shown as pills on the homepage card.
+stack: ["ml5.js", "GSAP"]
 transitionId: "project-mountains-hero"
 
 services:

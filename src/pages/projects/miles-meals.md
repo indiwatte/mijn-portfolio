@@ -5,6 +5,10 @@ subtitle: "A world of flavours in every box."
 type: "School project"
 year: "2026"
 client: "Miles & Meals"
+# One line for cards (homepage): what it is.
+summary: "Brand identity, packaging and app design for a street-food meal kit."
+# Tools / tech stack, shown as pills on the homepage card. Fill in, e.g. ["Figma", "Astro", "GSAP"]
+# stack: []
 transitionId: "project-miles-meals-hero"
 
 services:
