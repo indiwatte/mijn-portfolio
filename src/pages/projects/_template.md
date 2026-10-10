@@ -34,6 +34,8 @@ heroImage: "/images/projects/<project-slug>/hero.webp"
 # heroVideo: "/images/projects/<project-slug>/hero.mp4"
 
 # Photo scroll (right column, below the header), top to bottom. size: full (default) | half | third
+# Optional chapter: 1, 2, … the chapter a photo belongs to (the photos after it follow along);
+# then each chapter opens while its own photos scroll by.
 # A .mp4/.webm/.mov src becomes a silent looping video (with controls to turn the sound on).
 gallery:
   - src: "/images/projects/<project-slug>/photo-1.webp"

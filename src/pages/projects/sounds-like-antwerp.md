@@ -34,44 +34,89 @@ concept:
 heroImage: "/images/projects/antwerp/laptop-mockup.webp"
 
 # Photo scroll (right column, below the header), top to bottom. size: full (default) | half | third
+# chapter: the chapter a photo belongs to (1 = the first); the photos after it follow along.
 gallery:
+  # 2. Collaborators (1. Client brief and 3. The problem share these photos)
   - src: "/images/projects/antwerp/grouppic.jpg"
+    chapter: 2
     alt: "The four team members in front of the projected Sounds Like Antwerp website"
     caption: "The team at the final presentation."
+  # 4. Research
   - src: "/images/projects/antwerp/process.MP4"
+    chapter: 4
     alt: "The team brainstorming at a whiteboard: why, how, what, problem, concept, target audience and pain points"
     caption: "Process: brainstorming from the problem and the target audience's pain points to the concept."
-  - src: "/images/projects/antwerp/metro-poster.webp"
-    alt: "Sounds Like Antwerp poster in a metro station"
-    caption: "Campaign poster: make your own music at soundslikeantwerp.be."
+  # 5. The concept
   - src: "/images/projects/antwerp/website-home.webp"
+    chapter: 5
     alt: "Home page: Hear the sounds of Antwerp"
+  - src: "/images/projects/antwerp/website-your-sound.webp"
+    alt: "Result screen: This is your sound of Antwerp"
+    size: half
+  - src: "/images/projects/antwerp/website-events.webp"
+    alt: "Events overview: What's on in Antwerp"
+    size: half
+  # 6. Visual language: shares the photos of the concept above
+  # 7. The design system
+  - src: "/images/projects/antwerp/design-system.webp"
+    chapter: 7
+    alt: "The Sounds Like Antwerp styleguide: design position, principles, colour palette, typography, dither and grain, motion, photography rules, UI elements, grid and logo tryouts"
+    caption: "The full styleguide. Scroll inside it to see it all."
+    tall: true
+  # 8. Technology
   - src: "/images/projects/antwerp/website-neighbourhood-map.webp"
+    chapter: 8
     alt: "Neighbourhood map with live traffic, noise, crowd and heat data"
     caption: "Pick a neighbourhood on the map to hear its live data."
+    size: half
   - src: "/images/projects/antwerp/website-sound-builder.webp"
     alt: "Sound builder connecting city sensors to instruments"
     caption: "The sound builder: connect live city sensors to instruments."
-  - src: "/images/projects/antwerp/website-your-sound.webp"
-    alt: "Result screen: This is your sound of Antwerp"
-  - src: "/images/projects/antwerp/website-events.webp"
-    alt: "Events overview: What's on in Antwerp"
+    size: half
+  # 9. Social media (Creating awareness)
+  - src: "/images/projects/antwerp/social-profile.webp"
+    chapter: 9
+    alt: "The soundslikeantwerp Instagram profile: bio, pixel-icon highlights and a grid of posts"
+    size: half
+  - src: "/images/projects/antwerp/social-story.webp"
+    alt: "Instagram story announcing a Visible Cloaks event, with a link to the website"
+    size: half
+  - src: "/images/projects/antwerp/social-posts.webp"
+    alt: "Two Instagram carousel posts for the Fragments expo with a live performance by Visible Cloaks"
+    caption: "Posts, stories and the profile, all in the new design system."
+  # 10. Results & reflection
   - src: "/images/projects/antwerp/video_antwerp.mp4"
+    chapter: 10
     alt: "Screen recording of the Sounds Like Antwerp experience"
     caption: "Demo of the experience."
 
 # Buttons under the chapters. Paste the URLs between the quotes: a button only shows once
 # its link is filled in.
 links:
-  - label: "Visit project"
-    href: ""
+  - label: "See website"
+    href: "https://antwerp.halim-yalcinkaya.be/"
   - label: "Figma process"
     href: "https://www.figma.com/board/nxJT4IDezHBYjiw2muusCk/INT4---Visit-Antwerp---FigJam?node-id=67-1171&t=7H1ltylYbgEb48AW-0"
+  - label: "Figma visual design"
+    href: "https://www.figma.com/design/fAR9H6M9K8DV5VSqQLkm7Z/INT-4---Visit-Antwerp---Design-File?node-id=19-113&t=bDisS6AswQw0LcSU-1"
   - label: "UX case on Behance"
     href: "https://www.behance.net/gallery/250907007/Sounds-like-Antwerp"
 ---
 
+<h3 class="chapter-group">The brief</h3>
+
 <details name="chapter" open>
+<summary>Client brief</summary>
+
+**Visit Antwerp** asked us to convince more **young urban travellers (18–36)** to consciously choose Antwerp for a city trip of several days, not just a quick stop on the way somewhere else.
+
+This audience looks for authentic, creative and less obvious places, avoids classic city marketing and has little trust in official institutions. They get their inspiration from social media, creators and friends.
+
+The concept had to be **digital-first**, feel authentic rather than like a promotional campaign, and combine at least two of: a digital application, a physical activation in the city and a social media format. It also had to be scalable, from a €5,000 to a €30,000 version, and use the city's youth brand style.
+
+</details>
+
+<details name="chapter">
 <summary>Collaborators</summary>
 
 - **Abdulhalim Yalcinkaya:** Team Lead
@@ -89,6 +134,8 @@ Young urban travellers don't find Antwerp relevant. They know it exists, but not
 **Research question:** how might we reshape the perception of Antwerp for young urban travellers, from "Go to Antwerp? No thanks!" to a vibrant, must-visit destination?
 
 </details>
+
+<h3 class="chapter-group">The process</h3>
 
 <details name="chapter">
 <summary>Research</summary>
@@ -114,6 +161,21 @@ Starting from Visit Antwerp’s youth branding, I kept the city fonts and narrow
 </details>
 
 <details name="chapter">
+<summary>The design system</summary>
+
+My main job in the team: building the **design system** everyone designed and built with. The starting point: *we extend Antwerp's identity, we don't override it.* The city brand is the container, our project the living thing inside it: cold, documentary and slightly raw. Less a tourism campaign, more a living platform.
+
+Three principles guided every choice: **experimental, not exclusive**; **let Antwerp speak without words**; and **playful, not intimidating**.
+
+- **Colour:** 3 of the 9 colours of Visit Antwerp's youth branding (acid lime, black and warm grey), plus an electric blue. The closest fit to the underground, nocturnal rave scene.
+- **Typography:** the city's own Antwerpen fonts for headings and body, Pixelify Sans to make big words stand out and Littlebit Square for data labels and sensor readouts.
+- **Pixel language:** on scroll, photos break into pixel tiles and a Bayer dither: the city's analogue reality being sampled into digital data. A subtle grain refers to rave flyers and print.
+- **Photography:** urban documentary. Observed rather than staged, high contrast and natural light: Antwerp captured as it is, active, imperfect and always moving.
+- **UI:** particle-based icons and graphics, no round shapes, and a grid where a 2px seam turns the background itself into the grid.
+
+</details>
+
+<details name="chapter">
 <summary>Technology</summary>
 
 Each neighbourhood has live readings from Antwerp's city sensors: **noise, traffic, crowds, events and heat**, each as a value between 0 and 1 (Central Station at a quiet moment: noise 0.28, traffic 0.24, crowd 0.51).
@@ -123,6 +185,19 @@ In the sound builder you connect a sensor to an instrument (drums, bass guitar, 
 Built with: [fill in the tools, e.g. Web Audio API / Tone.js, p5.js, Webflow, and the city data source you used].
 
 </details>
+
+<h3 class="chapter-group">Creating awareness</h3>
+
+<details name="chapter">
+<summary>Social media</summary>
+
+Young urban travellers don't get inspired by city marketing, but by what they see on their feed. So the campaign lives where they already are: an Instagram account that **lets the city do the talking**.
+
+The profile shares what Antwerp sounds like right now, and highlights take you straight into it: Listen, Feel, Artists, See and Discover, each with its own pixel icon. Posts and stories put the events and artists that fit the sound in the spotlight, like a live performance by Visible Cloaks at Park Spoor Noord. Every touchpoint links back to the website, where you make your own sound and plan your trip.
+
+</details>
+
+<h3 class="chapter-group">The final result</h3>
 
 <details name="chapter">
 <summary>Results & reflection</summary>

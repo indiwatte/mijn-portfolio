@@ -41,6 +41,12 @@ gallery:
     alt: "TYPE01 website: program card for the Official Saturday Dinner Party"
   - src: "/images/projects/type_01/website-accommodation.webp"
     alt: "TYPE01 website: accommodation section for Hotel Indigo London with a discount code"
+
+# Buttons under the chapters. Paste the URL between the quotes: the button only shows
+# once its link is filled in.
+links:
+  - label: "See full prototype"
+    href: ""
 ---
 
 <details name="chapter" open>
