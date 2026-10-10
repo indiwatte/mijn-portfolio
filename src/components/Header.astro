@@ -16,23 +16,21 @@ const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 ---
 
-<header id="site-header" class="header">
-    <div class="location">
-        <svg class="location-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-        Based in Belgium
-    </div>
+<!-- One floating glass pill. Over the coloured hero and footer (data-header-dark) it
+     turns see-through with white text; everywhere else it gets dark text (script below). -->
+<header id="site-header" class="header" data-header>
+    <a href="/" class="home-link" aria-label="Home" aria-current={isActive("/") ? "page" : undefined}>
+        <img class="avatar" src="/images/selfie.jpg" alt="" />
+    </a>
 
     <nav class="nav" aria-label="Primary">
         {
-            links.map(({ href, label }) => (
+            links.filter(({ href }) => href !== "/").map(({ href, label }) => (
                 <a
                     href={href}
                     class="nav-link"
                     aria-current={isActive(href) ? "page" : undefined}
                 >
-                    {href === "/" && (
-                        <img class="avatar" src="/images/projects/profilpic.webp" alt="" aria-hidden="true" />
-                    )}
                     {label}
                 </a>
             ))
@@ -109,83 +107,113 @@ const isActive = (href: string) =>
 <style>
     /* ============ BAR ============ */
     .header {
+        --bar-text: var(--home-text);
+        --bar-line: rgba(23, 21, 58, 0.1);
+        --bar-glass: rgba(255, 255, 255, 0.6);
+        --bar-hover: rgba(23, 21, 58, 0.06);
         position: fixed;
-        inset: 0 0 auto;
+        top: 0.75rem;
+        left: 0.75rem;
+        right: 0.75rem;
         z-index: 50;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-        background: rgba(255, 255, 255, 0.1);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-    }
-
-    /* ============ LOCATION (left) ============ */
-    .location {
-        display: flex;
-        align-items: center;
         gap: 0.5rem;
-        font-size: 0.75rem;
-        font-weight: 500;
-        letter-spacing: 0.025em;
-        text-transform: uppercase;
-        color: #fff;
-        mix-blend-mode: difference;
+        padding: 0.4rem;
+        border: 1px solid var(--bar-line);
+        border-radius: 999px;
+        background: var(--bar-glass);
+        box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.35),
+            0 10px 30px rgba(23, 21, 58, 0.1);
+        backdrop-filter: blur(14px) saturate(1.4);
+        -webkit-backdrop-filter: blur(14px) saturate(1.4);
+        color: var(--bar-text);
+        transition:
+            background 300ms ease,
+            border-color 300ms ease,
+            color 300ms ease;
     }
 
-    .location-icon {
-        color: var(--home-pink);
+    /* Over the blue hero and footer: like frosted glass, white text */
+    .header.is-on-dark {
+        --bar-text: #fff;
+        --bar-line: rgba(255, 255, 255, 0.45);
+        --bar-glass: rgba(255, 255, 255, 0.2);
+        --bar-hover: rgba(255, 255, 255, 0.16);
     }
 
-    /* ============ NAV (centre) ============ */
-    .nav {
-        display: none; /* shown from tablet width, see below */
-        align-items: center;
-        gap: 1.5rem;
-        font-size: 1rem;
-        font-weight: 500;
-        color: #fff;
-        mix-blend-mode: difference;
-    }
-
-    .nav-link {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        text-decoration: none;
-        transition: color 150ms ease;
-    }
-
-    .nav-link:hover,
-    .nav-link[aria-current="page"] {
-        color: var(--home-pink);
+    .home-link {
+        flex: none;
+        display: block;
+        border-radius: 50%;
     }
 
     .avatar {
-        width: 2.25rem;
-        height: 2.25rem;
+        display: block;
+        width: 2.6rem;
+        height: 2.6rem;
         border-radius: 50%;
         object-fit: cover;
-        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5);
+        transition: transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .home-link:hover .avatar {
+        transform: scale(1.06) rotate(-4deg);
+    }
+
+    /* ============ LINKS (middle) ============ */
+    .nav {
+        display: none; /* shown from tablet width, see below */
+        align-items: center;
+        gap: 0.4rem;
+        margin-inline: 2rem 0.75rem;
+    }
+
+    .nav-link {
+        padding: 0.55rem 1.1rem;
+        border: 1.5px solid transparent;
+        border-radius: 999px;
+        font-size: 1rem;
+        font-weight: 500;
+        color: inherit;
+        text-decoration: none;
+        transition:
+            background 200ms ease,
+            border-color 200ms ease;
+    }
+
+    .nav-link:hover {
+        background: var(--bar-hover);
+    }
+
+    /* the page you're on gets an outlined pill */
+    .nav-link[aria-current="page"] {
+        border-color: currentColor;
+        background: none;
+    }
+
+    .home-link:focus-visible,
+    .nav-link:focus-visible,
+    .cta:focus-visible {
+        outline: 3px solid var(--home-sun);
+        outline-offset: 2px;
     }
 
     /* ============ BUTTON (right) ============ */
     .cta {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
+        gap: 0.6rem;
+        padding: 0.7rem 1.3rem;
         border-radius: 999px;
         background: #fff;
         color: var(--home-text);
-        font-size: 0.75rem;
+        font-size: 1rem;
         font-weight: 600;
         text-decoration: none;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 8px rgba(23, 21, 58, 0.1);
         transition: background 150ms ease;
     }
 
@@ -246,7 +274,7 @@ const isActive = (href: string) =>
     }
 
     /* ============ PHONES: HAMBURGER + FULL-SCREEN MENU ============ */
-    /* On phones the bar shows the location and the hamburger; the CTA moves into the menu */
+    /* On phones the bar shows the photo and the hamburger; the CTA moves into the menu */
     @media (max-width: 767px) {
         .header > .cta {
             display: none;
@@ -483,13 +511,12 @@ const isActive = (href: string) =>
             display: none;
         }
 
+        /* centred, as wide as its content */
         .header {
-            padding-inline: 2.5rem;
-        }
-
-        .location,
-        .cta {
-            font-size: 0.875rem;
+            top: 1rem;
+            left: 50%;
+            right: auto;
+            translate: -50% 0;
         }
 
         .nav {
@@ -526,6 +553,39 @@ const isActive = (href: string) =>
         document.addEventListener("astro:before-swap", () => (document.documentElement.style.overflow = ""), { once: true });
     }
 
+    // White text when what's showing under the bar belongs to a coloured section
+    // (data-header-dark), dark text everywhere else. Checked on scroll, once per frame.
+    // Looks at what's actually painted there, since sections slide over each other.
+    function initHeaderTone() {
+        const header = document.querySelector<HTMLElement>("[data-header]");
+        if (!header || header.dataset.toneReady) return;
+        header.dataset.toneReady = "true";
+
+        let queued = false;
+        const update = () => {
+            queued = false;
+            const bar = header.getBoundingClientRect();
+            const y = bar.top + bar.height / 2;
+            const below = document
+                .elementsFromPoint(bar.left + bar.width / 2, y)
+                .find((el) => !header.contains(el) && el !== document.documentElement);
+            const onDark = !!below?.closest("[data-header-dark]");
+            header.classList.toggle("is-on-dark", onDark);
+        };
+        const queue = () => {
+            if (queued) return;
+            queued = true;
+            requestAnimationFrame(update);
+        };
+
+        update();
+        window.addEventListener("scroll", queue, { passive: true });
+        window.addEventListener("resize", queue);
+        window.addEventListener("load", queue); // the bar may only get its final spot now
+        document.addEventListener("astro:page-load", update);
+    }
+
     initMenu();
+    initHeaderTone();
     document.addEventListener("astro:page-load", initMenu);
 </script>

@@ -4,6 +4,7 @@ import { ClientRouter } from "astro:transitions";
 import Cursor from "../components/Cursor.astro";
 import CreatureDefs from "../components/creatures/CreatureDefs.astro";
 import Header from "../components/Header.astro";
+import Loader from "../components/Loader.astro";
 import Footer from "../components/Footer.astro";
 import "../styles/tailwind.css";
 import "../styles/global.css";
@@ -78,6 +79,8 @@ const imageUrl = new URL(image, base).href;
 		{viewTransitions && <ClientRouter />}
 	</head>
 	<body class={bodyClass}>
+		<!-- First thing in the page, so it covers everything while the rest loads -->
+		<Loader />
 		<Cursor />
 		<!-- Gradients/filters for the creatures (hero, footer wordmark) -->
 		<CreatureDefs />

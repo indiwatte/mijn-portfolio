@@ -2,8 +2,8 @@
 // Homepage work section.
 //  1. Case studies: the two strongest projects, built from their own Markdown files
 //     (image, one-line summary, my role, tools), so they always match the project page.
-//  2. Play: drawings and paintings in three drifting columns (projectsGallery.ts).
-import ProjectCard from "./ProjectCard.astro";
+//  2. Play: drawings and paintings pegged to the bee's scroll line, which zigzags down
+//     through them like a washing line (ropeGallery.ts, drawn by scrollPath.ts).
 import { projects } from "../../data/projects";
 
 interface Frontmatter {
@@ -39,31 +39,20 @@ const cases = FEATURED.map((slug) => {
 
 const F = "/images/featured";
 
-// Side work: drawings and paintings (no project page behind them)
-const columns = [
-	{
-		direction: "up",
-		cards: [
-			{ image: `${F}/collage.webp`, alt: "Collage of a woman with a crown of flowers over her eyes", title: "Flower crown", desc: "Collage" },
-			{ image: `${F}/illustration1.webp`, alt: "Colourful line drawing of a crying face", title: "Face study", desc: "Digital drawing" },
-		],
-	},
-	{
-		direction: "down",
-		cards: [
-			{ image: `${F}/octopus.webp`, alt: "Painting an octopus on an iPad with a stylus", title: "Octopus", desc: "Digital painting" },
-			{ image: `${F}/headwrap-portrait.webp`, alt: "Painting of a woman in a colourful headwrap, hanging on a wall", title: "Headwrap portrait", desc: "Painting" },
-			{ image: `${F}/papegaai.webp`, alt: "Digital painting of a green parrot", title: "Parrot", desc: "Digital painting" },
-		],
-	},
-	{
-		direction: "up",
-		cards: [
-			{ image: `${F}/painted-portrait.webp`, alt: "Indi next to her large, colourful painted portrait", title: "Painted portrait", desc: "Painting" },
-			{ image: `${F}/illustration2.webp`, alt: "Illustrated figure in red, purple and gold lines", title: "Red figure", desc: "Digital illustration" },
-		],
-	},
+// Side work: drawings and paintings (no project page behind them), in the order they
+// are hung on the line. w/h = the image's size, so the frame keeps its shape while loading.
+const paintings = [
+	{ image: `${F}/octopus.webp`, w: 1000, h: 1161, alt: "Painting an octopus on an iPad with a stylus", title: "Octopus", desc: "Digital painting" },
+	{ image: `${F}/collage.webp`, w: 792, h: 992, alt: "Collage of a woman with a crown of flowers over her eyes", title: "Flower crown", desc: "Collage" },
+	{ image: `${F}/painted-portrait.webp`, w: 886, h: 886, alt: "Indi next to her large, colourful painted portrait", title: "Painted portrait", desc: "Painting" },
+	{ image: `${F}/illustration1.webp`, w: 769, h: 1020, alt: "Colourful line drawing of a crying face", title: "Face study", desc: "Digital drawing" },
+	{ image: `${F}/headwrap-portrait.webp`, w: 1000, h: 1000, alt: "Painting of a woman in a colourful headwrap, hanging on a wall", title: "Headwrap portrait", desc: "Painting" },
+	{ image: `${F}/papegaai.webp`, w: 900, h: 1157, alt: "Digital painting of a green parrot", title: "Parrot", desc: "Digital painting" },
+	{ image: `${F}/illustration2.webp`, w: 752, h: 1044, alt: "Illustrated figure in red, purple and gold lines", title: "Red figure", desc: "Digital illustration" },
 ];
+
+// Clothes pegs in the site's colours, one after the other
+const PEGS = ["#ff8fb1", "#ffc93c", "#5868f0", "#c9a7f0"];
 ---
 
 <!-- data-footer-overlap: this section stays pinned while the footer slides over it -->
@@ -107,20 +96,42 @@ const columns = [
 	<!-- ============ PLAY: DRAWINGS & PAINTINGS ============ -->
 	<div class="play-header">
 		<span class="eyebrow-tag">PLAY</span>
-		<h3>Drawings &amp; paintings</h3>
+		<h3>some other stuff</h3>
 		<p>Where it all started: I still draw and paint next to my design work.</p>
 	</div>
 
-	<div id="parallax-grid" class="work-grid">
-		{
-			columns.map((col) => (
-				<div class="parallax-col" data-direction={col.direction}>
-					{col.cards.map((card) => (
-						<ProjectCard {...card} />
-					))}
-				</div>
-			))
-		}
+	<!-- Without JS the paintings sit in a simple grid; ropeGallery.ts strings them up -->
+	<div class="rope-gallery" data-rope-gallery>
+		<!-- Same thin striped line as the bee's (ScrollPath.astro): drawn by pulling back a
+		     cover stroke in the background colour (scrollPath.ts) -->
+		<svg class="rope" aria-hidden="true">
+			<path class="rope-line" data-line></path>
+			<path class="rope-cover" data-cover></path>
+		</svg>
+
+		<ul class="rope-items">
+			{
+				paintings.map((p, i) => (
+					<li class="hang" data-hang>
+						<div class="hang-drop" data-hang-drop>
+							<div class="hang-sway" style={`--sway-time: ${3.2 + (i % 3) * 0.7}s; --sway-delay: -${i * 0.9}s`}>
+								<svg class="hang-peg" viewBox="0 0 14 40" style={`--peg: ${PEGS[i % PEGS.length]}`} aria-hidden="true">
+									<rect x="0.5" y="0" width="6" height="40" rx="3" />
+									<rect x="7.5" y="0" width="6" height="40" rx="3" />
+									<rect class="hang-peg-spring" x="0" y="15" width="14" height="5" rx="2" />
+								</svg>
+								<figure class="hang-frame">
+									<img src={p.image} width={p.w} height={p.h} alt={p.alt} loading="lazy" decoding="async" />
+									<figcaption>
+										{p.title} <span>· {p.desc}</span>
+									</figcaption>
+								</figure>
+							</div>
+						</div>
+					</li>
+				))
+			}
+		</ul>
 	</div>
 </section>
 
@@ -142,33 +153,43 @@ const columns = [
 		gap: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 3vw, 2.5rem);
 	}
 
+	/* Side by side; the one you hover spreads out sideways and the other makes room */
 	@media (min-width: 768px) {
 		.cases {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
+			display: flex;
+			align-items: flex-start;
+		}
+
+		.case {
+			flex: 1 1 0;
+			min-width: 0;
+			transition: flex-grow 700ms cubic-bezier(0.22, 1, 0.36, 1);
+		}
+
+		.case:hover,
+		.case:focus-visible {
+			flex-grow: 1.6;
+		}
+
+		/* fixed height, so spreading only adds width (and shows more of the image) */
+		.cases .case-media {
+			aspect-ratio: auto;
+			height: clamp(16rem, 28vw, 26rem);
 		}
 	}
 
-	/* White cards, so they read as one solid deck while stacked (projectsGallery.ts) */
+	/* Plain rectangles. The white background keeps them solid while they're stacked as a
+	   deck (projectsGallery.ts); on the white page it doesn't show. */
 	.case {
 		display: block;
-		padding: 0.75rem 0.75rem 1.4rem;
-		border-radius: 1.6rem;
 		background: #fff;
-		box-shadow:
-			0 1px 2px rgba(23, 21, 58, 0.06),
-			0 18px 40px rgba(23, 21, 58, 0.12);
 		color: var(--home-text);
 		text-decoration: none;
-	}
-
-	.case-info {
-		padding-inline: 0.6rem;
 	}
 
 	.case-media {
 		overflow: hidden;
 		aspect-ratio: 4 / 3;
-		border-radius: 1.1rem;
 		background: #ece4f6;
 	}
 
@@ -176,17 +197,11 @@ const columns = [
 		background: #ffe8d2;
 	}
 
-
 	.case-media img {
 		display: block;
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
-	}
-
-	.case:hover .case-media img {
-		transform: scale(1.04);
 	}
 
 	.case-info {
@@ -238,7 +253,6 @@ const columns = [
 	.case:focus-visible {
 		outline: 3px solid var(--home-blue);
 		outline-offset: 6px;
-		border-radius: var(--radius-md);
 	}
 
 	/* ============ PLAY ============ */
@@ -266,16 +280,126 @@ const columns = [
 		color: var(--home-muted);
 	}
 
-	/* One column on phones, three parallax columns from tablet width */
-	.work-grid {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 1.5rem;
+	/* ============ ROPE GALLERY ============ */
+	.rope-gallery {
+		position: relative;
 	}
 
-	@media (min-width: 768px) {
-		.work-grid {
-			grid-template-columns: repeat(3, 1fr);
+	.rope {
+		position: absolute;
+		inset: 0;
+		z-index: -1; /* behind the headings and case studies it runs past */
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+		pointer-events: none;
+	}
+
+	.rope path {
+		fill: none;
+	}
+
+	/* Same look as the bee's line (ScrollPath.astro) */
+	.rope-line {
+		stroke: var(--home-text);
+		stroke-width: 1.5;
+		stroke-dasharray: 6 8;
+		stroke-linecap: round;
+		opacity: 0.35;
+	}
+
+	.rope-cover {
+		stroke: var(--home-bg);
+		stroke-width: 8;
+	}
+
+	/* Fallback (no JS): a plain grid */
+	.rope-items {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+		gap: 2rem 1.5rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.rope-gallery.is-strung .rope-items {
+		display: block;
+	}
+
+	.rope-gallery.is-strung .hang {
+		position: absolute;
+		/* left, top, width and --tilt come from ropeGallery.ts */
+		rotate: var(--tilt, 0deg);
+		transform-origin: 50% 0;
+	}
+
+	.hang-drop,
+	.hang-sway {
+		transform-origin: 50% 0;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.rope-gallery.is-strung .hang-sway {
+			animation: hang-sway var(--sway-time) ease-in-out var(--sway-delay) infinite alternate;
 		}
+	}
+
+	@keyframes hang-sway {
+		from {
+			rotate: -1.8deg;
+		}
+		to {
+			rotate: 1.8deg;
+		}
+	}
+
+	/* the peg clamps the line just above the frame */
+	.hang-peg {
+		position: absolute;
+		top: -1.55rem;
+		left: 50%;
+		z-index: 1;
+		width: 0.85rem;
+		translate: -50% 0;
+		fill: var(--peg);
+		filter: drop-shadow(0 2px 2px rgba(23, 21, 58, 0.2));
+	}
+
+	.hang-peg-spring {
+		fill: #9aa0ad;
+	}
+
+	.rope-gallery:not(.is-strung) .hang-peg {
+		display: none;
+	}
+
+	.hang-frame {
+		margin: 0;
+		padding: 0.55rem 0.55rem 0;
+		background: #fff;
+		box-shadow:
+			0 1px 2px rgba(23, 21, 58, 0.08),
+			0 14px 28px rgba(23, 21, 58, 0.14);
+	}
+
+	.hang-frame img {
+		display: block;
+		width: 100%;
+		height: auto;
+		background: #f2eef8;
+	}
+
+	.hang-frame figcaption {
+		padding: 0.6rem 0.2rem 0.75rem;
+		font-family: var(--display-font);
+		font-size: clamp(0.7rem, 0.9vw, 0.82rem);
+		line-height: 1.3;
+		text-align: center;
+		color: var(--home-text);
+	}
+
+	.hang-frame figcaption span {
+		color: var(--home-muted);
 	}
 </style>
