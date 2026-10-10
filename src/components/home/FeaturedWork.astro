@@ -1,39 +1,58 @@
 ---
-import ProjectCard from "./ProjectCard.astro";
+// Homepage work section.
+//  1. Case studies: the two strongest projects, built from their own Markdown files
+//     (image, one-line summary, my role, tools), so they always match the project page.
+//  2. Play: drawings and paintings pegged to the bee's scroll line, which zigzags down
+//     through them like a washing line (ropeGallery.ts, drawn by scrollPath.ts).
+import { projects } from "../../data/projects";
+
+interface Frontmatter {
+	title: string;
+	summary?: string;
+	role?: string;
+	team?: string;
+	stack?: string[];
+	tags?: string[];
+	heroImage?: string;
+}
+
+// Which projects lead, in this order
+const FEATURED = ["sounds-like-antwerp", "type-one"];
+
+const pages = import.meta.glob<{ frontmatter: Frontmatter }>("../../pages/projects/*.md", { eager: true });
+const cases = FEATURED.map((slug) => {
+	const page = pages[`../../pages/projects/${slug}.md`];
+	if (!page) return undefined;
+	const fm = page.frontmatter;
+	const href = `/projects/${slug}`;
+	return {
+		href,
+		title: fm.title,
+		summary: fm.summary,
+		role: fm.role,
+		team: fm.team,
+		// Tools if filled in, otherwise the project's tags
+		pills: fm.stack?.length ? fm.stack : (fm.tags ?? []),
+		image: fm.heroImage ?? projects.find((project) => project.href === href)?.image,
+	};
+}).filter((c) => c !== undefined);
 
 const F = "/images/featured";
 
-// Three parallax columns: the outer ones drift up, the middle one drifts down.
-// A mix of side work (drawings, paintings, collage: no link) and one image per project.
-const columns = [
-	{
-		direction: "up",
-		cards: [
-			{ image: `${F}/collage.webp`, alt: "Collage of a woman with a crown of flowers over her eyes", title: "Flower crown", desc: "Collage" },
-			{ href: "/projects/miles-meals", image: "/images/projects/miles-meals/box-mockup.webp", alt: "Miles & Meals packaging mockup", title: "Miles & Meals", desc: "Branding & packaging" },
-			{ image: `${F}/illustration1.webp`, alt: "Colourful line drawing of a face", title: "Face study", desc: "Digital drawing" },
-			{ href: "/projects/thrive", image: "/images/painting.JPG", alt: "Thrive campaign website: Fight your battle", title: "Thrive", desc: "Campaign website" },
-		],
-	},
-	{
-		direction: "down",
-		cards: [
-			{ href: "/projects/sounds-like-antwerp", video: "/images/projects/antwerp/brabo-fountain-web.mp4", alt: "Animated Sounds Like Antwerp poster with the Brabo fountain", title: "Sounds Like Antwerp", desc: "Motion poster" },
-			{ image: `${F}/octopus.webp`, alt: "Drawing an octopus on an iPad", title: "Octopus", desc: "Digital painting" },
-			{ href: "/projects/type-one", image: "/images/projects/type1.webp", alt: "TYPE01 conference website on a laptop", title: "Type One", desc: "Conference website" },
-			{ image: `${F}/painted-portrait.webp`, alt: "Painting of a green parrot", title: "Parrot", desc: "Digital painting" },
-		],
-	},
-	{
-		direction: "up",
-		cards: [
-			{ image: `${F}/papegaai.webp`, alt: "Indi next to her large colourful painted portrait", title: "Painted portrait", desc: "Painting" },
-			{ href: "/projects/mountains", image: "/images/projects/mountains/mountain-mock-still.webp", alt: "Hiking in the Alps interactive experience on a laptop", title: "Hiking in the Alps", desc: "Interactive experience" },
-			{ image: `${F}/illustration2.webp`, alt: "Illustrated figure in red, purple and gold lines", title: "Red figure", desc: "Digital illustration" },
-			{ href: "/projects/miles-meals", image: "/images/projects/miles-meals/miles&meals-drink.webp", alt: "Miles & Meals drink product shot", title: "Miles & Meals", desc: "Product shot" },
-		],
-	},
+// Side work: drawings and paintings (no project page behind them), in the order they
+// are hung on the line. w/h = the image's size, so the frame keeps its shape while loading.
+const paintings = [
+	{ image: `${F}/octopus.webp`, w: 1000, h: 1161, alt: "Painting an octopus on an iPad with a stylus", title: "Octopus", desc: "Digital painting" },
+	{ image: `${F}/collage.webp`, w: 792, h: 992, alt: "Collage of a woman with a crown of flowers over her eyes", title: "Flower crown", desc: "Collage" },
+	{ image: `${F}/painted-portrait.webp`, w: 886, h: 886, alt: "Indi next to her large, colourful painted portrait", title: "Painted portrait", desc: "Painting" },
+	{ image: `${F}/illustration1.webp`, w: 769, h: 1020, alt: "Colourful line drawing of a crying face", title: "Face study", desc: "Digital drawing" },
+	{ image: `${F}/headwrap-portrait.webp`, w: 1000, h: 1000, alt: "Painting of a woman in a colourful headwrap, hanging on a wall", title: "Headwrap portrait", desc: "Painting" },
+	{ image: `${F}/papegaai.webp`, w: 900, h: 1157, alt: "Digital painting of a green parrot", title: "Parrot", desc: "Digital painting" },
+	{ image: `${F}/illustration2.webp`, w: 752, h: 1044, alt: "Illustrated figure in red, purple and gold lines", title: "Red figure", desc: "Digital illustration" },
 ];
+
+// Clothes pegs in the site's colours, one after the other
+const PEGS = ["#ff8fb1", "#ffc93c", "#5868f0", "#c9a7f0"];
 ---
 
 <!-- data-footer-overlap: this section stays pinned while the footer slides over it -->
@@ -41,35 +60,346 @@ const columns = [
 	<div class="home-work-header">
 		<div class="home-work-heading">
 			<span class="eyebrow-tag">WORK</span>
-			<h2>Some of my creative works</h2>
+			<h2>Selected case studies</h2>
 		</div>
-		
+		<a href="/projects" class="all-link">All projects →</a>
 	</div>
 
-	<div id="parallax-grid" class="work-grid">
+	<!-- ============ CASE STUDIES ============ -->
+	<div class="cases">
 		{
-			columns.map((col) => (
-				<div class="parallax-col" data-direction={col.direction}>
-					{col.cards.map((card) => (
-						<ProjectCard {...card} />
-					))}
-				</div>
+			cases.map((c) => (
+				<a href={c.href} class="case">
+					<div class="case-media">
+						<img src={c.image} alt={`${c.title}: project image`} loading="lazy" decoding="async" />
+					</div>
+					<div class="case-info">
+						<h3 class="case-title">
+							{c.title} <span aria-hidden="true">→</span>
+						</h3>
+						{c.summary && <p class="case-summary">{c.summary}</p>}
+						{c.role && (
+							<p class="case-role">
+								<span>My role</span> {c.role}
+								{c.team && ` · ${c.team}`}
+							</p>
+						)}
+						<ul class="tag-pills case-pills" aria-label="Tools and tags">
+							{c.pills.map((pill) => <li>{pill}</li>)}
+						</ul>
+					</div>
+				</a>
 			))
 		}
+	</div>
+
+	<!-- ============ PLAY: DRAWINGS & PAINTINGS ============ -->
+	<div class="play-header">
+		<span class="eyebrow-tag">PLAY</span>
+		<h3>some other stuff</h3>
+		<p>Where it all started: I still draw and paint next to my design work.</p>
+	</div>
+
+	<!-- Without JS the paintings sit in a simple grid; ropeGallery.ts strings them up -->
+	<div class="rope-gallery" data-rope-gallery>
+		<!-- Same thin striped line as the bee's (ScrollPath.astro): drawn by pulling back a
+		     cover stroke in the background colour (scrollPath.ts) -->
+		<svg class="rope" aria-hidden="true">
+			<path class="rope-line" data-line></path>
+			<path class="rope-cover" data-cover></path>
+		</svg>
+
+		<ul class="rope-items">
+			{
+				paintings.map((p, i) => (
+					<li class="hang" data-hang>
+						<div class="hang-drop" data-hang-drop>
+							<div class="hang-sway" style={`--sway-time: ${3.2 + (i % 3) * 0.7}s; --sway-delay: -${i * 0.9}s`}>
+								<svg class="hang-peg" viewBox="0 0 14 40" style={`--peg: ${PEGS[i % PEGS.length]}`} aria-hidden="true">
+									<rect x="0.5" y="0" width="6" height="40" rx="3" />
+									<rect x="7.5" y="0" width="6" height="40" rx="3" />
+									<rect class="hang-peg-spring" x="0" y="15" width="14" height="5" rx="2" />
+								</svg>
+								<figure class="hang-frame">
+									<img src={p.image} width={p.w} height={p.h} alt={p.alt} loading="lazy" decoding="async" />
+									<figcaption>
+										{p.title} <span>· {p.desc}</span>
+									</figcaption>
+								</figure>
+							</div>
+						</div>
+					</li>
+				))
+			}
+		</ul>
 	</div>
 </section>
 
 <style>
-	/* One column on phones, three parallax columns from tablet width */
-	.work-grid {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 1.5rem;
+	.all-link {
+		font-weight: 700;
+		color: var(--home-text);
+		text-decoration: none;
 	}
 
+	.all-link:hover {
+		color: var(--home-accent);
+	}
+
+	/* ============ CASE STUDIES ============ */
+	.cases {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 3vw, 2.5rem);
+	}
+
+	/* Side by side; the one you hover spreads out sideways and the other makes room */
 	@media (min-width: 768px) {
-		.work-grid {
-			grid-template-columns: repeat(3, 1fr);
+		.cases {
+			display: flex;
+			align-items: flex-start;
 		}
+
+		.case {
+			flex: 1 1 0;
+			min-width: 0;
+			transition: flex-grow 700ms cubic-bezier(0.22, 1, 0.36, 1);
+		}
+
+		.case:hover,
+		.case:focus-visible {
+			flex-grow: 1.6;
+		}
+
+		/* fixed height, so spreading only adds width (and shows more of the image) */
+		.cases .case-media {
+			aspect-ratio: auto;
+			height: clamp(16rem, 28vw, 26rem);
+		}
+	}
+
+	/* Plain rectangles. The white background keeps them solid while they're stacked as a
+	   deck (projectsGallery.ts); on the white page it doesn't show. */
+	.case {
+		display: block;
+		background: #fff;
+		color: var(--home-text);
+		text-decoration: none;
+	}
+
+	.case-media {
+		overflow: hidden;
+		aspect-ratio: 4 / 3;
+		background: #ece4f6;
+	}
+
+	.case:nth-child(2) .case-media {
+		background: #ffe8d2;
+	}
+
+	.case-media img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.case-info {
+		padding-top: 1rem;
+	}
+
+	.case-title {
+		margin: 0;
+		font-size: clamp(1.4rem, 2.2vw, 1.9rem);
+		font-weight: 800;
+		letter-spacing: -0.01em;
+		text-transform: uppercase;
+	}
+
+	.case-title span {
+		display: inline-block;
+		color: var(--home-accent);
+		transition: translate 300ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.case:hover .case-title span {
+		translate: 0.3rem 0;
+	}
+
+	.case-summary {
+		margin: 0.4rem 0 0;
+		line-height: 1.55;
+		color: var(--home-muted);
+	}
+
+	.case-role {
+		margin: 0.5rem 0 0;
+		font-size: 0.9rem;
+		font-weight: 600;
+	}
+
+	.case-role span {
+		margin-right: 0.3rem;
+		font-size: 0.7rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--home-muted);
+	}
+
+	.case-pills {
+		margin-top: 0.75rem;
+	}
+
+	.case:focus-visible {
+		outline: 3px solid var(--home-blue);
+		outline-offset: 6px;
+	}
+
+	/* ============ PLAY ============ */
+	.play-header {
+		margin: clamp(4rem, 9vw, 7rem) 0 clamp(1.5rem, 3vw, 2.25rem);
+	}
+
+	.play-header .eyebrow-tag {
+		display: block;
+		margin-bottom: 0.4rem;
+		font-family: var(--display-font);
+		color: var(--home-accent);
+	}
+
+	.play-header h3 {
+		margin: 0;
+		font-size: clamp(1.6rem, 3vw, 2.4rem);
+		font-weight: 900;
+		text-transform: uppercase;
+		color: var(--home-text);
+	}
+
+	.play-header p {
+		margin: 0.4rem 0 0;
+		color: var(--home-muted);
+	}
+
+	/* ============ ROPE GALLERY ============ */
+	.rope-gallery {
+		position: relative;
+	}
+
+	.rope {
+		position: absolute;
+		inset: 0;
+		z-index: -1; /* behind the headings and case studies it runs past */
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+		pointer-events: none;
+	}
+
+	.rope path {
+		fill: none;
+	}
+
+	/* Same look as the bee's line (ScrollPath.astro) */
+	.rope-line {
+		stroke: var(--home-text);
+		stroke-width: 1.5;
+		stroke-dasharray: 6 8;
+		stroke-linecap: round;
+		opacity: 0.35;
+	}
+
+	.rope-cover {
+		stroke: var(--home-bg);
+		stroke-width: 8;
+	}
+
+	/* Fallback (no JS): a plain grid */
+	.rope-items {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+		gap: 2rem 1.5rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.rope-gallery.is-strung .rope-items {
+		display: block;
+	}
+
+	.rope-gallery.is-strung .hang {
+		position: absolute;
+		/* left, top, width and --tilt come from ropeGallery.ts */
+		rotate: var(--tilt, 0deg);
+		transform-origin: 50% 0;
+	}
+
+	.hang-drop,
+	.hang-sway {
+		transform-origin: 50% 0;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.rope-gallery.is-strung .hang-sway {
+			animation: hang-sway var(--sway-time) ease-in-out var(--sway-delay) infinite alternate;
+		}
+	}
+
+	@keyframes hang-sway {
+		from {
+			rotate: -1.8deg;
+		}
+		to {
+			rotate: 1.8deg;
+		}
+	}
+
+	/* the peg clamps the line just above the frame */
+	.hang-peg {
+		position: absolute;
+		top: -1.55rem;
+		left: 50%;
+		z-index: 1;
+		width: 0.85rem;
+		translate: -50% 0;
+		fill: var(--peg);
+		filter: drop-shadow(0 2px 2px rgba(23, 21, 58, 0.2));
+	}
+
+	.hang-peg-spring {
+		fill: #9aa0ad;
+	}
+
+	.rope-gallery:not(.is-strung) .hang-peg {
+		display: none;
+	}
+
+	.hang-frame {
+		margin: 0;
+		padding: 0.55rem 0.55rem 0;
+		background: #fff;
+		box-shadow:
+			0 1px 2px rgba(23, 21, 58, 0.08),
+			0 14px 28px rgba(23, 21, 58, 0.14);
+	}
+
+	.hang-frame img {
+		display: block;
+		width: 100%;
+		height: auto;
+		background: #f2eef8;
+	}
+
+	.hang-frame figcaption {
+		padding: 0.6rem 0.2rem 0.75rem;
+		font-family: var(--display-font);
+		font-size: clamp(0.7rem, 0.9vw, 0.82rem);
+		line-height: 1.3;
+		text-align: center;
+		color: var(--home-text);
+	}
+
+	.hang-frame figcaption span {
+		color: var(--home-muted);
 	}
 </style>

@@ -5,6 +5,10 @@ subtitle: "Digital marketing campaign"
 type: "School project"
 year: "2025"
 client: "Thrive Belgium (school project)"
+# One line for cards (homepage): what it is.
+summary: "An interactive campaign website that links a real boxing challenge to an online battle card."
+# Tools / tech stack, shown as pills on the homepage card. Fill in, e.g. ["Figma", "Astro", "GSAP"]
+# stack: []
 transitionId: "project-thrive-hero"
 
 services:
@@ -28,6 +32,8 @@ heroImage: "/images/projects/thrive/laptop-mockup.webp"
 gallery:
   - src: "/images/projects/thrive/image.png"
     alt: "Thrive campaign website home: Fight your battle with Thrive, a Thrive can boxing in a ring"
+  - src: "/images/projects/thrive/itterations.png"
+    alt: "Thrive campaign website home: Fight your battle with Thrive, a Thrive can boxing in a ring"
   - src: "/images/projects/thrive/website-home.webp"
     alt: "Thrive campaign website home: Fight your battle with Thrive, a Thrive can boxing in a ring"
   - src: "/images/projects/thrive/website-products.webp"
@@ -35,10 +41,11 @@ gallery:
   - src: "/images/projects/thrive/website-battle-cards.webp"
     alt: "Battle card section: upload your own Thrive battle card and share it with #fightyourbattle"
 
-# Optional buttons under the chapters.
-# links:
-#   - label: "Visit website"
-#     href: "https://example.com"
+# Buttons under the chapters. Paste the URL between the quotes: the button only shows
+# once its link is filled in.
+links:
+  - label: "See full prototype"
+    href: "https://www.figma.com/proto/UnTuN9Cd3MlDpD3OhqfSRf/2DEV-IndiWatt%C3%A9_Thrive?node-id=1039-11151&viewport=-15039%2C-5654%2C0.13&t=rFQWnN7gHC3PHIVp-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1"
 ---
 
 <details name="chapter" open>

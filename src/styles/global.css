@@ -11,7 +11,7 @@
     --title-font: cofo-cinema1909, 'Poppins', sans-serif;
 
     /* Brand palette, by role (happy + modern; every text pairing passes WCAG AA) */
-    --home-bg: #fbf8f3; /* page background: warm white */
+    --home-bg: #ffffff; /* page background: clean, bright white */
     --home-lilac: #f3dcf7; /* section or card background */
     --home-sun: #ffc93c; /* highlights, tags (ink text on it) */
     --home-text: #17153a; /* ink: primary text and headings (15:1 on the background) */
@@ -57,16 +57,35 @@ body {
     height: max(0px, calc(max(130px, 20.8vw) * 0.92 - 4rem));
 }
 
-/* Fine grain over everything, like a print: never in the way of clicks */
-body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 60;
-    background: var(--grain);
-    opacity: 0.07;
-    pointer-events: none;
+/* Tag pills: the same on the project overview and on every project page */
+.tag-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
+
+.tag-pills li {
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-pill);
+    background: var(--home-sun);
+    color: var(--home-text);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.tag-pills .tag-pill--year {
+    background: transparent;
+    border: 1px solid rgba(23, 21, 58, 0.2);
+    color: var(--home-muted);
+}
+
+/* No grain over the whole page any more: pages stay clean white. The grain is kept
+   only where it adds depth (the header sky, the footer and the experience layer). */
 
 h1,
 h2,

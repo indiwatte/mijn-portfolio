@@ -8,6 +8,11 @@ subtitle: "Lorem ipsum dolor sit amet."
 type: "School project"
 year: "2026"
 client: "Lorem ipsum"
+# One line for cards (homepage): what it is.
+summary: "Lorem ipsum dolor sit amet."
+# Your role and the tools / tech stack (role shows in the info block and on homepage cards).
+# role: "Visual designer"
+# stack: ["Figma", "Astro"]
 transitionId: "project-<project-slug>-hero"
 
 services:
@@ -29,6 +34,8 @@ heroImage: "/images/projects/<project-slug>/hero.webp"
 # heroVideo: "/images/projects/<project-slug>/hero.mp4"
 
 # Photo scroll (right column, below the header), top to bottom. size: full (default) | half | third
+# Optional chapter: 1, 2, … the chapter a photo belongs to (the photos after it follow along);
+# then each chapter opens while its own photos scroll by.
 # A .mp4/.webm/.mov src becomes a silent looping video (with controls to turn the sound on).
 gallery:
   - src: "/images/projects/<project-slug>/photo-1.webp"

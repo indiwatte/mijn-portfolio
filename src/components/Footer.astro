@@ -6,9 +6,12 @@ import Creature from "./creatures/Creature.astro";
 const year = new Date().getFullYear();
 
 const socials = [
-    { href: "#", label: "Instagram" },
-    { href: "#", label: "LinkedIn" },
-    { href: "#", label: "Behance" },
+    {
+        href: "https://www.linkedin.com/in/indi-watt%C3%A9-9428bb3b1/",
+        label: "LinkedIn",
+    },
+    { href: "https://www.behance.net/indiwatt", label: "Behance" },
+    { href: "https://github.com/indiwatte", label: "GitHub" },
 ];
 
 const pages = [
@@ -18,7 +21,7 @@ const pages = [
 ];
 ---
 
-<footer id="site-footer" class="footer">
+<footer id="site-footer" class="footer" data-header-dark>
     <!-- Same style of edge as the homepage story section, but its own seed = its own shape -->
     <LiquidEdge seed={23} color="var(--footer-bg)" grain />
 
@@ -27,15 +30,16 @@ const pages = [
 
     <div class="footer-inner">
         <div class="intro">
-            <p class="kicker">Is it a match?</p>
+            <p class="kicker">Looking for an intern or a designer?</p>
             <h2 class="title">
                 So, let's work <span class="highlight" data-footer-together
                     >together?</span
                 >
             </h2>
             <p class="text">
-                Got a project in mind or just want to chat? I'm always open to
-                new ideas and creative challenges. Let's make something great.
+                I'm looking for an internship from February to May 2027, the
+                second semester of my bachelor. Got a place for me, a project in
+                mind or just want to chat? Let's make something great.
             </p>
             <a href="mailto:indi.watte1@gmail.com" class="mail"
                 >indi.watte1@gmail.com</a
@@ -49,7 +53,12 @@ const pages = [
                     {
                         pages.map(({ href, label }) => (
                             <li>
-                                <a href={href} class="link">
+                                <a
+                                    href={href}
+                                    class="link"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
                                     {label}
                                 </a>
                             </li>
@@ -63,7 +72,12 @@ const pages = [
                     {
                         socials.map(({ href, label }) => (
                             <li>
-                                <a href={href} class="link">
+                                <a
+                                    href={href}
+                                    class="link"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
                                     {label}
                                 </a>
                             </li>
@@ -127,7 +141,7 @@ const pages = [
             </div>
             <div class="bottom">
                 <span>© {year} Indi Watté</span>
-                <span>Creative Portfolio</span>
+                <span class="bottom-tag">Creative Portfolio</span>
                 <a href="#" class="link">Back to top ↑</a>
             </div>
         </div>
@@ -163,11 +177,13 @@ const pages = [
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        gap: 4rem;
-        min-height: 110svh;
+        /* fits one screen: spacing and type below also scale with the screen height */
+        gap: clamp(1.5rem, 5vh, 3.5rem);
+        box-sizing: border-box;
+        min-height: 100svh;
         max-width: 80rem;
         margin-inline: auto;
-        padding: clamp(6rem, 12vh, 9rem) 1.5rem 2rem;
+        padding: clamp(5rem, 12vh, 7.5rem) 1.5rem 1rem; /* clears the floating nav */
     }
 
     /* ============ INTRO ============ */
@@ -176,7 +192,7 @@ const pages = [
     }
 
     .kicker {
-        margin: 0 0 1.5rem;
+        margin: 0 0 clamp(0.75rem, 2vh, 1.5rem);
         font-family: var(--display-font);
         font-size: 1.125rem;
         color: var(--home-sun);
@@ -185,7 +201,7 @@ const pages = [
     .title {
         margin: 0;
         font-family: var(--body-font);
-        font-size: clamp(2.75rem, 8vw, 6.5rem);
+        font-size: clamp(2.5rem, min(7vw, 9.5vh), 6rem);
         font-weight: 900;
         line-height: 0.95;
         letter-spacing: -0.025em;
@@ -197,8 +213,8 @@ const pages = [
     }
 
     .text {
-        max-width: 36rem;
-        margin: 2rem 0 0;
+        max-width: 42rem;
+        margin: clamp(1rem, 3vh, 2rem) 0 0;
         font-size: clamp(1rem, 1.5vw, 1.2rem);
         line-height: 1.625;
         color: rgba(255, 255, 255, 0.85);
@@ -206,7 +222,7 @@ const pages = [
 
     .mail {
         display: inline-block;
-        margin-top: 2.5rem;
+        margin-top: clamp(1.25rem, 3.5vh, 2.5rem);
         padding: 1rem 2.5rem;
         border-radius: 999px;
         background: var(--home-pink); /* secondary button: pink + maroon */
@@ -231,7 +247,7 @@ const pages = [
     .columns {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 2.5rem;
+        gap: clamp(1.5rem, 4vh, 2.5rem) 2.5rem;
         font-size: 0.875rem;
     }
 
@@ -272,7 +288,7 @@ const pages = [
         position: relative;
         width: fit-content;
         margin-top: 0.3em; /* room for the creatures peeking over the letters */
-        font-size: clamp(3rem, 15vw, 15rem);
+        font-size: clamp(3rem, min(13.5vw, 20vh), 15rem); /* the whole name fits the width */
     }
 
     .wordmark-wrap :global(.creature) {
@@ -297,27 +313,35 @@ const pages = [
         font-size: 1em;
         font-weight: 900;
         line-height: 0.8;
-        letter-spacing: -0.05em;
+        letter-spacing: 0; /* outlines only: overlapping letters would cross each other */
         text-transform: uppercase;
         white-space: nowrap;
-        color: var(--home-pink);
+        /* outline only, no fill */
+        color: transparent;
+        -webkit-text-stroke: max(3px, 0.012em) var(--home-pink);
         user-select: none;
     }
 
     .bottom {
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
-        margin-top: 2rem;
-        padding-top: 1.5rem;
+        margin-top: clamp(1rem, 3vh, 2rem);
+        padding-top: clamp(0.75rem, 2vh, 1.5rem);
         border-top: 1px solid rgba(255, 255, 255, 0.2);
         font-size: 0.75rem;
         font-weight: 500;
         letter-spacing: 0.1em;
         text-transform: uppercase;
         color: rgba(255, 255, 255, 0.72);
+    }
+
+    /* Phones: the footer has to fit one screen, so skip what's already said elsewhere
+       (the email button, "Based in" in the menu) */
+    .bottom-tag,
+    .columns > :nth-child(n + 3) {
+        display: none;
     }
 
     /* ============ TABLET + DESKTOP ============ */
@@ -330,8 +354,29 @@ const pages = [
             grid-template-columns: repeat(4, 1fr);
         }
 
-        .bottom {
-            flex-direction: row;
+        .bottom-tag,
+        .columns > :nth-child(n + 3) {
+            display: revert;
+        }
+    }
+
+    /* Desktop: the link columns sit next to the intro instead of under it */
+    @media (min-width: 1024px) {
+        .footer-inner {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-content: space-between;
+            column-gap: 4rem;
+        }
+
+        .columns {
+            align-self: end;
+            grid-template-columns: repeat(2, auto);
+            column-gap: 3rem;
+        }
+
+        .footer-inner > :last-child {
+            grid-column: 1 / -1;
         }
     }
 </style>

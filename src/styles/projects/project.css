@@ -154,6 +154,38 @@
     transition: color 200ms ease;
 }
 
+/* Optional heading above a group of chapters (<h3 class="chapter-group"> in the Markdown) */
+.project-description .chapter-group {
+    margin: clamp(1.75rem, 3vw, 2.5rem) 0 0.6rem;
+    font-family: var(--body-font);
+    font-size: clamp(1.8rem, 2.6vw, 2.5rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: 0.03em; /* outlines only: touching letters would cross each other */
+    text-transform: uppercase;
+    /* An outline that fills up with colour, left to right, once you reach its part of
+       the story (.is-reached, set by projectDetail.ts) */
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--home-text);
+    background: linear-gradient(var(--home-accent), var(--home-accent)) no-repeat 0 0 / 0% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    transition:
+        background-size 900ms cubic-bezier(0.65, 0, 0.35, 1),
+        -webkit-text-stroke-color 500ms ease;
+}
+
+.project-description .chapter-group.is-reached {
+    background-size: 100% 100%;
+    -webkit-text-stroke-color: var(--home-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .project-description .chapter-group {
+        transition: none;
+    }
+}
+
 .project-description summary::-webkit-details-marker {
     display: none;
 }
@@ -177,16 +209,24 @@
     outline-offset: 2px;
 }
 
+/* Opens and closes slowly, the text fading in and out as it goes */
 .project-description details::details-content {
     block-size: 0;
     overflow: clip;
+    opacity: 0;
     transition:
-        block-size 450ms cubic-bezier(0.22, 1, 0.36, 1),
-        content-visibility 450ms allow-discrete;
+        block-size 900ms cubic-bezier(0.65, 0, 0.35, 1),
+        opacity 600ms ease,
+        content-visibility 900ms allow-discrete;
 }
 
 .project-description details[open]::details-content {
     block-size: auto;
+    opacity: 1;
+    transition:
+        block-size 900ms cubic-bezier(0.65, 0, 0.35, 1),
+        opacity 700ms ease 200ms,
+        content-visibility 900ms allow-discrete;
 }
 
 /* Lists inside a chapter (Tailwind's reset removes numbers and bullets) */
@@ -281,21 +321,83 @@
     background: var(--home-text);
 }
 
-.project-button--ghost {
-    border-color: var(--home-pink);
-    background: var(--home-pink); /* secondary: pink + maroon */
-    color: var(--home-text);
-}
-
-.project-button--ghost:hover {
-    border-color: var(--home-sun);
-    background: var(--home-sun);
-    color: var(--home-text);
-}
-
 .project-button:focus-visible {
     outline: 2px solid var(--home-accent);
     outline-offset: 3px;
+}
+
+/* Tag pills under the subtitle (styles: .tag-pills in global.css) */
+.project-tags {
+    margin-top: 1rem;
+}
+
+/* ---- Next project ---- */
+.project-next {
+    display: block;
+    margin-top: clamp(1.75rem, 3vw, 2.5rem);
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--border-soft);
+    color: var(--home-text);
+    text-decoration: none;
+}
+
+.project-next-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--home-muted);
+}
+
+.project-next-title {
+    display: inline-block;
+    margin-top: 0.3rem;
+    font-size: clamp(1.4rem, 2.2vw, 1.9rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    transition: color 200ms ease, translate 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.project-next:hover .project-next-title {
+    color: var(--home-accent);
+    translate: 0.3rem 0;
+}
+
+.project-next:focus-visible {
+    outline: 2px solid var(--home-blue);
+    outline-offset: 4px;
+}
+
+/* ---- Back to the overview: a quiet text link under "Next project" ---- */
+.project-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--home-muted);
+    text-decoration: none;
+    transition: color 200ms ease;
+}
+
+.project-back span {
+    transition: translate 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.project-back:hover {
+    color: var(--home-text);
+}
+
+.project-back:hover span {
+    translate: -0.25rem 0;
+}
+
+.project-back:focus-visible {
+    outline: 2px solid var(--home-blue);
+    outline-offset: 4px;
 }
 
 /* ============ RIGHT: PHOTO SCROLL ============ */
@@ -316,6 +418,20 @@
     display: block;
     width: 100%;
     height: auto;
+}
+
+/* A very tall image (a whole brandboard) in a window you scroll through */
+.project-photo-window {
+    max-height: min(85vh, 60rem);
+    overflow-y: auto;
+    overscroll-behavior: auto; /* at the end, the page carries on scrolling */
+    border: 1px solid var(--border-soft);
+    scrollbar-width: thin;
+}
+
+.project-photo-window:focus-visible {
+    outline: 2px solid var(--home-blue);
+    outline-offset: 3px;
 }
 
 .project-photo figcaption {

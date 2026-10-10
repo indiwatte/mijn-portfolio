@@ -4,6 +4,10 @@ title: "Hiking in the alps"
 subtitle: "digital interactive experience"
 type: "School project"
 year: "2025"
+# One line for cards (homepage): what it is.
+summary: "An interactive hiking experience you play with your own body and voice."
+# Tools / tech stack, shown as pills on the homepage card.
+stack: ["ml5.js", "GSAP"]
 transitionId: "project-mountains-hero"
 
 services:
@@ -31,6 +35,12 @@ gallery:
     alt: "Storyboard for the digital experience of becoming an expert hiker, in five steps from the valley to the top"
   - src: "/images/projects/mountains/interaction-packing.webp"
     alt: "Interaction: drag and drop hiking gear like a compass, rope and boots into the backpack"
+
+# Buttons under the chapters. Paste the URL between the quotes: the button only shows
+# once its link is filled in.
+links:
+  - label: "See website"
+    href: "https://indiwatte.com/alps-expert/"
 ---
 
 <details name="chapter" open>

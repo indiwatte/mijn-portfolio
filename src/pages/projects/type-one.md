@@ -5,6 +5,10 @@ subtitle: "Conference website"
 type: "School project"
 year: "2026"
 client: "Lorem ipsum"
+# One line for cards (homepage): what it is.
+summary: "A bold, mobile-first conference website for TYPE01 magazine."
+# Tools / tech stack, shown as pills on the homepage card. Fill in, e.g. ["Figma", "Astro", "GSAP"]
+# stack: []
 transitionId: "project-type-one-hero"
 
 services:
@@ -37,6 +41,12 @@ gallery:
     alt: "TYPE01 website: program card for the Official Saturday Dinner Party"
   - src: "/images/projects/type_01/website-accommodation.webp"
     alt: "TYPE01 website: accommodation section for Hotel Indigo London with a discount code"
+
+# Buttons under the chapters. Paste the URL between the quotes: the button only shows
+# once its link is filled in.
+links:
+  - label: "See full prototype"
+    href: ""
 ---
 
 <details name="chapter" open>

@@ -17,6 +17,12 @@ interface GalleryImage {
     caption?: string;
     /** Width inside the photo column; halves and thirds sit side by side. */
     size?: "full" | "half" | "third";
+    /** Optional: the chapter (1, 2, …) this photo belongs to. The photos after it belong to
+     *  the same chapter until one names another. Then a chapter opens when its photos scroll
+     *  into view, instead of the scroll being split evenly over the chapters. */
+    chapter?: number;
+    /** A very tall image (like a whole brandboard): shown in a window you scroll through. */
+    tall?: boolean;
 }
 
 interface ProjectLink {
@@ -32,6 +38,8 @@ const {
     type,
     year,
     client,
+    team,
+    role,
     services = [],
     tags = [],
     heroImage,
@@ -55,7 +63,12 @@ async function withSize(image: GalleryImage) {
 const isVideo = (src: string) => /\.(mp4|webm|mov)$/i.test(src);
 
 const hero = heroImage ? await withSize({ src: heroImage, alt: title }) : undefined;
-const photos = await Promise.all((gallery as GalleryImage[]).map(withSize));
+// Each photo carries on the chapter of the one before it, until one names another.
+let currentChapter: number | undefined;
+const photos = (await Promise.all((gallery as GalleryImage[]).map(withSize))).map((photo) => {
+    currentChapter = photo.chapter ?? currentChapter;
+    return { ...photo, chapter: currentChapter };
+});
 
 // Same "01 / 04" counter as the carousel on /projects.
 const pathname = Astro.url.pathname.replace(/\/$/, "");
@@ -67,17 +80,26 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 // The small print of the project, listed under the concept.
 const meta = [
+    { label: "My role", value: role },
+    { label: "Team", value: team },
     { label: "Type", value: type },
-    { label: "Year", value: year },
-    { label: "Tags", value: tags.join(" · ") },
     { label: "Client", value: client },
     { label: "Services", value: services.join(" · ") },
 ].filter(({ value }) => value);
 
+// Share preview: the project's own image (npm run og) and its lead sentence without HTML.
+const slug = pathname.split("/").pop();
+const shareText = String((concept as string[])[0] ?? subtitle ?? title).replace(/<[^>]+>/g, "");
+
 const isExternal = (href: string) => /^https?:\/\//.test(href);
+
+// "Next project →": the next finished project in the list, looping back to the first.
+const finished = projects.filter((project) => !project.isUpcoming);
+const current = finished.findIndex((project) => project.href === pathname);
+const next = finished.length > 1 && current !== -1 ? finished[(current + 1) % finished.length] : undefined;
 ---
 
-<BaseLayout title={`${title} | Indi Watté`} viewTransitions>
+<BaseLayout title={`${title} | Indi Watté`} description={shareText} image={`/og/${slug}.jpg`} viewTransitions>
     <main class="project" data-footer-overlap>
         <!-- ============ HEADER: PHOTO LEFT, TEXT RIGHT ============ -->
         <header class="project-header">
@@ -124,6 +146,15 @@ const isExternal = (href: string) => /^https?:\/\//.test(href);
                 {subtitle && <p class="project-subtitle">{subtitle}</p>}
 
                 {
+                    (tags.length > 0 || year) && (
+                        <ul class="project-tags tag-pills" aria-label="Tags">
+                            {(tags as string[]).map((tag) => <li>{tag}</li>)}
+                            {year && <li class="tag-pill--year">{year}</li>}
+                        </ul>
+                    )
+                }
+
+                {
                     concept.length > 0 && (
                         <div class="project-description">
                             {(concept as string[]).map((paragraph) => (
@@ -156,28 +187,39 @@ const isExternal = (href: string) => /^https?:\/\//.test(href);
                     <slot />
                 </div>
 
-                <div class="project-actions">
-                    {
-                        (links as ProjectLink[]).map(({ label, href }) => (
-                            <a
-                                href={href}
-                                class="project-button"
-                                target={isExternal(href) ? "_blank" : undefined}
-                                rel={isExternal(href) ? "noopener noreferrer" : undefined}
-                            >
-                                {label} ↗
-                            </a>
-                        ))
-                    }
-                    <a href="/projects" class="project-button project-button--ghost">← All projects</a>
-                </div>
+                {
+                    links.some(({ href }: ProjectLink) => href) && (
+                        <div class="project-actions">
+                            {(links as ProjectLink[]).filter(({ href }) => href).map(({ label, href }) => (
+                                <a
+                                    href={href}
+                                    class="project-button"
+                                    target={isExternal(href) ? "_blank" : undefined}
+                                    rel={isExternal(href) ? "noopener noreferrer" : undefined}
+                                >
+                                    {label} ↗
+                                </a>
+                            ))}
+                        </div>
+                    )
+                }
+
+                {
+                    next && (
+                        <a href={next.href} class="project-next">
+                            <span class="project-next-label">Next project</span>
+                            <span class="project-next-title">{next.title} →</span>
+                        </a>
+                    )
+                }
+                <a href="/projects" class="project-back"><span aria-hidden="true">←</span> All projects</a>
             </div>
 
             <!-- ============ RIGHT: PHOTO SCROLL ============ -->
             <div class="project-gallery" data-project-gallery>
                 {
                     photos.map((photo) => (
-                        <figure class="project-photo" data-size={photo.size ?? "full"}>
+                        <figure class="project-photo" data-size={photo.size ?? "full"} data-chapter={photo.chapter}>
                             {isVideo(photo.src) ? (
                                 <video
                                     src={photo.src}
@@ -189,6 +231,17 @@ const isExternal = (href: string) => /^https?:\/\//.test(href);
                                     controls
                                     preload="metadata"
                                 />
+                            ) : photo.tall ? (
+                                <div class="project-photo-window" tabindex="0" role="region" aria-label={`${photo.alt ?? title}: scroll to see it all`}>
+                                    <img
+                                        src={photo.src}
+                                        alt={photo.alt ?? ""}
+                                        width={photo.width}
+                                        height={photo.height}
+                                        loading="lazy"
+                                        decoding="async"
+                                    />
+                                </div>
                             ) : (
                                 <img
                                     src={photo.src}

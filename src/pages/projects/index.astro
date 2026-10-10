@@ -70,7 +70,12 @@ const columns = Array.from({ length: COLUMNS }, (_, c) => tiles.filter((_, i) =>
 const pad = (n: number) => String(n).padStart(2, "0");
 ---
 
-<BaseLayout title="Projects | Indi Watté" bodyClass="home-page" viewTransitions>
+<BaseLayout
+	title="Projects | Indi Watté"
+	description="Selected work by Indi Watté: brand identities, campaigns, websites and interactive experiences."
+	bodyClass="home-page"
+	viewTransitions
+>
 	<main class="overview" data-footer-overlap>
 		<header class="overview-intro">
 			<span class="overview-eyebrow">Selected work</span>
@@ -106,7 +111,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
 										) : (
 											<img
 												src={tile.image}
-												alt=""
+												alt={`${tile.title}: project image`}
 												loading={c + i < 3 ? "eager" : "lazy"}
 												decoding="async"
 												transition:name={tile.transitionId}
@@ -124,9 +129,9 @@ const pad = (n: number) => String(n).padStart(2, "0");
 											{tile.title}
 											{tile.href && <span class="tile-arrow" aria-hidden="true">→</span>}
 										</h2>
-										<ul class="tile-tags">
+										<ul class="tile-tags tag-pills">
 											{tile.tags.map((tag) => <li>{tag}</li>)}
-											{tile.year && <li class="tile-year">{tile.year}</li>}
+											{tile.year && <li class="tag-pill--year">{tile.year}</li>}
 										</ul>
 									</div>
 								</Tag>
@@ -358,29 +363,9 @@ const pad = (n: number) => String(n).padStart(2, "0");
 		translate: 0.3rem 0;
 	}
 
+	/* pill styles: .tag-pills in global.css */
 	.tile-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.4rem;
-		margin: 0.6rem 0 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.tile-tags li {
-		padding: 0.3rem 0.7rem;
-		border-radius: var(--radius-pill);
-		background: var(--home-sun);
-		font-size: 0.7rem;
-		font-weight: 600;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-	}
-
-	.tile-tags .tile-year {
-		background: transparent;
-		border: 1px solid rgba(23, 21, 58, 0.2);
-		color: var(--home-muted);
+		margin-top: 0.6rem;
 	}
 
 	.tile:focus-visible {
