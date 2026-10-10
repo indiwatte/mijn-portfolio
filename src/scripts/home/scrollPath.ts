@@ -1,4 +1,5 @@
 import { gsap, ScrollTrigger } from "../gsap";
+import { createRopeGallery } from "./ropeGallery";
 
 type Point = [number, number];
 type Variant = "wander" | "landing";
@@ -123,13 +124,16 @@ function createPiece(root: HTMLElement) {
 }
 
 type Piece = ReturnType<typeof createPiece>;
+// Anything the bird can fly along: the line pieces here and the paintings' washing line.
+type Track = Pick<Piece, "root" | "line" | "cover" | "length" | "progress">;
 
 // The line is drawn by pulling back a cover stroke (stroke-dashoffset). The bird (a bee)
 // starts in the hero, right after the intro line ([data-bee-start]), and flies down to
 // the start of the About line while the story section slides over the hero. After that
 // it is placed from the pieces' progress: on the footer piece once that has started,
-// otherwise on the About piece. So it stops where About ends, waits (scrolling away
-// with Featured work), and flies again when the footer slides in.
+// else on the paintings' washing line once that has started, otherwise on the About
+// piece. So it flies on from About, past the case studies and along the washing line,
+// waits at its end, and flies again when the footer slides in.
 export function initScrollPath() {
     const aboutRoot = document.querySelector<HTMLElement>('[data-scroll-path="about"]');
     const footerRoot = document.querySelector<HTMLElement>('[data-scroll-path="footer"]');
@@ -139,11 +143,23 @@ export function initScrollPath() {
     const about = createPiece(aboutRoot);
     const footer = createPiece(footerRoot);
     const pieces = [about, footer];
+    // Between them: the washing line through "Drawings & paintings" (ropeGallery.ts),
+    // starting where the About line ends.
+    const rope = createRopeGallery();
     const flip = bird.querySelector<HTMLElement>("[data-bird-flip]")!;
     const start = document.querySelector<HTMLElement>("[data-bee-start]");
     const intro = { progress: 0 }; // 0..1: from the hero to the start of the About line
 
-    const buildAll = () => pieces.forEach((piece) => piece.build());
+    // The end of a piece, in page coordinates.
+    const endOf = (piece: Piece) => {
+        const point = piece.line.getPointAtLength(piece.length);
+        const box = piece.root.getBoundingClientRect();
+        return { x: box.left + window.scrollX + point.x, y: box.top + window.scrollY + point.y };
+    };
+    const buildAll = () => {
+        pieces.forEach((piece) => piece.build());
+        rope?.build(endOf(about));
+    };
     buildAll();
     // Rebuild the curves for the new size before ScrollTrigger re-measures.
     ScrollTrigger.addEventListener("refreshInit", buildAll);
@@ -153,6 +169,11 @@ export function initScrollPath() {
     // Reduced motion: just show the finished lines (the bird is hidden in CSS).
     mm.add("(prefers-reduced-motion: reduce)", () => {
         pieces.forEach((piece) => gsap.set(piece.cover, { strokeDashoffset: -piece.length }));
+        if (rope) {
+            gsap.set(rope.cover, { strokeDashoffset: () => -rope.length });
+            rope.progress = 1;
+            rope.update(false);
+        }
     });
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -175,7 +196,7 @@ export function initScrollPath() {
 
         // In the hero: right of the intro line, facing right. While flying down, an arc
         // that swings out a little, turning towards where it is heading.
-        const toPage = (piece: Piece, at: number) => {
+        const toPage = (piece: Track, at: number) => {
             const point = piece.line.getPointAtLength(at);
             const box = piece.root.getBoundingClientRect();
             return [box.left + window.scrollX + point.x, box.top + window.scrollY + point.y];
@@ -205,7 +226,7 @@ export function initScrollPath() {
                 keepBackUp(blended);
                 return;
             }
-            const piece: Piece = footer.progress > 0 ? footer : about;
+            const piece: Track = footer.progress > 0 ? footer : rope && rope.progress > 0 ? rope : about;
             const at = piece.progress * piece.length;
             const point = piece.line.getPointAtLength(at);
             const before = piece.line.getPointAtLength(Math.max(0, at - 2));
@@ -222,14 +243,25 @@ export function initScrollPath() {
             keepBackUp(heading);
         };
 
-        const drawPiece = (piece: Piece, scrollTrigger: ScrollTrigger.Vars) =>
+        const drawPiece = (piece: Track, scrollTrigger: ScrollTrigger.Vars, onUpdate?: () => void) =>
             gsap
                 .timeline({
                     defaults: { ease: "none" },
                     scrollTrigger: { scrub: 0.6, invalidateOnRefresh: true, ...scrollTrigger },
                 })
                 .fromTo(piece.cover, { strokeDashoffset: 0 }, { strokeDashoffset: () => -piece.length }, 0)
-                .fromTo(piece, { progress: 0 }, { progress: 1, onUpdate: placeBird }, 0);
+                .fromTo(
+                    piece,
+                    { progress: 0 },
+                    {
+                        progress: 1,
+                        onUpdate: () => {
+                            onUpdate?.();
+                            placeBird();
+                        },
+                    },
+                    0,
+                );
 
         // Intro: from the top of the page until the About line starts drawing.
         gsap.timeline({
@@ -252,6 +284,22 @@ export function initScrollPath() {
             end: about.endTarget ? "center 60%" : "bottom 60%",
         });
 
+        // Paintings: picks up where About stopped, down past the case studies and through
+        // the paintings, hanging each one as the line reaches its peg.
+        const unhang = rope?.startHidden();
+        if (rope) {
+            drawPiece(
+                rope,
+                {
+                    trigger: about.endTarget ?? about.root,
+                    start: about.endTarget ? "center 60%" : "bottom 60%",
+                    endTrigger: rope.root,
+                    end: "bottom 75%",
+                },
+                () => rope.update(),
+            );
+        }
+
         // Footer: drawn while the footer slides up over Featured work, until the page ends.
         drawPiece(footer, {
             trigger: footer.root,
@@ -263,6 +311,9 @@ export function initScrollPath() {
         placeBird();
         // Pins add/remove space on refresh: put the bird back on its line afterwards.
         ScrollTrigger.addEventListener("refresh", placeBird);
-        return () => ScrollTrigger.removeEventListener("refresh", placeBird);
+        return () => {
+            ScrollTrigger.removeEventListener("refresh", placeBird);
+            unhang?.();
+        };
     });
 }
