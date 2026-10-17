@@ -7,6 +7,12 @@
 	<svg class="cursor-star" viewBox="0 0 24 24">
 		<path d="M12 0 L14.5 8.5 L23 12 L14.5 15.5 L12 24 L9.5 15.5 L1 12 L9.5 8.5 Z"></path>
 	</svg>
+	<span class="cursor-arrow" aria-hidden="true">
+		<svg viewBox="0 0 24 24">
+			<path d="M4 12h15M13 6l6 6-6 6"></path>
+		</svg>
+		<span class="cursor-arrow-label">View works</span>
+	</span>
 </div>
 
 <style>
@@ -29,6 +35,56 @@
 		filter: drop-shadow(0 0 6px rgba(244, 114, 182, 0.7));
 		animation: cursor-spin 5s linear infinite;
 		will-change: transform;
+		transition: opacity 300ms ease;
+	}
+
+	/* Arrow button shown over the work section (cursor.ts toggles .is-arrow) */
+	.cursor-arrow {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.3rem;
+		width: 6.5rem;
+		height: 6.5rem;
+		margin: -3.25rem 0 0 -3.25rem;
+		border-radius: 50%;
+		background: var(--home-orange);
+		color: #fff;
+		opacity: 0;
+		transform: scale(0.4);
+		transition:
+			opacity 300ms ease,
+			transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.cursor-arrow svg {
+		width: 1.4rem;
+		height: 1.4rem;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.cursor-arrow-label {
+		font-size: 0.8rem;
+		font-weight: 600;
+		line-height: 1;
+		white-space: nowrap;
+	}
+
+	.cursor.is-arrow .cursor-star {
+		opacity: 0;
+	}
+
+	.cursor.is-arrow .cursor-arrow {
+		opacity: 1;
+		transform: scale(1);
 	}
 
 	@keyframes cursor-spin {

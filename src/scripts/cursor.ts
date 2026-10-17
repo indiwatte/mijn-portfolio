@@ -9,12 +9,19 @@ export function initCursor() {
 
     const setX = gsap.quickTo(cursor, "x", { duration: 0.5, ease: "power3.out" });
     const setY = gsap.quickTo(cursor, "y", { duration: 0.5, ease: "power3.out" });
+    let overWork = false;
 
     window.addEventListener(
         "pointermove",
         (event) => {
             setX(event.clientX);
             setY(event.clientY);
+
+            const over = event.target instanceof Element && event.target.closest("[data-cursor-arrow]") !== null;
+            if (over !== overWork) {
+                overWork = over;
+                cursor.classList.toggle("is-arrow", over);
+            }
         },
         { passive: true },
     );
