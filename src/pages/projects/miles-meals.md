@@ -32,7 +32,7 @@ concept:
   - "The result is a brand that feels like travelling without leaving your kitchen."
 
 # Header photo (left); the card on /projects morphs into it.
-heroImage: "/images/projects/miles-meals/mockup2.png"
+heroImage: "/images/projects/miles-meals/box-local-legend.webp"
 
 # Photo scroll (right column, below the header), top to bottom. size: full (default) | half | third
 # chapter: the chapter a photo belongs to (1 = the first); the photos after it follow along.
@@ -57,7 +57,7 @@ gallery:
   # 5. Colours
   - src: "/images/projects/miles-meals/color1.webp"
     chapter: 5
-    alt: "Three versions of the colour combinations for Local Legend, Street Made and Neighbourhood Baked, next to notes on brand personality, values and tone of voice"
+    alt: "Three versions of the colour combinations for Local Legend, Street Made and Neighbourhood Bakes, next to notes on brand personality, values and tone of voice"
     caption: "Three rounds of colour combinations for the three boxes."
     size: half
   - src: "/images/projects/miles-meals/colors-mockup.webp"
@@ -71,7 +71,7 @@ gallery:
   # 7. From animals to symbols
   - src: "/images/projects/miles-meals/color2.webp"
     chapter: 7
-    alt: "First idea: an animal per box, a heron for Local Legend, a rooster for Street Made and a bee for Neighbourhood Baked, with notes on why"
+    alt: "First idea: an animal per box, a heron for Local Legend, a rooster for Street Made and a bee for Neighbourhood Bakes, with notes on why"
     caption: "The first idea: a heron, a rooster and a bee."
   # 8. Logo and typography
   - src: "/images/projects/miles-meals/logo-mockup.webp"
@@ -100,10 +100,12 @@ gallery:
   # 11. Beyond the box
   - src: "/images/projects/miles-meals/miles&meals-drink.webp"
     chapter: 11
-    alt: "Miles & Meals drink"
+    alt: "Miles & Meals coasters in pink, green, red and purple around a glass of water and street food"
+    caption: "Coasters for every box."
     size: half
-  - src: "/images/projects/miles-meals/header-img1.webp"
-    alt: "Miles & Meals coasters"
+  - src: "/images/projects/miles-meals/fridge-magnets.webp"
+    alt: "A fridge door full of photo-booth strips and polaroids, with round Miles & Meals magnets of the chili, the bee, the pepper and the dog between them"
+    caption: "Magnets: small souvenirs on the fridge."
     size: half
   # 12. The brandboard
   - src: "/images/projects/miles-meals/brandboard-final.webp"
@@ -229,5 +231,14 @@ The experience doesn't stop when the box is empty. Coasters and magnets bring th
 Everything comes together in the brandboard: logo, brand vision, illustrations, colours, pattern, typography, icons, the boxes, photography and the extras.
 
 A box of ingredients. A whole world to discover.
+
+</details>
+
+<details name="chapter">
+<summary>Results &amp; reflection</summary>
+
+**Feedback:** [Placeholder: what did your teachers, the client or users say about the result?]
+
+**What I learned:** [Placeholder: what did this project teach you, what are you proud of, and what would you do differently next time?]
 
 </details>

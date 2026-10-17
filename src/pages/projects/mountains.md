@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/ProjectLayout.astro
-title: "Hiking in the alps"
-subtitle: "digital interactive experience"
+title: "Interactive hiking experience"
+subtitle: "Surviving the Alps"
 type: "School project"
 year: "2025"
 # One line for cards (homepage): what it is.
@@ -11,12 +11,12 @@ stack: ["ml5.js", "GSAP"]
 transitionId: "project-mountains-hero"
 
 services:
-  - Visual Identity
-  - Art Direction
+  - Creative Coding
+  - Interaction Design
 
 tags:
-  - Identity
-  - Visual
+  - Creative coding
+  - Interaction design
 
 # Header text (right of the hero photo); the first paragraph is the lead. Inline HTML is allowed.
 concept:
@@ -82,5 +82,14 @@ The experience follows the storyboard in five steps:
 The experience combines **ml5.js** machine learning models with **GSAP** animation.
 
 ml5.js runs in the browser and uses the webcam and microphone, so your body and voice become the controller: the experience recognises your gestures and voice and reacts to them. GSAP brings the mountains to life, with the animations, transitions and the build-up of the storm reacting to what you do.
+
+</details>
+
+<details name="chapter">
+<summary>Results &amp; reflection</summary>
+
+**Feedback:** [Placeholder: what did your teachers, the client or users say about the result?]
+
+**What I learned:** [Placeholder: what did this project teach you, what are you proud of, and what would you do differently next time?]
 
 </details>

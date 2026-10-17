@@ -11,7 +11,7 @@ role: "Visual Design lead"
 # One line for cards (homepage): what it is.
 summary: "A website that turns Antwerp's live city data into music, for Visit Antwerp."
 # Tools / tech stack, shown as pills on the homepage card. Fill in, e.g. ["Figma", "Astro", "GSAP"]
-# stack: []
+stack: ["Web Design, Visual Design, UI/UX"]
 transitionId: "project-sounds-like-antwerp-hero"
 
 services:
@@ -23,7 +23,7 @@ services:
 tags:
   - Web design
   - UI/UX
-  - Visual
+  - Design system
 
 # Header text (right of the hero photo); the first paragraph is the lead. Inline HTML is allowed.
 concept:
@@ -140,7 +140,9 @@ Young urban travellers don't find Antwerp relevant. They know it exists, but not
 <details name="chapter">
 <summary>Research</summary>
 
-[Fill in how you got to the question: who you talked to and how. For example: "We surveyed 30 students aged 18–25 and interviewed 5 of them", competitor analysis of other city guides, personas. One or two sentences is enough.]
+We started by pulling Visit Antwerp's brief apart into its core challenge, the audience's pain points and the limits we had to work within. Desk research into Antwerp's **City of Things sensor network** then grounded our early "algorave" idea, and a **SWOT analysis** and a **research scoping canvas** showed us where that idea was still weak.
+
+We focused on **Zillennials** and checked our interview insights against **Schwartz's Basic Human Values**. The key finding: young travellers don't trust tourism boards, and they often hear about the city's local scene too late.
 
 </details>
 
