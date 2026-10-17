@@ -1,52 +1,40 @@
 ---
-import MusicPod from "./MusicPod.astro";
 import HeroCreatures from "./HeroCreatures.astro";
 // The ids (#hero, #hero-line-static, #hero-word, …) are used by src/scripts/home/.
+
+// Dark mode: a fixed field of stars (the same on every visit), faded in by CSS
+const STARS = (() => {
+	let seed = 7;
+	const random = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+	return Array.from({ length: 90 }, () => ({
+		x: (random() * 100).toFixed(2),
+		y: (random() * 78).toFixed(2),
+		size: (1 + random() * 2.4).toFixed(1),
+		duration: (2.5 + random() * 3.5).toFixed(1),
+		delay: (-random() * 6).toFixed(1),
+	}));
+})();
 ---
 
 <section id="hero" class="hero" data-header-dark>
 	<!-- Flowing, watery sky (WebGL, heroWater.ts); the CSS gradient below is the fallback -->
 	<canvas class="hero-water" data-hero-water aria-hidden="true"></canvas>
-	<!-- The sun: rises from behind the white layer at the bottom; sinks under it on scroll
-	     (heroScroll.ts). Its glow also shines through the white layer (index.astro). -->
+	<!-- Dark mode: stars in the sky (CSS shows them only in dark mode) -->
+	<div class="hero-stars" aria-hidden="true">
+		{
+			STARS.map((star) => (
+				<span
+					class="star"
+					style={`left: ${star.x}%; top: ${star.y}%; --size: ${star.size}px; --duration: ${star.duration}s; --delay: ${star.delay}s`}
+				></span>
+			))
+		}
+	</div>
+	<!-- The sun: peeks above the white layer at the bottom and stays in place while the
+	     layer slides over it. Its glow keeps shining through the white layer (index.astro). -->
 	<div class="hero-sun" data-hero-sun aria-hidden="true"></div>
 	<!-- Grain over the gradient sky -->
 	<div class="hero-grain" aria-hidden="true"></div>
-
-	<!-- The mirror: my photo framed in a tall arch, floating on clouds -->
-	<div class="hero-portal" data-portal>
-		<div class="portal-frame" data-depth="12">
-			<img
-				class="portal-me"
-				src="/images/selfie2.webp"
-				width="1400"
-				height="1657"
-				alt="Portrait of Indi Watté"
-				fetchpriority="high"
-			/>
-		</div>
-		<!-- Puffy clouds in front of the bottom of the frame, spilling over its edges -->
-		<svg class="portal-clouds" viewBox="0 0 520 150" data-depth="26" aria-hidden="true">
-			<defs>
-				<radialGradient id="cloud-shade" cx="45%" cy="30%" r="75%">
-					<stop offset="0" stop-color="#ffffff" />
-					<stop offset=".7" stop-color="#fbf4ff" />
-					<stop offset="1" stop-color="#e9dcf7" />
-				</radialGradient>
-			</defs>
-			<g fill="url(#cloud-shade)">
-				<circle cx="70" cy="100" r="46" />
-				<circle cx="140" cy="78" r="62" />
-				<circle cx="225" cy="92" r="54" />
-				<circle cx="300" cy="70" r="66" />
-				<circle cx="380" cy="94" r="52" />
-				<circle cx="450" cy="104" r="42" />
-				<rect x="40" y="100" width="440" height="50" rx="25" />
-			</g>
-		</svg>
-		<svg class="portal-sparkle portal-sparkle--1" viewBox="0 0 40 40" data-depth="34" aria-hidden="true"><path d="M20 0 C22 14 26 18 40 20 C26 22 22 26 20 40 C18 26 14 22 0 20 C14 18 18 14 20 0 Z" /></svg>
-		<svg class="portal-sparkle portal-sparkle--2" viewBox="0 0 40 40" data-depth="28" aria-hidden="true"><path d="M20 0 C22 14 26 18 40 20 C26 22 22 26 20 40 C18 26 14 22 0 20 C14 18 18 14 20 0 Z" /></svg>
-	</div>
 
 	<!-- Little creatures whose eyes follow the mouse -->
 	<HeroCreatures />
@@ -56,21 +44,47 @@ import HeroCreatures from "./HeroCreatures.astro";
 			Hi, I'm Indi Watté, a<!-- the bee (ScrollBird) starts right after this line -->
 			<span class="bee-anchor" data-bee-start>
 				<!-- What the bee is about: shown while it waits in the hero, gone once it flies -->
-				<span class="bee-bubble" data-bee-bubble aria-hidden="true"><span class="bee-bubble-pop">Busy bee at work ☕</span></span>
+				<span class="bee-bubble" data-bee-bubble aria-hidden="true"
+					><span class="bee-bubble-pop">Busy bee at work ☕</span
+					></span
+				>
 			</span>
 		</p>
 
+		<!-- Centred title. Pills inside the sentence: one of my mockups between "Designer" and
+		     "who", and a photo of me in the open space left of the rotating word -->
 		<h1 class="hero-title">
-			<span id="hero-line-static" class="hero-line"></span>
-			<span id="hero-line-dynamic" class="hero-line hero-line--word">
-				<span id="hero-word" class="hero-word"></span>
+			<span class="hero-line hero-line--static">
+				<span id="hero-line-static"></span>
+				<span class="hero-pill hero-pill--work">
+					<img
+						src="/images/hero-mockup.webp"
+						width="480"
+						height="476"
+						alt=""
+						fetchpriority="high"
+					/>
+				</span>
+				<span id="hero-line-static-end"></span>
+			</span>
+			<span class="hero-line hero-line--word">
+				<span class="hero-pill hero-pill--me">
+					<img
+						src="/images/selfie-pill.webp"
+						width="520"
+						height="400"
+						alt="Indi Watté"
+						fetchpriority="high"
+					/>
+				</span>
+				<span id="hero-line-dynamic" class="hero-word-slot">
+					<span id="hero-word" class="hero-word"></span>
+				</span>
 			</span>
 		</h1>
 
-		<MusicPod />
+		<p class="hero-subtitle">I build web experiences to remember.</p>
 	</div>
-
-	<div class="hero-scroll">Scroll</div>
 </section>
 
 <style>
@@ -78,10 +92,18 @@ import HeroCreatures from "./HeroCreatures.astro";
 	.hero {
 		position: relative;
 		/* fallback when WebGL is off: the same soft sky as heroWater.ts */
-		background: linear-gradient(180deg, #9eadfa 0%, #bdc4fc 30%, #ded1f7 55%, #ffd1de 72%, #ffc2a8 84%, #fff2eb 100%);
+		background: linear-gradient(
+			180deg,
+			#9eadfa 0%,
+			#bdc4fc 30%,
+			#ded1f7 55%,
+			#ffd1de 72%,
+			#ffc2a8 84%,
+			#fff2eb 100%
+		);
 		display: flex;
 		align-items: center;
-		justify-content: flex-start;
+		justify-content: center;
 		width: 100%;
 		height: 100vh;
 		min-height: 640px;
@@ -96,6 +118,62 @@ import HeroCreatures from "./HeroCreatures.astro";
 		height: 100%;
 	}
 
+	/* Dark mode: the night sky (fallback gradient; heroWater.ts draws the same mood) */
+	html[data-theme="dark"] .hero {
+		background: linear-gradient(
+			180deg,
+			#070716 0%,
+			#0f0d2e 35%,
+			#1f1648 62%,
+			#3a1f4f 84%,
+			#5a2b50 100%
+		);
+	}
+
+	/* ============ STARS (dark mode only) ============ */
+	.hero-stars {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 800ms ease;
+	}
+
+	html[data-theme="dark"] .hero-stars {
+		opacity: 1;
+	}
+
+	.star {
+		position: absolute;
+		width: var(--size);
+		height: var(--size);
+		border-radius: 50%;
+		background: #fff;
+		box-shadow: 0 0 calc(var(--size) * 3) rgba(255, 255, 255, 0.8);
+		animation: twinkle var(--duration) ease-in-out var(--delay) infinite;
+	}
+
+	@keyframes twinkle {
+		0%,
+		100% {
+			opacity: 0.3;
+		}
+		50% {
+			opacity: 1;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.star {
+			animation: none;
+		}
+	}
+
+	html[data-theme="dark"] .hero-sun {
+		opacity: 0.45; /* a dimmer sun for the night */
+	}
+
 	/* ============ SUN ============ */
 	.hero-sun {
 		position: absolute;
@@ -106,7 +184,14 @@ import HeroCreatures from "./HeroCreatures.astro";
 		aspect-ratio: 1;
 		translate: -50% 50%;
 		border-radius: 50%;
-		background: radial-gradient(circle at 50% 45%, #fffbe6 0%, #ffe28a 28%, #ffb35c 58%, #ff8a5b 78%, rgba(255, 138, 91, 0) 100%);
+		background: radial-gradient(
+			circle at 50% 45%,
+			#fffbe6 0%,
+			#ffe28a 28%,
+			#ffb35c 58%,
+			#ff8a5b 78%,
+			rgba(255, 138, 91, 0) 100%
+		);
 		box-shadow:
 			0 0 60px 20px rgba(255, 214, 140, 0.55),
 			0 0 160px 80px rgba(255, 170, 120, 0.35),
@@ -124,96 +209,6 @@ import HeroCreatures from "./HeroCreatures.astro";
 		pointer-events: none;
 	}
 
-	/* ============ MIRROR: MY PHOTO IN AN ARCH, FLOATING ON CLOUDS ============ */
-	.hero-portal {
-		--portal-w: 25vw;
-		position: absolute;
-		right: 7vw;
-		bottom: 17%;
-		/* no z-index: its layers interleave with the creatures (frame 3, peeking
-		   creatures 4, clouds 5, sparkles 6) */
-		width: var(--portal-w);
-		aspect-ratio: 5 / 7;
-		pointer-events: none;
-	}
-
-	.portal-frame {
-		position: absolute;
-		inset: 0;
-		z-index: 3;
-		overflow: hidden;
-		border: 0.55rem solid var(--home-sun);
-		border-radius: 999px 999px 2rem 2rem;
-		background: #f3dcf7;
-		box-shadow:
-			0 0 0 0.35rem rgba(255, 255, 255, 0.35),
-			0 30px 60px rgba(23, 21, 58, 0.28);
-	}
-
-	.portal-me {
-		display: block;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		object-position: 74% 50%; /* me, on the right of the photo */
-		/* zoomed in on me; the frame (overflow: hidden) crops the rest */
-		
-		transform-origin: 74% 64%;
-	}
-
-	/* A soft glow and a touch of grain over the glass */
-	.portal-frame::after {
-		content: "";
-		position: absolute;
-		inset: 0;
-		background:
-			linear-gradient(160deg, rgba(255, 255, 255, 0.28), transparent 40%),
-			var(--grain-soft);
-		pointer-events: none;
-	}
-
-	.portal-clouds {
-		position: absolute;
-		z-index: 5;
-		left: -18%;
-		bottom: -12%;
-		width: 136%;
-		height: auto;
-		filter: drop-shadow(0 12px 18px rgba(23, 21, 58, 0.18));
-	}
-
-	.portal-sparkle {
-		position: absolute;
-		z-index: 6;
-		fill: #fff;
-		filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9));
-		animation: sparkle 2.4s ease-in-out infinite alternate;
-	}
-
-	.portal-sparkle--1 {
-		top: -4%;
-		right: -8%;
-		width: 2.6rem;
-	}
-
-	.portal-sparkle--2 {
-		top: 34%;
-		left: -12%;
-		width: 1.6rem;
-		animation-delay: -1.2s;
-	}
-
-	@keyframes sparkle {
-		from {
-			scale: 0.7;
-			rotate: 0deg;
-		}
-		to {
-			scale: 1.1;
-			rotate: 45deg;
-		}
-	}
-
 	/* ============ BUSY BEE SPEECH BUBBLE ============ */
 	.bee-anchor {
 		position: relative;
@@ -224,7 +219,9 @@ import HeroCreatures from "./HeroCreatures.astro";
 	.bee-bubble {
 		position: absolute;
 		left: 7.5rem;
-		bottom: 1.6rem;
+		bottom: calc(
+			1.6rem + 40px
+		); /* follows the bee, lifted above the intro line */
 	}
 
 	.bee-bubble-pop {
@@ -235,7 +232,7 @@ import HeroCreatures from "./HeroCreatures.astro";
 		color: var(--home-text);
 		font-family: var(--body-font);
 		font-size: 0.8rem;
-		font-weight: 700;
+		font-weight: 600;
 		white-space: nowrap;
 		box-shadow: 0 10px 24px rgba(23, 21, 58, 0.2);
 		transform-origin: 0 100%;
@@ -264,40 +261,60 @@ import HeroCreatures from "./HeroCreatures.astro";
 		}
 	}
 
-	/* ============ TEXT ============ */
+	/* ============ TEXT: CENTRED ============ */
 	.hero-content {
 		position: relative;
 		z-index: 10;
 		display: flex;
 		flex-direction: column;
+		align-items: center;
 		width: 100%;
-		padding-inline: 1.5rem;
+		max-width: 72rem;
+		margin-inline: auto;
+		padding-inline: 1.25rem;
+		/* sits a bit above the middle, clear of the clouds at the bottom */
+		margin-bottom: 20vh;
+		text-align: center;
 		color: #fff;
 	}
 
-	/* "Designer who" + the rotating word */
+	/* "Designer who" + pills + the rotating word */
 	.hero-title {
-		width: 100%;
-		margin: 0;
-		font-size: clamp(3.2rem, calc(9vw + 1rem), 8rem); /* min (phone), preferred, max (desktop) */
+		margin: 0.25em 0 0;
+		font-size: clamp(3rem, 9.5vw, 9.5rem);
 		font-family: var(--title-font);
 		font-style: normal;
-		font-weight: 100;
-		line-height: 0.82; /* cofo-cinema1909 has short capitals for its size */
+		font-weight: 400;
+		line-height: 0.9;
 		letter-spacing: -0.025em;
 		text-transform: uppercase;
 		user-select: none;
 	}
 
-	.hero-line {
-		display: block;
-		text-align: left;
-		white-space: nowrap;
+	.hero-subtitle {
+		color: white;
 	}
 
+
+	/* The photo stays put, a little in from the left edge of "Designer who"; the word
+	   starts right after it and grows to the right. width: 0 + min-width: 100% keeps
+	   this line out of the title's width, so a longer word never re-centres anything. */
 	.hero-line--word {
-		margin-top: 0;
-		text-align: right;
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 0.14em;
+		width: 0;
+		min-width: 100%;
+		margin-top: 0.06em;
+		padding-left: 1.1em;
+		box-sizing: border-box;
+		color: white;
+	}
+
+	/* clips the word only while it spins (heroText.ts adds .is-spinning) */
+	.hero-word-slot {
+		display: inline-block;
 	}
 
 	.hero-word {
@@ -305,99 +322,88 @@ import HeroCreatures from "./HeroCreatures.astro";
 		padding-block: 0.08em; /* room for the spinning word, without a gap */
 	}
 
-	/* ============ SCROLL HINT ============ */
-	.hero-scroll {
-		position: absolute;
-		bottom: 2rem;
-		left: 50%;
-		z-index: 10;
-		transform: translateX(-50%);
-		font-size: 0.75rem;
-		letter-spacing: 0.3em;
-		text-transform: uppercase;
-		color: rgba(255, 255, 255, 0.7);
+	/* "Designer [mockup] who" */
+	.hero-line--static {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.14em;
 	}
 
-	/* ============ PHONES: TEXT ON TOP, PORTAL BELOW ============ */
+	/* A pill-shaped image inside the sentence, the height of the capitals */
+	.hero-pill {
+		flex: none;
+		display: inline-block;
+		height: 0.78em;
+		aspect-ratio: 1.3;
+		overflow: hidden;
+		border-radius: 999px;
+		translate: 0 -0.04em;
+	}
+
+	/* The mockup floats on a soft lilac, smaller than the pill so the laptop shows whole */
+	.hero-pill--work {
+		background: #ddd3f7;
+	}
+
+	.hero-pill--work img {
+		object-fit: contain;
+		padding: 0.06em 0.1em;
+		box-sizing: border-box;
+	}
+
+	.hero-pill img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.hero-subtitle {
+		margin: clamp(0.8rem, 2vh, 1.3rem) 0 0;
+		font-family: var(--body-font);
+		font-size: clamp(1.05rem, 1.6vw, 1.4rem);
+		font-weight: 600;
+		color: white;
+		border: 1px solid white;
+		padding: 0.4rem 0.8rem;
+		border-radius: 999px; /* ink: readable on the light sky */
+	}
+
+	/* ============ PHONES ============ */
 	@media (max-width: 767px) {
 		.hero {
-			align-items: flex-start;
-			padding-top: 7rem;
-			box-sizing: border-box;
+			align-items: center;
 		}
 
 		.hero-title {
-			font-size: clamp(2.6rem, 12.5vw, 3.8rem); /* "Designer who" fits the screen */
+			font-size: clamp(
+				2.5rem,
+				12vw,
+				3.8rem
+			); /* "Designer who" fits the screen */
 		}
 
-		.hero-portal {
-			--portal-w: 52vw;
-			right: auto;
-			left: 50%;
-			bottom: 13%;
-			translate: -50% 0;
-		}
-	}
-
-	/* ============ TABLET + DESKTOP: TEXT LEFT, PORTAL RIGHT ============ */
-	@media (min-width: 768px) {
 		.hero-content {
-			width: 54vw;
-			margin-left: 6vw;
-			padding-inline: 0;
-		}
-
-		.hero-title {
-			font-size: clamp(4rem, 8.2vw, 9.5rem);
-		}
-
-		.hero-line--word {
-			margin-top: 0;
+			margin-bottom: 6vh;
 		}
 	}
 </style>
 
 <script>
 	import { gsap } from "../../scripts/gsap";
-
-	// Depth: the layers of the mirror drift with the mouse, the closer ones (clouds,
-	// sparkles) further than the framed photo behind them.
-	function initPortalDepth() {
-		const portal = document.querySelector<HTMLElement>("[data-portal]");
-		if (!portal || portal.dataset.ready) return;
-		if (!window.matchMedia("(hover: hover) and (prefers-reduced-motion: no-preference)").matches) return;
-		portal.dataset.ready = "true";
-
-		const layers = [...portal.querySelectorAll<HTMLElement | SVGElement>("[data-depth]")].map((el) => ({
-			depth: Number(el.dataset.depth),
-			x: gsap.quickTo(el, "x", { duration: 0.8, ease: "power3.out" }),
-			y: gsap.quickTo(el, "y", { duration: 0.8, ease: "power3.out" }),
-		}));
-
-		window.addEventListener(
-			"pointermove",
-			(event) => {
-				const dx = event.clientX / window.innerWidth - 0.5;
-				const dy = event.clientY / window.innerHeight - 0.5;
-				for (const layer of layers) {
-					layer.x(dx * layer.depth);
-					layer.y(dy * layer.depth * 0.6);
-				}
-			},
-			{ passive: true },
-		);
-	}
-
-	initPortalDepth();
-
 	// The speech bubble fades away as soon as the bee starts flying off (first bit of scroll).
 	const bubble = document.querySelector("[data-bee-bubble]");
 	if (bubble) {
-		gsap.fromTo(bubble, { autoAlpha: 1, y: 0 }, {
-			autoAlpha: 0,
-			y: -10,
-			ease: "none",
-			scrollTrigger: { start: 0, end: 120, scrub: true },
-		});
+		gsap.fromTo(
+			bubble,
+			{ autoAlpha: 1, y: 0 },
+			{
+				autoAlpha: 0,
+				y: -10,
+				ease: "none",
+				scrollTrigger: { start: 0, end: 120, scrub: true },
+			},
+		);
 	}
 </script>

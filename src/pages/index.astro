@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/home/Hero.astro";
 import About from "../components/About.astro";
 import FeaturedWork from "../components/home/FeaturedWork.astro";
+import ProcessStack from "../components/home/ProcessStack.astro";
 import ScrollPath from "../components/home/ScrollPath.astro";
 import ScrollBird from "../components/home/ScrollBird.astro";
 import LiquidEdge from "../components/LiquidEdge.astro";
@@ -17,7 +18,8 @@ import "../styles/home.css";
 		<div id="story" class="story">
 			<!-- Liquid, organic edge that slides over the hero -->
 			<LiquidEdge seed={7} color="var(--home-bg)" />
-			<!-- The sun's light shining through the white layer from below (heroScroll.ts) -->
+			<!-- The sun's light shining through the white layer, fixed to the bottom of the
+			     screen so it stays with you down the whole page (heroScroll.ts) -->
 			<div class="sun-glow" data-sun-glow aria-hidden="true"></div>
 
 			<!-- The scroll line runs through About and stops right next to the "Featured work" heading -->
@@ -25,6 +27,8 @@ import "../styles/home.css";
 				<ScrollPath name="about" endAt="#work h2" />
 				<About />
 			</div>
+			<!-- How I work: a stack that builds itself while you scroll -->
+			<ProcessStack />
 			<FeaturedWork />
 		</div>
 
@@ -36,7 +40,7 @@ import "../styles/home.css";
 		slot="footer"
 		name="footer"
 		variant="landing"
-		endAt="[data-footer-together]"
+		endAt="[data-footer-flower]"
 		color="var(--home-pink)"
 		background="var(--footer-bg)"
 	/>
@@ -55,18 +59,34 @@ import "../styles/home.css";
 		background: var(--home-bg);
 	}
 
-	/* Warm light from the sun under this layer, centred on the sun, over the wavy edge */
+	/* Warm light from the sun below the screen, shining up through the white layer. Fixed,
+	   so it stays in place while the page scrolls; multiply tints the white without
+	   washing out text or images. Fades in once the layer covers the sky (heroScroll.ts);
+	   the footer (z-index 40) slides over it. */
 	.sun-glow {
-		position: absolute;
+		position: fixed;
 		left: 50%;
-		top: -14vw;
+		bottom: 0;
 		z-index: 11; /* above the LiquidEdge (10) */
-		width: min(90vw, 70rem);
-		height: 34vw;
-		translate: -50% 0;
-		background: radial-gradient(ellipse 50% 50% at 50% 42%, rgba(255, 186, 100, 0.75), rgba(255, 160, 130, 0.3) 45%, rgba(255, 160, 130, 0) 72%);
-		opacity: 0.35;
+		width: min(140vw, 110rem);
+		height: 75vh;
+		translate: -50% 50%;
+		background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255, 186, 100, 0.6), rgba(255, 160, 130, 0.25) 45%, rgba(255, 160, 130, 0) 72%);
+		mix-blend-mode: multiply;
+		opacity: 0;
 		pointer-events: none;
+	}
+
+	:global(html[data-theme="dark"]) .sun-glow {
+		mix-blend-mode: screen;
+		filter: brightness(0.5);
+	}
+
+	/* Without the scroll animation the glow simply stays on */
+	@media (prefers-reduced-motion: reduce) {
+		.sun-glow {
+			opacity: 1;
+		}
 	}
 
 	/* Holds the About scroll line (ScrollPath covers this box) */

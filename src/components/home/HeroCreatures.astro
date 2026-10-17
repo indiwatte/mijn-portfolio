@@ -22,16 +22,12 @@ interface Placement {
 	peek?: boolean;
 }
 
+// While the mouse rests (and on phones) they look at the title, leading the eye there.
 const placements: Placement[] = [
-	{ name: "rainbow", x: "59%", y: "31%", phoneX: "2%", phoneY: "50%", size: 10, rotate: -8, phone: true },
-	{ name: "bunny", x: "87%", y: "21%", size: 10, rotate: 8 },
-	{ name: "flower", x: "75%", y: "10%", size: 7.5, rotate: -6 },
-	{ name: "apple", x: "57%", y: "71%", size: 8.5, rotate: 4 },
-	{ name: "worm", x: "89%", y: "45%", size: 8.5, rotate: 0 },
-	{ name: "cloud", x: "67%", y: "68%", size: 7, rotate: -10, peek: true },
-	{ name: "drop", x: "86%", y: "69%", size: 6, rotate: 12, peek: true },
-	{ name: "cyclops", x: "87%", y: "8%", phoneX: "82%", phoneY: "52%", size: 5.5, rotate: 0, phone: true },
-	{ name: "squiggle", x: "57%", y: "22%", size: 6, rotate: -14 },
+	// on the left side, level with the title
+	{ name: "rainbow", x: "11%", y: "34%", phoneX: "4%", phoneY: "60%", size: 7.5, rotate: -10, phone: true },
+	{ name: "cyclops", x: "86%", y: "16%", phoneX: "80%", phoneY: "12%", size: 4.5, rotate: 0, phone: true },
+	{ name: "cloud", x: "8%", y: "62%", phoneX: "4%", phoneY: "74%", size: 6, rotate: -10, phone: true },
 ];
 ---
 
@@ -43,6 +39,7 @@ const placements: Placement[] = [
 				index={i}
 				class:list={["placed", { "is-desktop-only": !c.phone, "is-phone-only": c.desktop === false, "is-peeking": c.peek }]}
 				style={`--x: ${c.x}; --y: ${c.y}; --px: ${c.phoneX ?? c.x}; --py: ${c.phoneY ?? c.y}; --size: ${c.size}rem; --r: ${c.rotate}deg;`}
+				data-look-at=".hero-title"
 			/>
 		))
 	}

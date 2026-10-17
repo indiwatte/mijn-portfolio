@@ -98,9 +98,17 @@ function createPiece(root: HTMLElement) {
             const height = root.offsetHeight;
             svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
 
-            // End point just right of the target element, in this piece's coordinates.
+            // End point just right of the target element, in this piece's coordinates
+            // (or, for a target marked data-land-on, sitting on top of it).
             let end: Point | undefined;
-            if (endTarget) {
+            if (endTarget?.hasAttribute("data-land-on")) {
+                const box = root.getBoundingClientRect();
+                const target = endTarget.getBoundingClientRect();
+                end = [
+                    target.left - box.left + target.width / 2,
+                    target.top - box.top - 50, // the bee's middle, above the top (the bloom pokes out above the svg): it sits on it
+                ];
+            } else if (endTarget) {
                 const box = root.getBoundingClientRect();
                 // Last line box: if the word wraps, stop after where it really ends.
                 const rects = endTarget.getClientRects();
@@ -204,7 +212,11 @@ export function initScrollPath() {
         const heroSpot = () => {
             const box = start!.getBoundingClientRect();
             const gap = window.innerWidth < 768 ? 60 : 90;
-            return [box.right + window.scrollX + gap, box.top + window.scrollY + box.height / 2];
+            // a little above the intro line, so it never sits on "Designer who" below it
+            const lift = window.innerWidth < 768 ? 0 : 40;
+            // never past the right edge of the screen (the bee is ~110px wide)
+            const x = Math.min(box.right + gap, window.innerWidth - 60);
+            return [x + window.scrollX, box.top + window.scrollY + box.height / 2 - lift];
         };
         const introAt = (t: number) => {
             const [x0, y0] = heroSpot();
@@ -301,12 +313,29 @@ export function initScrollPath() {
         }
 
         // Footer: drawn while the footer slides up over Featured work, until the page ends.
-        drawPiece(footer, {
-            trigger: footer.root,
-            start: "top bottom",
-            end: "bottom bottom",
-            refreshPriority: -2, // after the Featured work pin (footerReveal.ts)
-        });
+        // When the bee reaches the end it has landed (on the flower): the footer listens for
+        // "bee:landed" (detail: true on landing, false when it takes off again).
+        let landed = false;
+        drawPiece(
+            footer,
+            {
+                trigger: footer.root,
+                start: "top bottom",
+                end: "bottom bottom",
+                refreshPriority: -2, // after the Featured work pin (footerReveal.ts)
+            },
+            () => {
+                // (on phones the line can stop just short of its end at the very bottom)
+                const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 12;
+                // once landed it only takes off again when you clearly scroll back up
+                const now = landed
+                    ? footer.progress > 0.85
+                    : footer.progress > 0.985 || (footer.progress > 0.9 && atBottom);
+                if (now === landed) return;
+                landed = now;
+                window.dispatchEvent(new CustomEvent("bee:landed", { detail: landed }));
+            },
+        );
 
         placeBird();
         // Pins add/remove space on refresh: put the bird back on its line afterwards.

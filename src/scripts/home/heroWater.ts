@@ -1,6 +1,6 @@
 // Hero background: a soft sky gradient (blue -> lavender -> pink -> warm peach, like a
-// risograph print) drawn with WebGL. It slowly flows, has a fine grain, and the mouse
-// stirs it like water: ripples spread out from the pointer and fade when it stops.
+// risograph print) drawn with WebGL. It slowly flows, without grain. (The shader can
+// still make ripples around a point, but nothing stirs it: the sky stays calm.)
 // Falls back to the CSS gradient on .hero when WebGL isn't available.
 
 const VERTEX = `
@@ -14,6 +14,7 @@ uniform vec2 resolution;
 uniform float time;
 uniform vec2 mouse;     // 0..1, top-left origin
 uniform float stir;     // 0..1, how strongly the mouse moves the water right now
+uniform float night;    // 0..1, dark mode: the sky fades to a starry night
 
 // Soft value noise for the slow flow
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -45,6 +46,20 @@ vec3 sky(float y) {
     return c;
 }
 
+// The night sky (dark mode): deep navy at the top, indigo, then a dusky plum glow low down
+vec3 nightSky(float y) {
+    vec3 n0 = vec3(0.04, 0.04, 0.12);  // deep navy
+    vec3 n1 = vec3(0.07, 0.07, 0.2);   // midnight blue
+    vec3 n2 = vec3(0.15, 0.11, 0.32);  // indigo
+    vec3 n3 = vec3(0.31, 0.16, 0.4);   // plum
+    vec3 n4 = vec3(0.5, 0.24, 0.42);   // dusky rose at the horizon
+    vec3 c = mix(n0, n1, smoothstep(0.0, 0.3, y));
+    c = mix(c, n2, smoothstep(0.28, 0.56, y));
+    c = mix(c, n3, smoothstep(0.54, 0.78, y));
+    c = mix(c, n4, smoothstep(0.78, 1.0, y));
+    return c;
+}
+
 void main() {
     vec2 uv = gl_FragCoord.xy / resolution;
     uv.y = 1.0 - uv.y;
@@ -64,13 +79,11 @@ void main() {
     y += ripple * 0.06 + swell * 0.04;
     float x = uv.x + ripple * 0.03;
 
-    vec3 colour = sky(y);
+    vec3 colour = mix(sky(y), nightSky(y), night);
     // a soft caustic shimmer on the ripples
     colour += ripple * 0.09 + swell * 0.05;
     // a little horizontal banding, like the print in the reference
     colour += (noise(vec2(x * 3.0, y * 60.0)) - 0.5) * 0.015;
-    // grain
-    colour += (hash(gl_FragCoord.xy + fract(time) * 100.0) - 0.5) * 0.06;
 
     gl_FragColor = vec4(colour, 1.0);
 }
@@ -109,6 +122,7 @@ export function initHeroWater() {
         time: gl.getUniformLocation(program, "time"),
         mouse: gl.getUniformLocation(program, "mouse"),
         stir: gl.getUniformLocation(program, "stir"),
+        night: gl.getUniformLocation(program, "night"),
     };
 
     // Render at a lower resolution: the gradient is soft, and it keeps it light
@@ -123,34 +137,32 @@ export function initHeroWater() {
     new ResizeObserver(resize).observe(hero);
     resize();
 
-    // Mouse: the ripple centre eases after the pointer; stirring fades when it stops
-    const target = { x: 0.7, y: 0.5 };
+    // No mouse ripples: the sky only flows by itself.
     const current = { x: 0.7, y: 0.5 };
-    let stir = 0;
-    let stirTarget = 0;
-    hero.addEventListener("pointermove", (event) => {
-        const box = hero.getBoundingClientRect();
-        target.x = (event.clientX - box.left) / box.width;
-        target.y = (event.clientY - box.top) / box.height;
-        stirTarget = 1;
-    });
-    hero.addEventListener("pointerleave", () => (stirTarget = 0));
+    const stir = 0;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let visible = true;
     new IntersectionObserver(([entry]) => (visible = entry.isIntersecting)).observe(hero);
 
     const start = performance.now();
+
+    // Dark mode (theme.ts sets data-theme on <html>): the sky eases into the night palette
+    const isDark = () => document.documentElement.dataset.theme === "dark";
+    let night = isDark() ? 1 : 0;
     const frame = (now: number) => {
-        current.x += (target.x - current.x) * 0.08;
-        current.y += (target.y - current.y) * 0.08;
-        stir += (stirTarget - stir) * 0.04;
-        stirTarget *= 0.985; // ripples calm down when the mouse rests
+        night += ((isDark() ? 1 : 0) - night) * 0.05;
+        gl.uniform1f(u.night, night);
         gl.uniform1f(u.time, (now - start) / 1000);
         gl.uniform2f(u.mouse, current.x, current.y);
         gl.uniform1f(u.stir, stir);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
+
+    document.addEventListener("themechange", () => {
+        if (reduceMotion) night = isDark() ? 1 : 0; // no easing: snap, then redraw the still frame
+        frame(performance.now());
+    });
 
     if (reduceMotion) {
         frame(start); // one still frame
