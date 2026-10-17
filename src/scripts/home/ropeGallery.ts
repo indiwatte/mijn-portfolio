@@ -51,8 +51,8 @@ export function createRopeGallery() {
             const inset = Math.max(24, width * 0.05); // row ends; the loops swing out past them
             const left = inset;
             const right = width - inset;
-            const sag = gsap.utils.clamp(26, 70, width * 0.065);
-            const gap = width < 640 ? 56 : 84;
+            const sag = gsap.utils.clamp(20, 48, width * 0.045);
+            const gap = width < 640 ? 34 : 44; // rows close together
             // How far the loops between rows (and the lead-in) swing out past the row ends
             const swing = Math.max(40, inset * 1.8);
             // Steepness of a row where it starts and ends, so the loops can carry it on

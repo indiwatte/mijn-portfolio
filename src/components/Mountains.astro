@@ -1,0 +1,133 @@
+---
+// Soft, hazy mountain layers that form the footer's top edge: they poke up above the
+// footer, over the section it slides over. In the site's gradient colours, with grain in
+// each ridge (like a risograph print); the front ridge melts into the footer colour.
+// Each ridge carries a parallax depth (data-depth, 0..1): Footer.astro animates them.
+
+// Back to front: a blur per ridge (more haze further away) and a parallax depth (0..1).
+const RIDGES = [
+	{
+		id: "far",
+		blur: 5,
+		depth: 0.12,
+		d: "M0 158C120 132 220 61 360 43C470 30 560 88 660 114C780 145 900 88 1040 61C1160 39 1300 79 1440 105V420H0Z",
+	},
+	{
+		id: "back",
+		blur: 4,
+		depth: 0.3,
+		d: "M0 185C140 158 260 123 400 132C560 142 640 194 800 198C960 203 1080 136 1220 123C1320 114 1390 132 1440 141V420H0Z",
+	},
+	{
+		id: "mid",
+		blur: 3,
+		depth: 0.5,
+		d: "M0 220C160 203 280 172 420 185C580 201 700 247 860 238C1020 229 1120 180 1260 176C1350 173 1410 187 1440 194V420H0Z",
+	},
+	{
+		id: "near",
+		blur: 2.5,
+		depth: 0.75,
+		d: "M0 247C180 229 320 247 480 269C640 291 780 273 940 251C1100 229 1250 238 1440 260V420H0Z",
+	},
+	{
+		id: "front",
+		blur: 2,
+		fadeAt: 0.6, // reaches the footer colour early, so it melts into the footer without a seam
+		depth: 1,
+		d: "M0 300C200 278 400 291 600 311C800 330 1000 318 1180 300C1300 288 1390 291 1440 296V420H0Z",
+	},
+];
+---
+
+<div class="mountains" data-mountains aria-hidden="true">
+	<svg viewBox="0 0 1440 420" preserveAspectRatio="none">
+		<defs>
+			{
+				RIDGES.map(({ id, blur, fadeAt = 1 }) => (
+					<>
+						<linearGradient id={`ridge-${id}`} x1="0" y1="0" x2={0.4 * fadeAt} y2={fadeAt}>
+							<stop offset="0" style={`stop-color: var(--ridge-${id}-top)`} />
+							<stop offset="1" style={`stop-color: var(--ridge-${id}-bottom)`} />
+						</linearGradient>
+						<!-- Haze (blur) + grain: noise clipped to the ridge, laid over it in overlay mode -->
+						<filter id={`haze-${id}`} x="-5%" y="-20%" width="110%" height="140%">
+							<feGaussianBlur in="SourceGraphic" stdDeviation={blur} result="soft" />
+							<feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch" result="noise" />
+							<feColorMatrix in="noise" type="saturate" values="0" result="mono" />
+							<feComposite in="mono" in2="soft" operator="in" result="grain" />
+							<feBlend in="grain" in2="soft" mode="overlay" />
+						</filter>
+					</>
+				))
+			}
+		</defs>
+		{
+			RIDGES.map(({ id, depth, d }) => (
+				<path d={d} fill={`url(#ridge-${id})`} filter={`url(#haze-${id})`} data-ridge data-depth={depth} />
+			))
+		}
+	</svg>
+</div>
+
+<style>
+	.mountains {
+		/* back to front: lilac haze, periwinkle, cobalt-violet, pink, warm orange */
+		--ridge-far-top: #dcd8fb;
+		--ridge-far-bottom: #f3dcf7;
+		--ridge-back-top: #b1b7fa;
+		--ridge-back-bottom: #e2c9f4;
+		--ridge-mid-top: #7f88f1;
+		--ridge-mid-bottom: #c59de9;
+		--ridge-near-top: #f594c2;
+		--ridge-near-bottom: #ffb8a0;
+		--ridge-front-top: #ff8a5e;
+		--ridge-front-bottom: var(--footer-bg);
+
+		position: absolute;
+		left: 0;
+		right: 0;
+		/* sits right on top of the footer; the cloud edge covers its lower part */
+		bottom: 100%;
+		z-index: 0;
+		height: var(--footer-mountains-h);
+		overflow: hidden;
+		pointer-events: none;
+	}
+
+	/* Dark mode: indigo and plum ridges under the night sky */
+	:global(html[data-theme="dark"]) .mountains {
+		--ridge-far-top: #2a2966;
+		--ridge-far-bottom: #352a5e;
+		--ridge-back-top: #33307a;
+		--ridge-back-bottom: #47306e;
+		--ridge-mid-top: #3d3290;
+		--ridge-mid-bottom: #5c3177;
+		--ridge-near-top: #742f6c;
+		--ridge-near-bottom: #973f66;
+		--ridge-front-top: #a8474a;
+		--ridge-front-bottom: var(--footer-bg);
+	}
+
+	/* The bottom fades into the footer's own colour and grain, so there is no seam where
+	   the clouds dip down to the footer's edge */
+	.mountains::after {
+		content: "";
+		position: absolute;
+		inset: auto 0 0;
+		height: 30%;
+		background: var(--grain-soft), var(--footer-bg);
+		mask-image: linear-gradient(to bottom, transparent, #000 75%);
+	}
+
+	svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	path {
+		will-change: transform;
+	}
+
+</style>

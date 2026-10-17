@@ -5,10 +5,11 @@
     --text-color: var(--home-text);
     --accent-pink: var(--home-pink);
     --max-width: 1100px;
+    /* Two typefaces only: a calm serif for titles (regular + italic, never bold) and Poppins for text */
     --body-font: 'Poppins', sans-serif;
-    --display-font: 'Rock Salt', cursive;
-    /* Header title (Adobe Fonts, loaded in BaseLayout); Poppins until the kit is added */
-    --title-font: cofo-cinema1909, 'Poppins', sans-serif;
+    --heading-font: 'Instrument Serif', Georgia, serif;
+    --title-font: var(--heading-font);
+    --display-font: var(--heading-font); /* kickers, captions: used in italic */
 
     /* Brand palette, by role (happy + modern; every text pairing passes WCAG AA) */
     --home-bg: #ffffff; /* page background: clean, bright white */
@@ -21,7 +22,10 @@
     --home-orange: #ff5a1f; /* decoration only: too light for small text */
     --home-accent: #d6360c; /* red-orange accent *text* (4.5:1 on the background) */
     --home-accent-soft: var(--home-pink);
-    --footer-bg: var(--home-blue);
+    --home-ink: #17153a; /* text on sun and pink, in both themes */
+    --home-surface: #ffffff; /* cards and buttons that sit on the page */
+    --footer-bg: #eeeefe; /* top of the footer's light sky (and its wavy edge) */
+    --footer-mountains-h: clamp(14rem, 36vw, 34rem); /* how far the footer's mountains poke up */
 
     /* Shared tokens reused by page-specific stylesheets (avoid re-declaring these values elsewhere) */
     --radius-sm: 0.5rem;
@@ -35,8 +39,26 @@
     /* Film grain: a tile of fine noise, laid over the whole site (below) and, stronger, over
        the hero, footer and other gradient sections */
     --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.6 -0.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    /* Marker highlight (markers.ts): a rough, sun-orange felt-tip stroke with frayed edges
+       and dry streaks, stretched over the highlighted words */
+    --marker-stroke: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 300 60%27 preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 x2=%271%27%3E%3Cstop offset=%270%27 stop-color=%27%23ffc65c%27/%3E%3Cstop offset=%27.55%27 stop-color=%27%23ffa94f%27/%3E%3Cstop offset=%271%27 stop-color=%27%23ff8a5b%27/%3E%3C/linearGradient%3E%3Cfilter id=%27r%27 x=%27-5%25%27 y=%27-20%25%27 width=%27110%25%27 height=%27140%25%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%27.035 .5%27 numOctaves=%272%27 seed=%273%27 result=%27n%27/%3E%3CfeDisplacementMap in=%27SourceGraphic%27 in2=%27n%27 scale=%277%27 xChannelSelector=%27R%27 yChannelSelector=%27G%27 result=%27d%27/%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%27.012 .9%27 numOctaves=%272%27 seed=%278%27 result=%27s%27/%3E%3CfeColorMatrix in=%27s%27 type=%27matrix%27 values=%270 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.2 2%27 result=%27m%27/%3E%3CfeComposite in=%27d%27 in2=%27m%27 operator=%27in%27/%3E%3C/filter%3E%3C/defs%3E%3Cg filter=%27url%28%23r%29%27 fill=%27url%28%23g%29%27%3E%3Cpath d=%27M7 15C60 9 140 13 220 8C255 6 284 9 295 12L291 22L298 30L290 40L294 49C230 53 150 48 80 52C50 54 22 51 5 49L10 40L3 30L9 22Z%27 opacity=%27.88%27/%3E%3Cpath d=%27M14 30C90 25 170 29 240 26C262 25 280 27 290 29L286 37C220 41 140 38 70 41C45 42 25 41 12 40Z%27 opacity=%27.35%27/%3E%3C/g%3E%3C/svg%3E");
     /* A much fainter version, for use directly as a background layer */
     --grain-soft: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 -0.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Dark mode: set on <html data-theme="dark"> by theme.ts (saved in localStorage). Only the
+   tokens change, so every surface that uses them follows the switch. */
+html[data-theme="dark"] {
+    color-scheme: dark;
+    --home-bg: #0d0b22; /* night: deep navy */
+    --home-lilac: #221d44;
+    --home-text: #f3f0ff; /* light ink */
+    --home-muted: #aaa4cf;
+    --home-accent: #ff8a6b; /* lighter red-orange, readable on night */
+    --home-surface: #1c1838; /* cards and buttons on the page */
+    --border-soft: rgba(255, 255, 255, 0.1);
+    --shadow-soft: 0 16px 40px rgba(0, 0, 0, 0.45);
+    --footer-bg: #0f0d2e;
 }
 
 body {
@@ -48,13 +70,13 @@ body {
 }
 
 /* The section the footer slides over (footerReveal.ts) gets extra room at the bottom, as
-   tall as the part of the footer's wavy edge (LiquidEdge: 20.8vw, min 130px, 92% of it
-   above the footer) that its own bottom padding doesn't cover, so the edge never hides
-   the last lines of content */
+   tall as the footer's mountain edge (Mountains.astro: --footer-mountains-h above the
+   footer, peaks from ~15% down) minus its own bottom padding, so the edge never hides the
+   last lines of content */
 [data-footer-overlap]::after {
     content: "";
     display: block;
-    height: max(0px, calc(max(130px, 20.8vw) * 0.92 - 4rem));
+    height: max(0px, calc(var(--footer-mountains-h) * 0.85 - 4rem));
 }
 
 /* Tag pills: the same on the project overview and on every project page */
@@ -71,7 +93,7 @@ body {
     padding: 0.3rem 0.7rem;
     border-radius: var(--radius-pill);
     background: var(--home-sun);
-    color: var(--home-text);
+    color: var(--home-ink);
     font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.06em;
@@ -114,3 +136,22 @@ a {
         display: block;
     }
 }
+
+/* Highlighted words (<mark class="marker" data-marker>): the stroke is drawn left to right
+   on scroll by markers.ts. Without JS (no .js-markers) the stroke simply shows. */
+mark.marker {
+    color: inherit;
+    background: var(--marker-stroke) no-repeat 0 60% / 100% 78%;
+    padding: 0 0.14em;
+    margin: 0 -0.06em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    transition: color 300ms ease;
+}
+
+/* ink on the orange once it is covered (in dark mode the text is light otherwise) */
+html:not(.js-markers) mark.marker,
+mark.marker.is-marked {
+    color: var(--home-ink);
+}
+

@@ -11,19 +11,34 @@ export function initHeroScroll() {
         pin: true,
     });
 
-    // The sun sets under the white layer as you scroll down (and rises again scrolling
-    // up): it sinks a little faster than the layer rises, while its glow on the white
-    // layer grows, so the light still shines through once the sun itself is hidden.
+    // The sun stays in place while the white layer slides over it; its glow (fixed to the
+    // bottom of the screen) fades in on the white layer, so the light keeps shining
+    // through it down the whole page.
     gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {
-        const sun = document.querySelector("[data-hero-sun]");
         const glow = document.querySelector("[data-sun-glow]");
-        if (!sun || !glow) return;
-        gsap.timeline({
-            defaults: { ease: "none" },
+        if (!glow) return;
+        gsap.to(glow, {
+            opacity: 1,
+            ease: "none",
             scrollTrigger: { trigger: "#hero", start: "top top", end: "+=70%", scrub: 0.8 },
+        });
+    });
+
+    // The title splits as you scroll: "Designer who" slides off to the left, the rotating
+    // word to the right, fading as they go. Scrubbed, so scrolling back brings them together.
+    gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {
+        // the whole first line: the mockup pill goes along with "Designer who"
+        const left = document.querySelector<HTMLElement>(".hero-line--static");
+        // the whole second line: the photo and creature pills go along with the word
+        const right = document.querySelector<HTMLElement>(".hero-line--word");
+        if (!left || !right) return;
+        gsap.timeline({
+            defaults: { ease: "power2.in" },
+            // From the very top of the page (a "#hero" trigger would only start after its pin).
+            scrollTrigger: { start: 0, end: () => window.innerHeight * 0.6, scrub: 0.6, invalidateOnRefresh: true },
         })
-            .to(sun, { yPercent: 60, scale: 0.92 }, 0)
-            .to(glow, { opacity: 1, scaleX: 1.15 }, 0);
+            .to(left, { xPercent: -70, autoAlpha: 0 }, 0)
+            .to(right, { xPercent: 70, autoAlpha: 0 }, 0);
     });
 
     // The manifesto headline slowly reveals as it scrolls into view (transform +

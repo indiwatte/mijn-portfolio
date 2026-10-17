@@ -1,0 +1,358 @@
+---
+// Homepage, after the intro: how I work, as a stack that builds itself while you scroll.
+// The section is tall; its stage stays in view (CSS sticky, no GSAP pin, so nothing else on
+// the page shifts) while GSAP drops the layers in one by one, bottom to top, each with its
+// word appearing next to it. Scrubbed: scrolling back up takes the stack apart again.
+// Listed top to bottom, the way the finished stack reads; they fall in from the bottom up.
+// Each disc is drawn like a grainy riso / airbrush illustration: a glowing gradient
+// (light core, saturated rim) roughened by a noise filter, a sprayed highlight, a darker
+// side for thickness and a flat offset shadow in a contrasting colour.
+const layers = [
+	{
+		label: "Building & testing",
+		tone: "build",
+		core: "#ffb347", mid: "#f0283f", rim: "#ff4fc3", side: "#b0123a", shadow: "#ffc93c",
+	},
+	{
+		label: "Designing & refining",
+		tone: "design",
+		core: "#fff6b8", mid: "#8fe07a", rim: "#1f9a63", side: "#17704a", shadow: "#ff9ec4",
+	},
+	{
+		label: "Defining & making strategy",
+		tone: "strategy",
+		core: "#fff4cf", mid: "#ffc93c", rim: "#ff6a2a", side: "#d0521c", shadow: "#9cc2ff",
+	},
+	{
+		label: "Listening",
+		tone: "listen",
+		core: "#ffffff", mid: "#b8a6ff", rim: "#5a6bff", side: "#3f49d8", shadow: "#ffb39a",
+	},
+];
+---
+
+<section class="process" data-process aria-labelledby="process-heading">
+	<!-- The grain: noise pushes the gradient's colours around, so transitions look sprayed -->
+	<svg class="process-defs" aria-hidden="true">
+		<defs>
+			<filter id="pg-grain" x="-10%" y="-10%" width="120%" height="120%">
+				<feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="7" stitchTiles="stitch" result="noise" />
+				<feDisplacementMap in="SourceGraphic" in2="noise" scale="40" xChannelSelector="R" yChannelSelector="G" />
+			</filter>
+			<!-- Loose specks over everything: light ones and dark ones, like riso ink -->
+			<filter id="pg-specks-light" x="0" y="0" width="100%" height="100%">
+				<feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="1" seed="11" stitchTiles="stitch" />
+				<feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  9 0 0 0 -5.6" />
+			</filter>
+			<filter id="pg-specks-dark" x="0" y="0" width="100%" height="100%">
+				<feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="1" seed="23" stitchTiles="stitch" />
+				<feColorMatrix type="matrix" values="0 0 0 0 0.09  0 0 0 0 0.08  0 0 0 0 0.23  9 0 0 0 -5.6" />
+			</filter>
+			<!-- Soft sprayed shapes: blurred first, then scattered by the noise -->
+			<filter id="pg-spray" x="-50%" y="-100%" width="200%" height="300%">
+				<feGaussianBlur in="SourceGraphic" stdDeviation="18" result="soft" />
+				<feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="noise" />
+				<feDisplacementMap in="soft" in2="noise" scale="34" xChannelSelector="R" yChannelSelector="G" />
+			</filter>
+		</defs>
+	</svg>
+
+	<div class="process-stage">
+		<header class="process-intro">
+			<h2 id="process-heading">
+				Not only an executor, but a <mark class="marker" data-marker>problem solver</mark> who focuses
+				on outcomes.
+			</h2>
+			<p class="process-kicker">The perfect combination</p>
+		</header>
+
+		<div class="process-stack">
+			<ol class="process-layers">
+				{
+					layers.map((layer, i) => (
+						<li class="process-layer" data-layer style={`--i: ${i}`}>
+							<span class="process-disc" data-disc aria-hidden="true">
+								<svg viewBox="0 0 400 136" overflow="visible">
+									<defs>
+										<radialGradient id={`pg-top-${layer.tone}`} cx="38%" cy="32%" r="72%">
+											<stop offset="0" stop-color={layer.core} />
+											<stop offset=".32" stop-color={layer.mid} />
+											<stop offset=".78" stop-color={layer.rim} />
+										</radialGradient>
+										<linearGradient id={`pg-side-${layer.tone}`} x1="0" x2="1">
+											<stop offset="0" stop-color={layer.side} />
+											<stop offset=".55" stop-color={layer.mid} />
+											<stop offset="1" stop-color={layer.side} />
+										</linearGradient>
+										<clipPath id={`pg-clip-${layer.tone}`}>
+											<ellipse cx="200" cy="56" rx="192" ry="52" />
+										</clipPath>
+										<clipPath id={`pg-clip-side-${layer.tone}`}>
+											<ellipse cx="200" cy="70" rx="192" ry="52" />
+										</clipPath>
+									</defs>
+									<!-- flat offset shadow, like a misregistered print -->
+									<ellipse cx="184" cy="84" rx="192" ry="52" fill={layer.shadow} />
+									<!-- the side, for thickness -->
+									<g clip-path={`url(#pg-clip-side-${layer.tone})`}>
+										<rect x="-20" y="0" width="440" height="140" fill={`url(#pg-side-${layer.tone})`} filter="url(#pg-grain)" />
+										<rect x="0" y="0" width="400" height="136" filter="url(#pg-specks-dark)" opacity=".25" />
+									</g>
+									<!-- the top: a glowing, grainy gradient -->
+									<g clip-path={`url(#pg-clip-${layer.tone})`}>
+										<rect x="-20" y="-20" width="440" height="160" fill={`url(#pg-top-${layer.tone})`} filter="url(#pg-grain)" />
+										<!-- sprayed shading on the far side -->
+										<ellipse cx="290" cy="84" rx="150" ry="40" fill={layer.rim} opacity=".75" filter="url(#pg-spray)" />
+										<!-- riso specks -->
+										<rect x="0" y="0" width="400" height="136" filter="url(#pg-specks-light)" opacity=".45" />
+										<rect x="0" y="0" width="400" height="136" filter="url(#pg-specks-dark)" opacity=".22" />
+										<!-- sprayed highlight -->
+										<ellipse cx="128" cy="34" rx="58" ry="12" fill="#fff" opacity=".75" filter="url(#pg-spray)" />
+									</g>
+								</svg>
+							</span>
+							<span class="process-label" data-label>
+								{layer.label}
+							</span>
+						</li>
+					))
+				}
+			</ol>
+		</div>
+	</div>
+</section>
+
+<style>
+	/* Tall section: the stage sticks while you scroll through it */
+	.process {
+		position: relative;
+		z-index: 1; /* above the bee's scroll line */
+		height: 320vh;
+	}
+
+	.process-stage {
+		position: sticky;
+		top: 0;
+		display: grid;
+		grid-template-rows: auto 1fr;
+		align-items: center;
+		justify-items: center;
+		gap: clamp(1.5rem, 4vh, 3rem);
+		box-sizing: border-box;
+		height: 100svh;
+		padding: clamp(5rem, 11vh, 7rem) min(6vw, 3rem) clamp(2rem, 6vh, 4rem);
+		overflow: hidden;
+	}
+
+	.process-intro {
+		max-width: 52rem;
+		text-align: center;
+	}
+
+	.process-intro h2 {
+		margin: 0;
+		font-family: var(--heading-font);
+		font-size: clamp(2.2rem, 4.4vw, 3.6rem);
+		font-weight: 400;
+		line-height: 1.15;
+		letter-spacing: 0;
+		color: var(--home-text);
+	}
+
+	.process-kicker {
+		margin: 0.9rem 0 0;
+		font-family: var(--heading-font);
+		font-size: clamp(1rem, 1.6vw, 1.25rem);
+		color: var(--home-blue);
+		font-style: italic;
+	}
+
+	/* ============ THE STACK ============ */
+	.process-stack {
+		--disc-w: clamp(11rem, 34vw, 26rem);
+		--disc-h: calc(var(--disc-w) * 0.27); /* the top of the disc, in the 400 x 136 drawing */
+		--step: calc(var(--disc-w) * 0.16); /* how far each layer sits above the one below */
+		width: 100%;
+		display: flex;
+		justify-content: center;
+	}
+
+	.process-layers {
+		position: relative;
+		width: calc(var(--disc-w) + clamp(9rem, 26vw, 22rem));
+		height: calc(var(--disc-h) + var(--step) * 3);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	/* layer 0 on top, layer 3 at the bottom */
+	.process-layer {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: calc(var(--i) * var(--step));
+		z-index: calc(4 - var(--i));
+		display: flex;
+		align-items: center;
+		gap: clamp(1rem, 2.5vw, 2rem);
+		height: var(--disc-h);
+	}
+
+	.process-defs {
+		position: absolute;
+		width: 0;
+		height: 0;
+	}
+
+	/* The drawn disc (its top sits in the layer's box; side and shadow hang below it) */
+	.process-disc {
+		position: relative;
+		flex: none;
+		align-self: flex-start;
+		width: var(--disc-w);
+	}
+
+	.process-disc svg {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+
+	.process-label {
+		font-family: var(--body-font);
+		font-size: clamp(0.95rem, 1.6vw, 1.35rem);
+		font-weight: 600;
+		line-height: 1.15;
+		white-space: nowrap;
+		letter-spacing: -0.01em;
+		color: var(--home-text);
+	}
+
+	/* Phones: smaller discs, labels in the room next to them */
+	@media (max-width: 640px) {
+		.process-stack {
+			--disc-w: 46vw;
+			--step: calc(var(--disc-w) * 0.24); /* a bit more room per word */
+		}
+
+		.process-layers {
+			width: calc(var(--disc-w) + 44vw);
+		}
+
+		.process-layer {
+			gap: 0.75rem;
+		}
+
+		.process-label {
+			font-size: 0.78rem;
+			white-space: normal;
+		}
+	}
+
+	/* Reduced motion: no tall scroll, just the finished stack */
+	@media (prefers-reduced-motion: reduce) {
+		.process {
+			height: auto;
+		}
+
+		.process-stage {
+			position: relative;
+			height: auto;
+			min-height: 80svh;
+		}
+	}
+</style>
+
+<script>
+	import { gsap } from "../../scripts/gsap";
+
+	// Drops the layers in from above, bottom layer first, each landing with a little
+	// squash; its word slides in once it lands. Tied to the scroll through the section.
+	// While a layer falls it spins flat as you scroll, and it tips with your scroll speed
+	// (the drawing inside it swings; landed layers lie still).
+	function initProcessStack() {
+		const section = document.querySelector<HTMLElement>("[data-process]");
+		if (!section || section.dataset.ready) return;
+		section.dataset.ready = "true";
+
+		gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {
+			// Bottom to top: the last item in the list (Listening) falls first.
+			const layers = gsap.utils.toArray<HTMLElement>("[data-layer]", section).reverse();
+			// Scroll speed → a swing on the drawing of every layer that's still in the air
+			const swings = layers.map((layer) => {
+				const disc = layer.querySelector<HTMLElement>("[data-disc]")!;
+				const art = disc.querySelector("svg")!;
+				return {
+					disc,
+					rotate: gsap.quickTo(art, "rotation", { duration: 0.6, ease: "power3.out" }),
+				};
+			});
+			const clampSwing = gsap.utils.clamp(-28, 28);
+			let settle: gsap.core.Tween | undefined;
+
+			const tl = gsap.timeline({
+				defaults: { ease: "none" },
+				scrollTrigger: {
+					trigger: section,
+					start: "top top",
+					end: "bottom bottom",
+					scrub: 0.8,
+					onUpdate: (self) => {
+						const tip = clampSwing(self.getVelocity() / 90);
+						swings.forEach(({ disc, rotate }, n) => {
+							// in the air: still above its spot (y < 0) and visible
+							const falling = (gsap.getProperty(disc, "y") as number) < -4 && (gsap.getProperty(disc, "opacity") as number) > 0;
+							rotate(falling ? tip * (n % 2 ? 1 : -1) : 0);
+						});
+						// once the scrolling stops, everything swings back level
+						settle?.kill();
+						settle = gsap.delayedCall(0.15, () => swings.forEach(({ rotate }) => rotate(0)));
+					},
+				},
+			});
+
+			// The heading comes in while the section scrolls into view, so it's already
+			// there once the stage sticks (no empty screen first)
+			gsap.from(section.querySelector(".process-intro"), {
+				y: 40,
+				autoAlpha: 0,
+				ease: "power2.out",
+				scrollTrigger: { trigger: section, start: "top 85%", end: "top 35%", scrub: 0.6 },
+			});
+
+			layers.forEach((layer, n) => {
+				const disc = layer.querySelector("[data-disc]");
+				const label = layer.querySelector("[data-label]");
+				const at = n * 1.2;
+				// falls from high up, spinning flat as it comes down (tied to the scroll)
+				tl.from(disc, { y: () => -window.innerHeight * 0.75, autoAlpha: 0, rotation: n % 2 ? 32 : -32, duration: 0.8, ease: "power2.in" }, at)
+					// land: a quick squash and back
+					.to(disc, { scaleY: 0.82, scaleX: 1.04, duration: 0.12, ease: "power1.out" }, at + 0.8)
+					.to(disc, { scaleY: 1, scaleX: 1, duration: 0.25, ease: "back.out(3)" }, at + 0.92)
+					.from(label, { x: 30, autoAlpha: 0, duration: 0.4, ease: "power2.out" }, at + 0.8);
+			});
+
+			// a moment to look at the finished stack before the section scrolls away
+			tl.to({}, { duration: 0.8 });
+
+			// Only once the section is done and scrolls away, the stack (words and all)
+			// shrinks to a small stack while it moves up off the screen.
+			gsap.to(section.querySelector(".process-layers"), {
+				scale: 0.45,
+				transformOrigin: "50% 50%",
+				ease: "power1.in",
+				scrollTrigger: {
+					trigger: section,
+					start: "bottom bottom", // the stage stops sticking here
+					end: "bottom 35%",
+					scrub: 0.6,
+				},
+			});
+
+			return () => settle?.kill();
+		});
+	}
+
+	initProcessStack();
+</script>

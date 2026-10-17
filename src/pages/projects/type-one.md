@@ -4,7 +4,7 @@ title: "Type One"
 subtitle: "Conference website"
 type: "School project"
 year: "2026"
-client: "Lorem ipsum"
+client: "TYPE01 Magazine (school project)"
 # One line for cards (homepage): what it is.
 summary: "A bold, mobile-first conference website for TYPE01 magazine."
 # Tools / tech stack, shown as pills on the homepage card. Fill in, e.g. ["Figma", "Astro", "GSAP"]
@@ -17,7 +17,7 @@ services:
 
 tags:
   - Typography
-  - Visual
+  - Web design
 
 # Header text (right of the hero photo); the first paragraph is the lead. Inline HTML is allowed.
 concept:
@@ -28,16 +28,37 @@ concept:
 heroVideo: "/images/projects/type_01/video/type1_video-web.mp4"
 
 # Photo scroll (right column, below the header), top to bottom. size: full (default) | half | third
+# chapter: the chapter a photo belongs to (1 = the first); the photos after it follow along.
 gallery:
+  # 1. Why bold works
   - src: "/images/projects/type1.webp"
+    chapter: 1
     alt: "Type One typography poster"
+  # 2. Exploration & wireframing
+  - src: "/images/projects/type_01/exploration2.webp"
+    chapter: 2
+    alt: "Figma canvas with a moodboard (bold typography, bright colour, experimental gradients, keywords like loud, acid and electric) next to the first homepage versions in pink and lilac"
+    caption: "Moodboard and first directions: loud, bright and anti-minimal."
+  - src: "/images/projects/type_01/exploration1.webp"
+    alt: "Figma canvas with many iterations of the TYPE01 homepage in black, lime, pink and blue, each with the big SPEAKERS letter grid"
+    caption: "Round after round of homepage versions, pushing the SPEAKERS grid and the colours."
   - src: "/images/projects/type_01/wireframing.webp"
     alt: "Wireframes in Figma: desktop homepage, conference program and mobile screens"
+    caption: "Wireframes for desktop and mobile."
+  # 3. Mobile: speed and clarity
+  - src: "/images/projects/type_01/mobile-mockup.webp"
+    chapter: 3
+    alt: "Four mobile screens of the TYPE01 website: the agenda, a workshop card with a Book button, the day program with filters and the ticket prices, each with a fixed Ticket here button at the bottom"
+    caption: "The mobile flow: agenda, workshops, program and tickets, with the ticket button always in reach."
+  # 4. Desktop: room to explore
   - src: "/images/projects/type_01/website-speakers.webp"
+    chapter: 4
     alt: "TYPE01 website: speakers grid with big SPEAK letters, speaker portraits and key numbers"
   - src: "/images/projects/type_01/website-program-workshops.webp"
     alt: "TYPE01 website: day program with workshop cards for Python for Designers and Cyrillic Type Design"
+  # 5. Mobile vs desktop
   - src: "/images/projects/type_01/website-program-dinner.webp"
+    chapter: 5
     alt: "TYPE01 website: program card for the Official Saturday Dinner Party"
   - src: "/images/projects/type_01/website-accommodation.webp"
     alt: "TYPE01 website: accommodation section for Hotel Indigo London with a discount code"
@@ -59,6 +80,17 @@ TYPE01 is all about fresh takes on design, so a minimal, safe approach wouldn't 
 - **Expressive compositions** that mirror the magazine's editorial style.
 
 One look tells you: this conference is different.
+
+</details>
+
+<h3 class="chapter-group">The process</h3>
+
+<details name="chapter">
+<summary>Exploration &amp; wireframing</summary>
+
+I started wide: a moodboard full of **bold typography, bright colour and experimental gradients**, with keywords like loud, acid, electric and anti-minimal.
+
+From there I explored round after round of homepage directions in Figma, testing colour combinations and pushing the big SPEAKERS letter grid until it felt as loud as the magazine. In parallel I wireframed the structure for desktop and mobile, so the bold look always sat on a clear layout.
 
 </details>
 
@@ -95,5 +127,14 @@ The same content, designed for two different moments:
 
 - **Mobile = speed and clarity:** one column, a vertical flow and fixed CTAs for immediate action.
 - **Desktop = exploration and expression:** multi-column grids for comparing, asymmetric layouts and typography at full scale.
+
+</details>
+
+<details name="chapter">
+<summary>Results &amp; reflection</summary>
+
+**Feedback:** [Placeholder: what did your teachers, the client or users say about the result?]
+
+**What I learned:** [Placeholder: what did this project teach you, what are you proud of, and what would you do differently next time?]
 
 </details>

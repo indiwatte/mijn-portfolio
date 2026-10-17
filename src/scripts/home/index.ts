@@ -3,13 +3,13 @@
 import { initHeroText } from "./heroText";
 import { initHeroScroll } from "./heroScroll";
 import { initHeroWater } from "./heroWater";
-import { initMusicPod } from "./musicPod";
 import { initProjectsGallery } from "./projectsGallery";
 import { initScrollPath } from "./scrollPath";
+import { initMarkers } from "../markers";
 
 initHeroText();
-initMusicPod();
 initHeroWater();
 initHeroScroll();
 initProjectsGallery();
 initScrollPath();
+initMarkers();

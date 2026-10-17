@@ -51,7 +51,8 @@
 }
 
 .home-eyebrow {
-    font-family: 'Rock Salt', cursive;
+    font-family: var(--display-font);
+    font-style: italic;
     font-size: clamp(1rem, 1.6vw, 1.3rem);
     color: var(--home-accent);
     margin: 0 0 0.75rem;
@@ -62,15 +63,14 @@
 }
 
 .home-title {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
+    font-family: var(--heading-font);
+    font-weight: 400;
     font-size: clamp(3.8rem, 12vw, 9rem);
     line-height: 0.92;
     letter-spacing: -0.01em;
     text-transform: uppercase;
     margin: 0;
     color: var(--home-accent);
-    -webkit-text-stroke: 1px rgba(0, 0, 0, 0.02);
 }
 
 .home-hero-meta {
@@ -102,8 +102,8 @@
 }
 
 .home-manifesto h2 {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
+    font-family: var(--heading-font);
+    font-weight: 400;
     font-size: clamp(1.9rem, 3.8vw, 3.1rem);
     line-height: 1.18;
 
@@ -136,7 +136,7 @@
 .home-split-right h3 {
     font-family: 'Poppins', sans-serif;
     font-size: 0.8rem;
-    font-weight: 800;
+    font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--home-muted);
@@ -168,17 +168,10 @@
     margin-bottom: clamp(2rem, 4vw, 3rem);
 }
 
-.home-work-heading .eyebrow-tag {
-    display: block;
-    font-family: 'Rock Salt', cursive;
-    font-size: 1rem;
-    color: var(--home-accent);
-    margin-bottom: 0.4rem;
-}
 
 .home-work-heading h2 {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
+    font-family: var(--heading-font);
+    font-weight: 400;
     font-size: clamp(2rem, 4vw, 3rem);
     text-transform: uppercase;
     letter-spacing: -0.01em;
@@ -189,12 +182,12 @@
 .home-work-tag {
     font-family: 'Poppins', sans-serif;
     font-size: 0.8rem;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--home-muted);
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: var(--home-surface);
+    border: 1px solid var(--border-soft);
     padding: 0.5rem 1rem;
 
 }

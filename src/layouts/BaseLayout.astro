@@ -57,6 +57,12 @@ const imageUrl = new URL(image, base).href;
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="generator" content={Astro.generator} />
+		<!-- Dark mode: applied before the first paint (see theme.ts) -->
+		<script is:inline>
+			try {
+				if (localStorage.getItem("theme") === "dark") document.documentElement.dataset.theme = "dark";
+			} catch (e) {}
+		</script>
 		<title>{title}</title>
 		<meta name="description" content={description} />
 		<!-- Share previews (LinkedIn, WhatsApp, Slack, …) -->
@@ -72,10 +78,9 @@ const imageUrl = new URL(image, base).href;
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Rock+Salt&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Poppins:ital,wght@0,400;0,500;0,600;1,400&display=swap"
 			rel="stylesheet"
 		/>
-		<link rel="stylesheet" href="https://use.typekit.net/wrw4auj.css" />
 		{viewTransitions && <ClientRouter />}
 	</head>
 	<body class={bodyClass}>

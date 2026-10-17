@@ -1,0 +1,66 @@
+---
+// "Let's grow wonderful things": a little garden along the bottom of the footer. Move the
+// mouse over the footer and a watering can follows it, sprinkling drops; where enough drops
+// land, a flower grows up from the bottom (same illustrated style as FooterFlower).
+// On touch screens: tap and drag. All of it lives in src/scripts/garden.ts.
+// Place it as a child of the footer (position: relative); it covers the whole footer,
+// behind the content, and never catches clicks.
+---
+
+<div class="garden" data-garden aria-hidden="true">
+	<!-- the flowers and the drops are added here by garden.ts -->
+	<svg class="can" viewBox="0 0 64 48" data-garden-can>
+		<!-- spout tip at 2 4: that point sits on the pointer, the drops come out of it -->
+		<path d="M4 6L22 22" stroke="#17153a" stroke-width="7" stroke-linecap="round" />
+		<path d="M4 6L22 22" stroke="#ffa2b6" stroke-width="4" stroke-linecap="round" />
+		<ellipse cx="3" cy="5" rx="4" ry="2.4" transform="rotate(42 3 5)" fill="#ffa2b6" stroke="#17153a" stroke-width="1.5" />
+		<path d="M44 14C54 12 60 20 56 30C54 35 50 36 48 34" fill="none" stroke="#17153a" stroke-width="3" stroke-linecap="round" />
+		<rect x="20" y="14" width="30" height="30" rx="7" fill="#ffa2b6" stroke="#17153a" stroke-width="2" />
+		<rect x="24" y="19" width="5" height="16" rx="2.5" fill="#fff" opacity=".55" />
+		<path d="M24 14C24 9 46 9 46 14" fill="none" stroke="#17153a" stroke-width="3" stroke-linecap="round" />
+	</svg>
+</div>
+
+<style>
+	.garden {
+		position: absolute;
+		inset: 0;
+		z-index: 1; /* above the sunset glow, behind the content */
+		overflow: hidden;
+		pointer-events: none;
+	}
+
+	/* the flowers grow from the bottom edge */
+	.garden :global(.sprout) {
+		position: absolute;
+		bottom: -6px;
+		overflow: visible;
+	}
+
+	.garden :global(.drop) {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 6px;
+		height: 9px;
+		margin: -4px 0 0 -3px;
+		border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+		background: radial-gradient(circle at 35% 30%, #fff 0 18%, #8cc8ff 30%, #3f8ef0 100%);
+	}
+
+	.can {
+		position: absolute;
+		left: 0;
+		top: 0;
+		z-index: 2;
+		width: 84px;
+		margin: -5px 0 0 -3px; /* the spout tip on the pointer */
+		opacity: 0;
+		filter: drop-shadow(0 6px 10px rgba(23, 21, 58, 0.18));
+		transform-origin: 3px 5px;
+	}
+</style>
+
+<script>
+	import "../scripts/garden";
+</script>

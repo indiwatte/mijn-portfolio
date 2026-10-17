@@ -1,0 +1,154 @@
+---
+// The flower after "So, let's work together?" in the footer, drawn in a flat, folk-like
+// illustration style: orange-to-pink cup flowers with a white heart and thin cream lines,
+// olive leaves with a cream vein, all with a grainy print texture.
+// It grows up from the bottom as the footer comes in; the bee lands on top of it, the flower
+// squashes and springs back, and the sunset colour grows out of its heart (footerMoments.ts).
+// The <svg> itself never moves (only its parts do), so the bee's landing spot (data-land-on,
+// its top) and the heart marker stay put while it grows.
+interface Props {
+	class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<svg
+	class:list={["flower", className]}
+	viewBox="0 0 120 200"
+	overflow="visible"
+	aria-hidden="true"
+	data-footer-flower
+	data-land-on
+>
+	<defs>
+		<linearGradient id="fl-petal" x1="0" y1="0" x2="1" y2="0.6">
+			<stop offset="0" stop-color="#ff6aa8" />
+			<stop offset="0.55" stop-color="#ff7a4a" />
+			<stop offset="1" stop-color="#ff5a1f" />
+		</linearGradient>
+		<linearGradient id="fl-back" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="#ff8a4c" />
+			<stop offset="1" stop-color="#ff5a1f" />
+		</linearGradient>
+		<radialGradient id="fl-bee" cx="40%" cy="35%" r="75%">
+			<stop offset="0" stop-color="#fff3c4" />
+			<stop offset=".5" stop-color="#ffc93c" />
+			<stop offset="1" stop-color="#f08c00" />
+		</radialGradient>
+		<clipPath id="fl-bee-body">
+			<ellipse cx="60" cy="34" rx="12" ry="14" />
+		</clipPath>
+		<linearGradient id="fl-leaf" x1="0" y1="0" x2="1" y2="1">
+			<stop offset="0" stop-color="#6f7d45" />
+			<stop offset="1" stop-color="#4d5a2c" />
+		</linearGradient>
+		<!-- grain: noise clipped to the shapes, laid over them (like a risograph print) -->
+		<filter id="fl-grain" x="-10%" y="-10%" width="120%" height="120%">
+			<feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="5" result="noise" />
+			<feColorMatrix in="noise" type="saturate" values="0" result="mono" />
+			<feComposite in="mono" in2="SourceGraphic" operator="in" result="grain" />
+			<feBlend in="grain" in2="SourceGraphic" mode="soft-light" />
+		</filter>
+	</defs>
+
+	<!-- invisible: the middle of the bloom, where the sunset colour starts -->
+	<circle cx="60" cy="28" r="1" fill="none" data-flower-heart />
+
+	<g filter="url(#fl-grain)">
+		<!-- stems, drawn from the bottom up. Their shape, and where the leaves and the bud sit,
+		     is laid out by footerMoments.ts so the main stem reaches the bottom of the footer;
+		     these are the defaults without JS. -->
+		<g fill="none" stroke="#56642f" stroke-width="4.5" stroke-linecap="round">
+			<path d="M60 200C52 160 68 118 60 66" data-flower-stem data-main />
+			<path d="M60 140C72 128 84 116 92 102" data-flower-stem data-side />
+		</g>
+
+		<!-- leaves (drawn from their base at 0 0), each unfolding from where it meets the stem -->
+		<g transform="translate(60 170) scale(1.3)" data-flower-at="0.3" data-flip>
+			<g data-flower-leaf data-grow-from="100% 100%">
+				<path d="M0 0C-15 -3 -38 -15 -48 -40C-28 -37 -8 -24 0 0Z" fill="url(#fl-leaf)" />
+				<path d="M-3 -3C-17 -13 -32 -25 -43 -36" fill="none" stroke="#efe3c2" stroke-width="0.8" stroke-linecap="round" />
+			</g>
+		</g>
+		<g transform="translate(60 150) scale(1.3)" data-flower-at="0.52">
+			<g data-flower-leaf data-grow-from="0% 100%">
+				<path d="M0 0C14 -5 34 -17 44 -40C25 -34 7 -21 0 0Z" fill="url(#fl-leaf)" />
+				<path d="M2 -3C16 -13 30 -25 40 -36" fill="none" stroke="#efe3c2" stroke-width="0.8" stroke-linecap="round" />
+			</g>
+		</g>
+		<g transform="translate(60 120) scale(1.15)" data-flower-at="0.72" data-flip>
+			<g data-flower-leaf data-grow-from="100% 100%">
+				<path d="M0 0C-15 -3 -38 -15 -48 -40C-28 -37 -8 -24 0 0Z" fill="url(#fl-leaf)" />
+				<path d="M-3 -3C-17 -13 -32 -25 -43 -36" fill="none" stroke="#efe3c2" stroke-width="0.8" stroke-linecap="round" />
+			</g>
+		</g>
+
+		<!-- the bud at the end of the side stem (drawn from its base at 0 0) -->
+		<g transform="translate(92 102) scale(1.3)" data-flower-bud-at>
+			<g data-flower-bud data-grow-from="50% 100%">
+				<path d="M-10 -3C-13 -17 -4 -24 4 -20C12 -25 19 -13 11 -1C5 5 -5 4 -10 -3Z" fill="url(#fl-petal)" />
+				<path d="M-3 -16C0 -19 5 -19 7 -16" fill="none" stroke="#f4f1ea" stroke-width="3" stroke-linecap="round" />
+				<path d="M0 0L-3 -11M3 0L4 -12M6 -1L10 -11" fill="none" stroke="#ffe1c9" stroke-width="0.7" opacity="0.8" />
+			</g>
+		</g>
+
+		<!-- the bloom: back petal, white heart, front petals with their fine lines.
+		     Drawn larger than the rest (scaled around its base), so it holds the bee. -->
+		<g transform="translate(60 66) scale(1.45) translate(-60 -66)">
+		<g data-flower-bloom data-origin="60 66">
+			<path d="M30 50C26 22 44 7 60 14C76 7 94 22 90 50C80 58 40 58 30 50Z" fill="url(#fl-back)" />
+			<path d="M38 22C44 16 52 14 56 18M64 18C70 14 78 16 82 22" fill="none" stroke="#ffe1c9" stroke-width="0.7" opacity="0.8" />
+			<ellipse cx="60" cy="38" rx="15" ry="13" fill="#f4f1ea" />
+			<!-- The bee, head first in the flower: only its striped butt, kicking legs and
+			     wings stick out (shown once it lands, footerMoments.ts). The front petals
+			     cover its lower half. -->
+			<g transform="translate(60 46) scale(1.35) translate(-60 -46)">
+			<g data-bee-butt opacity="0">
+				<g fill="rgba(255,255,255,.85)" stroke="#17153a" stroke-width="1.2">
+					<ellipse cx="47" cy="33" rx="9" ry="5" transform="rotate(25 47 33)" data-butt-wing />
+					<ellipse cx="73" cy="33" rx="9" ry="5" transform="rotate(-25 73 33)" data-butt-wing />
+				</g>
+				<g fill="none" stroke="#17153a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M52 25L45 17L41 19" data-butt-leg />
+					<path d="M68 25L75 17L79 19" data-butt-leg />
+					<path d="M50 31L42 27" data-butt-leg />
+					<path d="M70 31L78 27" data-butt-leg />
+				</g>
+				<ellipse cx="60" cy="34" rx="12" ry="14" fill="url(#fl-bee)" stroke="#17153a" stroke-width="1.4" />
+				<g clip-path="url(#fl-bee-body)" fill="#17153a">
+					<rect x="44" y="25" width="32" height="4.5" />
+					<rect x="44" y="35" width="32" height="5" />
+				</g>
+				<ellipse cx="56" cy="27" rx="3.5" ry="2" fill="#fff" opacity=".55" transform="rotate(-20 56 27)" />
+				<!-- the stinger, pointing up at you -->
+				<path d="M57.5 20.5L60 13.5L62.5 20.5Z" fill="#17153a" />
+			</g>
+			</g>
+			<g data-flower-front>
+				<path d="M27 45C32 73 88 73 93 45C82 53 71 39 60 51C49 39 38 53 27 45Z" fill="url(#fl-petal)" />
+				<path
+					d="M60 68L42 52M60 68L50 48M60 68L60 52M60 68L70 48M60 68L78 52M60 68L34 49M60 68L86 49"
+					fill="none"
+					stroke="#ffe1c9"
+					stroke-width="0.7"
+					stroke-linecap="round"
+					opacity="0.75"
+				/>
+			</g>
+		</g>
+		</g>
+	</g>
+
+	<!-- pollen that bursts out of the heart when the bee lands -->
+	<g fill="#ffd36b" data-flower-pollen>
+		{[[-38, -24], [-20, -42], [0, -48], [20, -42], [38, -24], [-46, -2], [46, -2]].map(([x, y]) => (
+			<circle cx="60" cy="26" r="3.2" data-to={`${x} ${y}`} opacity="0" />
+		))}
+	</g>
+</svg>
+
+<style>
+	.flower {
+		overflow: visible;
+	}
+</style>

@@ -1,16 +1,20 @@
 ---
-// Project overview: a full-width grid of project tiles in drifting columns (like the
-// homepage's work grid). Every tile is built from the project's own Markdown file, so it
-// shows the same image or video as the header of its detail page, and morphs into it
-// when clicked (view-transitions.css). The order and the "coming soon" projects come
-// from src/data/projects.ts.
+// Project overview: a pinned showcase. The section stays in view while you scroll, and the
+// projects take turns: the next image slides up over the previous one while its title and
+// text change, with a counter "01 02 03 / 07" (like marimba.design/work). Below it: what
+// makes my work different. Every project comes from its own Markdown file, so it shows the
+// same image or video as its detail page and morphs into it when clicked
+// (view-transitions.css). The order and the "coming soon" projects: src/data/projects.ts.
+import { existsSync } from "node:fs";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { projects } from "../../data/projects";
+import WorkDifferent from "../../components/WorkDifferent.astro";
 import "../../styles/projects/view-transitions.css";
 
 interface Frontmatter {
 	title: string;
 	subtitle?: string;
+	summary?: string;
 	year?: string;
 	tags?: string[];
 	heroImage?: string;
@@ -30,6 +34,7 @@ const order = (href: string) => {
 interface Tile {
 	href?: string;
 	title: string;
+	summary?: string;
 	year?: string;
 	tags: string[];
 	image?: string;
@@ -37,6 +42,7 @@ interface Tile {
 	poster?: string;
 	transitionId?: string;
 	upcoming?: boolean;
+	tint?: string;
 }
 
 const tiles: Tile[] = [
@@ -44,19 +50,23 @@ const tiles: Tile[] = [
 		.map(({ url, frontmatter: fm }) => ({
 			href: url,
 			title: fm.title,
+			summary: fm.summary ?? fm.subtitle,
 			year: fm.year,
 			tags: fm.tags ?? [],
-			image: fm.heroImage,
+			// A header image that hasn't been added yet shows the title block instead
+			image: fm.heroImage && existsSync(`public${decodeURIComponent(fm.heroImage)}`) ? fm.heroImage : undefined,
 			video: fm.heroVideo,
 			// Same first frame as the detail page's video (ProjectLayout)
 			poster: fm.heroImage ?? projects.find((project) => project.href === url)?.image,
 			transitionId: fm.transitionId,
+			tint: projects.find((project) => project.href === url)?.tint,
 		}))
 		.sort((a, b) => order(a.href) - order(b.href)),
 	...projects
 		.filter((project) => project.isUpcoming)
 		.map((project) => ({
 			title: project.title,
+			summary: project.description,
 			year: project.year,
 			tags: [project.category],
 			image: project.image,
@@ -64,9 +74,6 @@ const tiles: Tile[] = [
 		})),
 ];
 
-// Three columns on desktop, dealt out left to right; the middle one drifts the other way.
-const COLUMNS = 3;
-const columns = Array.from({ length: COLUMNS }, (_, c) => tiles.filter((_, i) => i % COLUMNS === c));
 const pad = (n: number) => String(n).padStart(2, "0");
 ---
 
@@ -77,70 +84,59 @@ const pad = (n: number) => String(n).padStart(2, "0");
 	viewTransitions
 >
 	<main class="overview" data-footer-overlap>
+		<!-- Title in the middle of the screen, on a soft glowing circle in the home sky's colours -->
 		<header class="overview-intro">
-			<span class="overview-eyebrow">Selected work</span>
-			<h1>All projects <sup>{pad(tiles.length)}</sup></h1>
-			<p>Brand identities, campaigns, websites and interactive experiences.</p>
+			<span class="overview-glow" aria-hidden="true"></span>
+			<h1>Selected work <sup>{pad(tiles.length)}</sup></h1>
+			<p>Every project starts from the story behind it, never from a template.</p>
 		</header>
 
-		<div class="overview-grid" data-overview-grid>
-			{
-				columns.map((column, c) => (
-					<div class="overview-col" data-direction={c === 1 ? "down" : "up"}>
-						{column.map((tile, i) => {
+		<!-- ============ SHOWCASE: one project at a time, while you scroll ============ -->
+		<section class="showcase" data-showcase style={`--count: ${tiles.length}`} aria-label="Projects">
+			<div class="showcase-stage">
+
+				<ol class="showcase-list">
+					{
+						tiles.map((tile, i) => {
 							const Tag = tile.href ? "a" : "div";
 							return (
-								<Tag
-									href={tile.href}
-									class:list={["tile", { "is-upcoming": tile.upcoming }]}
-									style={`--tint: var(--tint-${(c + i) % 4})`}
-								>
-									<div class="tile-media">
+								<li class:list={["showcase-item", { "is-upcoming": tile.upcoming }]} data-item style={`--tint: ${tile.tint ?? `var(--tint-${i % 4})`}`}>
+									<div class="showcase-info" data-info>
+										<div class="showcase-top">
+											<p class="showcase-number">
+												{pad(i + 1)}<span> / {pad(tiles.length)}</span>
+											</p>
+											<h2 class="showcase-title">{tile.title}</h2>
+											<ul class="tag-pills showcase-tags">
+												{tile.tags.map((tag) => <li>{tag}</li>)}
+												{tile.year && <li class="tag-pill--year">{tile.year}</li>}
+											</ul>
+											{tile.href ? (
+												<a href={tile.href} class="showcase-link">View project <span aria-hidden="true">→</span></a>
+											) : (
+												<span class="showcase-soon"><span class="showcase-soon-dot" aria-hidden="true" />Coming soon</span>
+											)}
+										</div>
+										{tile.summary && <p class="showcase-summary">{tile.summary}</p>}
+									</div>
+									<Tag href={tile.href} class="showcase-media" data-media tabindex={tile.href ? -1 : undefined} aria-hidden={tile.href ? "true" : undefined}>
 										{tile.video ? (
-											<video
-												src={tile.video}
-												poster={tile.poster}
-												autoplay
-												muted
-												loop
-												playsinline
-												preload="metadata"
-												aria-hidden="true"
-												transition:name={tile.transitionId}
-											/>
+											<video src={tile.video} poster={tile.poster} autoplay muted loop playsinline preload="metadata" transition:name={tile.transitionId} />
+										) : !tile.image ? (
+											<div class="showcase-placeholder"><span>{tile.title}</span></div>
 										) : (
-											<img
-												src={tile.image}
-												alt={`${tile.title}: project image`}
-												loading={c + i < 3 ? "eager" : "lazy"}
-												decoding="async"
-												transition:name={tile.transitionId}
-											/>
+											<img src={tile.image} alt="" loading={i < 2 ? "eager" : "lazy"} decoding="async" transition:name={tile.transitionId} />
 										)}
-										{tile.upcoming && (
-											<span class="tile-badge">
-												<span class="tile-badge-dot" aria-hidden="true" />
-												Coming soon
-											</span>
-										)}
-									</div>
-									<div class="tile-info">
-										<h2 class="tile-title">
-											{tile.title}
-											{tile.href && <span class="tile-arrow" aria-hidden="true">→</span>}
-										</h2>
-										<ul class="tile-tags tag-pills">
-											{tile.tags.map((tag) => <li>{tag}</li>)}
-											{tile.year && <li class="tag-pill--year">{tile.year}</li>}
-										</ul>
-									</div>
-								</Tag>
+									</Tag>
+								</li>
 							);
-						})}
-					</div>
-				))
-			}
-		</div>
+						})
+					}
+				</ol>
+			</div>
+		</section>
+
+		<WorkDifferent />
 	</main>
 </BaseLayout>
 
@@ -156,173 +152,233 @@ const pad = (n: number) => String(n).padStart(2, "0");
 		overflow-x: clip;
 	}
 
-	/* ============ INTRO ============ */
+	/* ============ INTRO: TITLE ON A GLOWING CIRCLE ============ */
 	.overview-intro {
-		margin-bottom: clamp(2.5rem, 5vw, 4rem);
-	}
-
-	.overview-eyebrow {
-		font-family: var(--display-font);
-		font-size: 1rem;
-		color: var(--home-accent);
-	}
-
-	.overview-intro h1 {
-		margin: 0.4rem 0 0;
-		font-family: var(--body-font);
-		font-size: clamp(2.6rem, 7vw, 6rem);
-		font-weight: 900;
-		line-height: 0.95;
-		letter-spacing: -0.03em;
-		text-transform: uppercase;
+		position: relative;
+		display: grid;
+		place-content: center;
+		justify-items: center;
+		/* short enough that the first project already peeks in at the bottom of the screen */
+		min-height: 56svh;
+		margin-bottom: clamp(1rem, 3vw, 2rem);
+		text-align: center;
 		color: var(--home-text);
 	}
 
+	/* the home sky's blue, lavender, pink and peach, as one soft blurred circle */
+	.overview-glow {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		z-index: 0;
+		width: min(70vw, 52rem);
+		aspect-ratio: 1;
+		translate: -50% -55%;
+		border-radius: 50%;
+		background:
+			radial-gradient(circle at 50% 62%, rgba(255, 194, 168, 0.85), transparent 45%),
+			radial-gradient(circle at 42% 50%, rgba(222, 209, 247, 0.95), transparent 60%),
+			radial-gradient(circle at 55% 30%, rgba(158, 173, 250, 0.85), transparent 62%),
+			radial-gradient(circle at 50% 50%, rgba(255, 209, 222, 0.7), transparent 72%);
+		filter: blur(40px);
+		pointer-events: none;
+		animation: glow-drift 14s ease-in-out infinite alternate;
+	}
+
+	@media (max-width: 640px) {
+		.overview-glow {
+			width: 115vw;
+		}
+	}
+
+	@keyframes glow-drift {
+		to {
+			translate: -48% -52%;
+			rotate: 25deg;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.overview-glow {
+			animation: none;
+		}
+	}
+
+	.overview-intro > :not(.overview-glow) {
+		position: relative;
+		z-index: 1;
+	}
+
+	/* the serif of the home header's big title */
+	.overview-intro h1 {
+		margin: 0;
+		font-family: var(--title-font);
+		font-size: clamp(3.5rem, 12vw, 11rem);
+		font-weight: 400;
+		line-height: 0.85;
+		letter-spacing: -0.02em;
+		text-transform: uppercase;
+	}
+
 	.overview-intro sup {
-		font-size: 0.25em;
+		font-family: var(--body-font);
+		font-size: 0.14em;
+		font-weight: 600;
 		letter-spacing: 0.1em;
 		vertical-align: top;
 		color: var(--home-accent);
 	}
 
 	.overview-intro p {
-		max-width: 34rem;
-		margin: 0.9rem 0 0;
-		line-height: 1.6;
-		color: var(--home-muted);
-	}
-
-	/* ============ GRID: FULL WIDTH ============ */
-	.overview-grid {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr);
-		gap: clamp(1rem, 2vw, 1.75rem);
-		align-items: start;
-	}
-
-	.overview-col {
-		display: grid;
-		gap: clamp(1.5rem, 3vw, 2.75rem);
-	}
-
-	@media (min-width: 640px) {
-		.overview-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-
-		/* two columns: let the third column's tiles flow into the first two */
-		.overview-col:nth-child(3) {
-			grid-column: 1 / -1;
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-	}
-
-	@media (min-width: 1024px) {
-		.overview-grid {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-		}
-
-		.overview-col:nth-child(3) {
-			grid-column: auto;
-			grid-template-columns: minmax(0, 1fr);
-		}
-
-		/* the middle column starts lower, like the homepage grid */
-		.overview-col:nth-child(2) {
-			margin-top: clamp(3rem, 8vw, 7rem);
-		}
-	}
-
-	/* ============ TILE ============ */
-	.tile {
-		display: block;
+		max-width: 32rem;
+		margin: clamp(1.25rem, 3vh, 2rem) 0 0;
+		font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+		line-height: 1.5;
 		color: var(--home-text);
-		text-decoration: none;
 	}
 
-	.tile-media {
-		position: relative;
+	/* ============ SHOWCASE ============ */
+	/* Without the pinned version (phones, reduced motion, no JS): a simple list */
+	.showcase-list {
+		display: grid;
+		gap: clamp(3rem, 8vw, 5rem);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.showcase-item {
+		display: grid;
+		gap: 1.25rem;
+	}
+
+	.showcase-media {
+		order: -1; /* image first in the simple list */
+		display: block;
 		overflow: hidden;
+		aspect-ratio: 4 / 3;
 		border-radius: var(--radius-md);
 		background: var(--tint);
 	}
 
-	.tile-media :is(img, video) {
+	/* The whole image or video, zoomed out on its tint, so nothing gets cropped off */
+	.showcase-media :is(img, video) {
 		display: block;
 		width: 100%;
-		height: auto;
+		height: 100%;
+		padding: clamp(1rem, 3vw, 2.5rem);
+		box-sizing: border-box;
+		object-fit: contain;
 		view-transition-class: project-hero; /* see view-transitions.css */
-		transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
 	}
 
-	/* Very tall images (posters, packaging layouts) are cropped so no column runs away */
-	.tile-media img {
-		max-height: min(34rem, 75vh);
-		object-fit: cover;
-		object-position: top;
+	.showcase-placeholder {
+		display: grid;
+		place-items: center;
+		height: 100%;
+		padding: 1.5rem;
 	}
 
-	.tile-media video {
-		aspect-ratio: 16 / 9;
-		object-fit: cover;
-	}
-
-	.tile:hover .tile-media :is(img, video) {
-		transform: scale(1.04);
-	}
-
-	.tile-badge {
-		position: absolute;
-		top: 1rem;
-		left: 1rem;
-		padding: 0.35rem 0.8rem;
-		border-radius: var(--radius-pill);
-		background: rgba(255, 255, 255, 0.92);
-		font-size: 0.7rem;
-		font-weight: 700;
-		letter-spacing: 0.08em;
+	.showcase-placeholder span {
+		font-family: var(--heading-font);
+		font-size: clamp(2rem, 5vw, 4rem);
+		font-weight: 400;
+		line-height: 0.95;
+		text-align: center;
 		text-transform: uppercase;
+		color: var(--home-sun);
 	}
 
-	/* Coming soon: highlighted rather than faded, a sneak peek of what's next */
-	.tile.is-upcoming .tile-media {
-		background: #2b2b2f; /* the render's own dark backdrop */
-		box-shadow: 0 0 0 3px var(--home-sun);
+	/* Coming soon: dark, blurred, with the sunflower frame */
+	.showcase-item.is-upcoming .showcase-media {
+		background: #2b2b2f;
+		box-shadow: inset 0 0 0 3px var(--home-sun);
 	}
 
-	/* Not revealed yet: blurred behind frosted glass; on hover it comes slightly into focus */
-	.tile.is-upcoming .tile-media img {
-		object-position: center;
+	.showcase-item.is-upcoming .showcase-media img {
 		filter: blur(10px);
-		scale: 1.08; /* hides the soft edge the blur leaves */
-		transition: filter 600ms ease;
+		scale: 1.08;
+		object-position: center;
 	}
 
-	.tile.is-upcoming .tile-media::after {
-		content: "";
-		position: absolute;
-		inset: 0;
-		background:
-			var(--grain-soft),
-			linear-gradient(160deg, rgba(255, 255, 255, 0.28), rgba(243, 220, 247, 0.12));
-		pointer-events: none;
+	/* big "03 / 07" */
+	.showcase-number {
+		margin: 0;
+		font-family: var(--body-font);
+		font-size: clamp(2.4rem, 4vw, 3.6rem);
+		font-weight: 400;
+		line-height: 1;
+		color: var(--home-text);
 	}
 
-	.tile.is-upcoming:hover .tile-media img {
-		filter: blur(6px);
+	.showcase-number span {
+		margin-left: 0.3rem;
+		font-size: 0.4em;
+		vertical-align: top;
+		color: var(--home-muted);
 	}
 
-	.tile-badge {
-		z-index: 1; /* above the frosted layer */
+	/* the same serif as the big title in the home header */
+	.showcase-title {
+		margin: clamp(1.25rem, 3vh, 2.5rem) 0 0;
+		font-family: var(--title-font);
+		font-size: clamp(2.6rem, 5vw, 5rem);
+		font-weight: 400;
+		line-height: 0.9;
+		letter-spacing: -0.02em;
+		text-transform: uppercase;
+		color: var(--home-text);
 	}
 
-	.tile-badge {
+	.showcase-tags {
+		margin-top: 1rem;
+	}
+
+	.showcase-summary {
+		max-width: 26rem;
+		margin: 1.5rem 0 0;
+		font-size: clamp(1rem, 1.3vw, 1.15rem);
+		line-height: 1.6;
+		color: var(--home-muted);
+	}
+
+	.showcase-link,
+	.showcase-soon {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.45rem;
+		gap: 0.5rem;
+		margin-top: 1.5rem;
+		padding: 0.75rem 1.4rem;
+		border-radius: 999px;
+		font-size: 0.9rem;
+		font-weight: 600;
+		text-decoration: none;
 	}
 
-	.tile-badge-dot {
+	.showcase-link {
+		background: var(--home-blue);
+		color: #fff;
+		transition: background 200ms ease;
+	}
+
+	.showcase-link span {
+		transition: translate 300ms cubic-bezier(0.22, 1, 0.36, 1);
+	}
+
+	.showcase-link:hover {
+		background: var(--home-text);
+	}
+
+	.showcase-link:hover span {
+		translate: 0.25rem 0;
+	}
+
+	.showcase-soon {
+		background: var(--home-sun);
+		color: var(--home-ink);
+	}
+
+	.showcase-soon-dot {
 		width: 0.5rem;
 		height: 0.5rem;
 		border-radius: 50%;
@@ -337,75 +393,168 @@ const pad = (n: number) => String(n).padStart(2, "0");
 		}
 	}
 
-	.tile-info {
-		padding-top: 0.9rem;
-	}
-
-	.tile-title {
-		display: flex;
-		align-items: baseline;
-		gap: 0.5rem;
-		margin: 0;
-		font-family: var(--body-font);
-		font-size: clamp(1.25rem, 1.8vw, 1.6rem);
-		font-weight: 800;
-		line-height: 1.15;
-		letter-spacing: -0.01em;
-		text-transform: uppercase;
-	}
-
-	.tile-arrow {
-		color: var(--home-accent);
-		transition: translate 300ms cubic-bezier(0.22, 1, 0.36, 1);
-	}
-
-	.tile:hover .tile-arrow {
-		translate: 0.3rem 0;
-	}
-
-	/* pill styles: .tag-pills in global.css */
-	.tile-tags {
-		margin-top: 0.6rem;
-	}
-
-	.tile:focus-visible {
+	.showcase a:focus-visible {
 		outline: 3px solid var(--home-blue);
-		outline-offset: 6px;
-		border-radius: var(--radius-md);
+		outline-offset: 4px;
 	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.tile-media :is(img, video),
-		.tile-arrow {
-			transition: none;
-		}
+	/* ---- Pinned (desktop, set by the script): one project at a time ---- */
+	.showcase.is-pinned {
+		height: calc(var(--count) * 110svh); /* room to grow, look and move on per project */
+	}
+
+	.showcase.is-pinned .showcase-stage {
+		position: sticky;
+		top: 0;
+		display: grid;
+		height: 100svh;
+		padding: 6rem 0 2.5rem;
+		box-sizing: border-box;
+	}
+
+	.showcase.is-pinned .showcase-list {
+		position: relative;
+		display: block;
+		min-height: 0;
+	}
+
+	.showcase.is-pinned .showcase-item {
+		position: absolute;
+		inset: 0;
+		/* image left, text right */
+		grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+		align-items: stretch;
+		gap: clamp(2rem, 5vw, 5rem);
+		pointer-events: none;
+	}
+
+	.showcase.is-pinned .showcase-item.is-current {
+		pointer-events: auto;
+	}
+
+	.showcase.is-pinned .showcase-media {
+		order: -1;
+		transform-origin: 50% 50%;
+		height: 100%;
+		aspect-ratio: auto;
+	}
+
+	/* number, title and button at the top; the description at the bottom */
+	.showcase.is-pinned .showcase-info {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		padding-block: 0.5rem;
 	}
 </style>
 
 <script>
 	import { gsap } from "../../scripts/gsap";
 
-	// The columns drift at different speeds while you scroll (desktop only), like the
-	// homepage grid. Rebuilt after every client-side navigation (Astro's router).
+	// Desktop: the showcase stays in view and the projects take turns while you scroll.
+	// Each project's image arrives small in the middle, then grows and slides to the left
+	// while its text appears on the right; then the project moves up and away for the next.
+	// Scrubbed, so scrolling back reverses it.
 	let media: gsap.MatchMedia | undefined;
 
-	function initOverview() {
+	function initShowcase() {
 		media?.revert();
-		const grid = document.querySelector<HTMLElement>("[data-overview-grid]");
-		if (!grid) return;
+		const showcase = document.querySelector<HTMLElement>("[data-showcase]");
+		if (!showcase) return;
 
 		media = gsap.matchMedia();
+
+		// The big "Selected work" title shrinks as you scroll, like the title on the about
+		// page. It moves down exactly as far as you scroll, so it stays put while it shrinks
+		// towards the top; the line under it fades, and the first project comes up right under
+		// the small title. (No pin: <main> is already pinned by footerReveal.ts.)
+		media.add("(prefers-reduced-motion: no-preference)", () => {
+			const intro = document.querySelector<HTMLElement>(".overview-intro");
+			const title = intro?.querySelector("h1");
+			const line = intro?.querySelector("p");
+			if (!intro || !title || !line) return;
+			const distance = () => window.innerHeight * 0.45;
+			const scale = () => (window.matchMedia("(min-width: 768px)").matches ? 0.42 : 0.6);
+			gsap.timeline({
+				defaults: { ease: "none" },
+				scrollTrigger: { trigger: intro, start: "top top", end: () => `+=${distance()}`, scrub: 0.6, invalidateOnRefresh: true },
+			})
+				.to(title, { scale, y: distance, transformOrigin: "50% 0%" }, 0)
+				// moves along with the title (so they never cross) and fades out early
+				.to(line, { y: distance }, 0)
+				.to(line, { autoAlpha: 0, duration: 0.35 }, 0);
+		});
+
 		media.add("(min-width: 1024px) and (prefers-reduced-motion: no-preference)", () => {
-			const timeline = gsap.timeline({
-				scrollTrigger: { trigger: grid, start: "top bottom", end: "bottom top", scrub: 1 },
+			const items = gsap.utils.toArray<HTMLElement>("[data-item]", showcase);
+			showcase.classList.add("is-pinned");
+
+			const setCurrent = (index: number) => {
+				items.forEach((item, i) => item.classList.toggle("is-current", i === index));
+			};
+			setCurrent(0);
+
+			// How far an image has to shift to sit in the middle of the stage
+			// (from the layout, not the screen, so its own movement never counts)
+			const toCentre = (el: HTMLElement) => {
+				const item = el.closest<HTMLElement>("[data-item]")!;
+				return item.offsetWidth / 2 - (el.offsetLeft + el.offsetWidth / 2);
+			};
+
+			items.forEach((item, i) => gsap.set(item, { zIndex: i + 1 }));
+
+			const tl = gsap.timeline({
+				defaults: { ease: "power2.inOut" },
+				scrollTrigger: {
+					trigger: showcase,
+					start: "top 75%", // already while the first project scrolls into view
+					end: "bottom bottom",
+					scrub: 0.8,
+					invalidateOnRefresh: true,
+					onUpdate: (self) => {
+						const t = self.progress * tl.duration();
+						setCurrent(Math.max(0, Math.min(items.length - 1, Math.floor((t + RISE) / STEP))));
+					},
+				},
 			});
-			grid.querySelectorAll<HTMLElement>("[data-direction]").forEach((column) => {
-				const direction = column.dataset.direction === "down" ? 1 : -1;
-				timeline.to(column, { y: direction * 80, ease: "none" }, 0);
+
+			// Per project: rise in small and centred (0.6) while the previous one slides up
+			// and out, grow + move to the left with its text appearing (0.8), look (HOLD).
+			const RISE = 0.6;
+			const GROW = 0.8;
+			const HOLD = 0.7;
+			const STEP = RISE + GROW + HOLD;
+			const off = () => window.innerHeight * 0.85;
+			items.forEach((item, i) => {
+				const img = item.querySelector<HTMLElement>("[data-media]")!;
+				const info = item.querySelector<HTMLElement>("[data-info]")!;
+				const at = i * STEP - (i > 0 ? RISE : 0);
+				if (i > 0) {
+					// rise from below, small in the middle
+					tl.fromTo(img, { x: () => toCentre(img), y: off, scale: 0.5 }, { y: 0, duration: RISE, ease: "power2.out", immediateRender: true }, at);
+				}
+				// grow and move to the left; the text comes in on the right. The first one
+				// starts right away, from the top of its spot, so it peeks in under the title.
+				const grow = i === 0 ? 0 : at + RISE;
+				if (i === 0) {
+					tl.fromTo(img, { x: () => toCentre(img), y: () => -img.offsetHeight * 0.25, scale: 0.5 }, { x: 0, y: 0, scale: 1, duration: GROW, immediateRender: true }, grow);
+				} else {
+					tl.to(img, { x: 0, scale: 1, duration: GROW }, grow);
+				}
+				tl.fromTo(info, { autoAlpha: 0, x: 60 }, { autoAlpha: 1, x: 0, duration: GROW * 0.7, ease: "power2.out", immediateRender: true }, grow + GROW * 0.35);
+				// leave: up and out, while the next one rises in
+				if (i < items.length - 1) {
+					const out = (i + 1) * STEP - (i === 0 ? RISE : 0);
+					tl.to(img, { y: () => -window.innerHeight * 1.15, scale: 0.85, duration: RISE, ease: "power2.in" }, out)
+						.to(info, { autoAlpha: 0, y: -60, duration: RISE * 0.6, ease: "power2.in" }, out);
+				}
 			});
+			tl.to({}, { duration: HOLD * 0.4 });
+
+			return () => showcase.classList.remove("is-pinned");
 		});
 	}
 
-	initOverview();
-	document.addEventListener("astro:page-load", initOverview);
+	initShowcase();
+	document.addEventListener("astro:page-load", initShowcase);
 </script>

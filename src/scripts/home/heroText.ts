@@ -15,12 +15,15 @@ function splitIntoLetters(el: HTMLElement, text: string) {
     });
 }
 
-const WORDS = ["codes", "overthinks", "draws", "designs", "obsesses", "builds", "iterates", "questions"];
+const WORDS = ["codes", "draws", "builds", "explores", "listens", "iterates", "plays"];
 
 // Headline letters: static "Designer who" line + a slot-machine word that cycles every 2s.
 export function initHeroText() {
+    // "Designer" + mockup pill + "who"
     const staticLine = document.getElementById("hero-line-static");
-    if (staticLine) splitIntoLetters(staticLine, "Designer who");
+    if (staticLine) splitIntoLetters(staticLine, "Designer");
+    const staticEnd = document.getElementById("hero-line-static-end");
+    if (staticEnd) splitIntoLetters(staticEnd, "who");
 
     const wordEl = document.getElementById("hero-word");
     const dynamicLine = document.getElementById("hero-line-dynamic");
@@ -43,7 +46,7 @@ export function initHeroText() {
             wordIndex = (wordIndex + 1) % WORDS.length;
             const nextWord = WORDS[wordIndex];
 
-            // Clip only while the reel is spinning so hover pops never get cropped at rest.
+            // Clip only while the reel is spinning.
             dynamicLine.classList.add("is-spinning");
 
             gsap
@@ -68,35 +71,4 @@ export function initHeroText() {
                 });
         }, 2000);
     }
-
-    // Delegated hover so newly generated letters (after each word swap) react too.
-    // Listening on the headline only, not the whole document, and only with a mouse.
-    const headline = staticLine?.closest("h1");
-    if (!headline || !window.matchMedia("(hover: hover)").matches) return;
-
-    headline.addEventListener("mouseover", (event) => {
-        const letter = (event.target as HTMLElement).closest<HTMLElement>(".hover-letter");
-        if (!letter) return;
-        gsap.to(letter, {
-            y: -16,
-            rotate: gsap.utils.random(-14, 14),
-            color: getComputedStyle(document.documentElement).getPropertyValue("--home-pink").trim(),
-            duration: 0.35,
-            ease: "back.out(3)",
-            overwrite: true,
-        });
-    });
-
-    headline.addEventListener("mouseout", (event) => {
-        const letter = (event.target as HTMLElement).closest<HTMLElement>(".hover-letter");
-        if (!letter) return;
-        gsap.to(letter, {
-            y: 0,
-            rotate: 0,
-            color: "#ffffff",
-            duration: 0.5,
-            ease: "elastic.out(1, 0.4)",
-            overwrite: true,
-        });
-    });
 }

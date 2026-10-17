@@ -2,8 +2,13 @@
 // Full-height footer. It slides up over the section marked [data-footer-overlap]
 // (see src/scripts/footerReveal.ts); its liquid edge pokes over that section's edge.
 import LiquidEdge from "./LiquidEdge.astro";
-import Creature from "./creatures/Creature.astro";
+import Mountains from "./Mountains.astro";
+import FooterFlower from "./FooterFlower.astro";
+import FooterGarden from "./FooterGarden.astro";
+import Resume from "./Resume.astro";
 const year = new Date().getFullYear();
+// The homepage footer also shows my resume
+const showResume = Astro.url.pathname === "/";
 
 const socials = [
     {
@@ -14,6 +19,11 @@ const socials = [
     { href: "https://github.com/indiwatte", label: "GitHub" },
 ];
 
+// The title, one span per letter, so the letters can fly in (footerMoments.ts).
+// Words stay together (no break inside a word), spaces stay real spaces.
+const toWords = (text: string) => text.split(" ").map((word) => [...word]);
+const titleStart = toWords("So, let's");
+
 const pages = [
     { href: "/", label: "Home" },
     { href: "/projects", label: "Work" },
@@ -21,9 +31,20 @@ const pages = [
 ];
 ---
 
-<footer id="site-footer" class="footer" data-header-dark>
-    <!-- Same style of edge as the homepage story section, but its own seed = its own shape -->
-    <LiquidEdge seed={23} color="var(--footer-bg)" grain />
+<footer id="site-footer" class="footer">
+    <!-- Top edge, back to front: soft mountain layers, then the cloud edge (same style as
+         the homepage story section, its own seed). They all rise with a parallax (script). -->
+    <Mountains />
+    <div class="footer-clouds" data-clouds>
+        <LiquidEdge seed={23} color="var(--footer-bg)" grain />
+    </div>
+
+    <!-- Warm sunset colour: grows out of the flower in a circle once the bee lands on it
+         (footerMoments.ts); it fades out towards the top, under the clouds -->
+    <div class="footer-glow" data-footer-glow aria-hidden="true"></div>
+
+    <!-- "Let's grow wonderful things": water the bottom of the footer and flowers grow -->
+    <FooterGarden />
 
     <!-- Optional page-specific layer behind the footer content (e.g. the homepage scroll line) -->
     <slot />
@@ -31,9 +52,30 @@ const pages = [
     <div class="footer-inner">
         <div class="intro">
             <p class="kicker">Looking for an intern or a designer?</p>
-            <h2 class="title">
-                So, let's work <span class="highlight" data-footer-together
-                    >together?</span
+            <h2 class="title" aria-label="So, let's work together?" data-footer-title>
+                <span aria-hidden="true">
+                    {
+                        titleStart.map((word, i) => (
+                            <>
+                                {i > 0 && " "}
+                                <span class="word">
+                                    {word.map((char) => <span class="letter" data-letter>{char}</span>)}
+                                </span>
+                            </>
+                        ))
+                    }
+                    <!-- break here: the second line is the long one, so the bee lands in the
+                         open space next to the short first line -->
+                    <br />
+                    <span class="word">{[..."work"].map((char) => <span class="letter" data-letter>{char}</span>)}</span>
+                </span>{" "}
+                <!-- appears together with the sunset circle, once the bee lands (footerMoments.ts) -->
+                <span class="highlight" data-footer-together aria-hidden="true"
+                    ><span class="word">{[..."together?"].map((char) => <span class="letter" data-letter>{char}</span>)}</span
+                    ></span
+                ><span class="flower-spot" aria-hidden="true"
+                    ><!-- the bee lands on top of this flower (data-land-on, scrollPath.ts) -->
+                    <FooterFlower class="footer-flower" /></span
                 >
             </h2>
             <p class="text">
@@ -46,7 +88,9 @@ const pages = [
             >
         </div>
 
-        <div class="columns">
+        <div class="side">
+            {showResume && <Resume size="10.5rem" />}
+            <div class="columns">
             <div>
                 <p class="label">Pages</p>
                 <ul class="list">
@@ -95,50 +139,18 @@ const pages = [
                     >indi.watte1@gmail.com</a
                 >
             </div>
+            </div>
         </div>
 
         <div>
-            <!-- My name, with a few of the hero's creatures living around and behind it.
-                 Sizes and positions are in em, so they scale with the letters. -->
-            <div class="wordmark-wrap" aria-hidden="true">
-                <Creature
-                    name="bunny"
-                    index={1}
-                    class="behind"
-                    style="left: 2%; top: -0.4em; width: 0.62em; rotate: -10deg;"
-                />
-                <Creature
-                    name="cyclops"
-                    index={7}
-                    class="behind"
-                    style="left: 63%; top: -0.22em; width: 0.46em;"
-                />
-                <p class="wordmark">Indi Watté</p>
-                <Creature
-                    name="apple"
-                    index={3}
-                    class="front"
-                    style="left: 38%; top: -0.5em; width: 0.5em; rotate: 6deg;"
-                />
-                <Creature
-                    name="drop"
-                    index={6}
-                    class="front"
-                    style="left: 21%; bottom: -0.32em; width: 0.34em; rotate: 14deg;"
-                />
-                <Creature
-                    name="worm"
-                    index={4}
-                    class="front"
-                    style="right: -0.38em; bottom: -0.12em; width: 0.56em;"
-                />
-                <Creature
-                    name="squiggle"
-                    index={8}
-                    class="front"
-                    style="left: 78%; top: -0.36em; width: 0.4em; rotate: -12deg;"
-                />
-            </div>
+            <!-- A sign-off with a double meaning: it's also how you play with the garden -->
+            <p class="grow">
+                <span class="grow-line">Let's grow wonderful things.</span>
+                <span class="grow-how" data-grow-how>
+                    <span class="grow-mouse">Move your mouse to water the garden.</span>
+                    <span class="grow-touch">Tap to water the garden.</span>
+                </span>
+            </p>
             <div class="bottom">
                 <span>© {year} Indi Watté</span>
                 <span class="bottom-tag">Creative Portfolio</span>
@@ -152,28 +164,40 @@ const pages = [
     /* ============ FOOTER ============ */
     .footer {
         position: relative;
-        overflow-x: clip; /* creatures around the name may poke past the screen edge */
+        overflow-x: clip;
         z-index: 40;
-        /* not flat: cobalt melting into violet, with grain on top */
+        /* a soft, light sky: lilac melting into blush and peach above the mountains */
         background:
             var(--grain-soft),
-            radial-gradient(
-                circle at 85% 90%,
-                rgba(255, 162, 182, 0.35),
-                transparent 45%
-            ),
             linear-gradient(
                 180deg,
                 var(--footer-bg) 0%,
-                #4a45ee 55%,
-                #6a4cf0 100%
+                var(--footer-bg) 35%,
+                #f6e6f6 62%,
+                #ffe4e6 82%,
+                #ffe9dc 100%
             );
-        color: #fff; /* cobalt + white */
+        color: var(--home-text);
+    }
+
+    html[data-theme="dark"] .footer {
+        background:
+            var(--grain-soft),
+            linear-gradient(180deg, var(--footer-bg) 0%, var(--footer-bg) 35%, #1f1648 70%, #3a1f4f 100%);
+    }
+
+    /* Holds the cloud edge (it pokes up from here), in front of the mountains */
+    .footer-clouds {
+        position: absolute;
+        /* lowered, so only the tops of the clouds poke up in front of the mountains
+           (LiquidEdge: max(130px, 20.8vw) tall, 92% of it above this point) */
+        inset: calc(max(130px, 20.8vw) * 0.45) 0 auto;
+        z-index: 1;
     }
 
     .footer-inner {
         position: relative;
-        z-index: 1; /* above the slot layer */
+        z-index: 2; /* above the slot layer, the top edge and the glow */
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -194,30 +218,88 @@ const pages = [
     .kicker {
         margin: 0 0 clamp(0.75rem, 2vh, 1.5rem);
         font-family: var(--display-font);
-        font-size: 1.125rem;
-        color: var(--home-sun);
+        font-style: italic;
+        font-size: 1.35rem;
+        color: var(--home-accent);
     }
 
     .title {
         margin: 0;
-        font-family: var(--body-font);
+        font-family: var(--heading-font);
         font-size: clamp(2.5rem, min(7vw, 9.5vh), 6rem);
-        font-weight: 900;
+        font-weight: 400;
         line-height: 0.95;
         letter-spacing: -0.025em;
         text-transform: uppercase;
     }
 
     .highlight {
-        color: var(--home-pink);
+        font-style: italic;
+        color: var(--home-accent);
+    }
+
+    .word,
+    .letter {
+        display: inline-block;
+    }
+
+    /* Zero-width spot right after "together?": the flower stands just past the question mark */
+    .flower-spot {
+        position: relative;
+        display: inline-block;
+        width: 0;
+        height: 0.9em;
+        vertical-align: top;
+    }
+
+    /* The bloom sits next to the short first line; its stem runs all the way down to the
+       bottom of the footer (height set by footerMoments.ts), behind the text */
+    .flower-spot {
+        z-index: -1;
+    }
+
+    .flower-spot :global(.footer-flower) {
+        position: absolute;
+        left: 0.25em;
+        top: -0.95em;
+        width: 1.6em;
+        height: 2.67em;
+    }
+
+    /* ============ SUNSET GLOW (revealed in a growing circle) ============ */
+    .footer-glow {
+        position: absolute;
+        inset: 0;
+        z-index: 1; /* over the clouds' lower part, under the content */
+        background: radial-gradient(
+            circle at var(--glow-x, 40%) var(--glow-y, 30%),
+            #fff4cf 0%,
+            #ffd98a 28%,
+            #ffb48a 62%,
+            #ff9fae 100%
+        );
+        /* soft top: melts into the lilac clouds instead of a hard line */
+        mask-image: linear-gradient(to bottom, transparent, #000 clamp(8rem, 20vw, 16rem));
+        clip-path: circle(0 at 50% 50%);
+        pointer-events: none;
+    }
+
+    html[data-theme="dark"] .footer-glow {
+        background: radial-gradient(
+            circle at var(--glow-x, 40%) var(--glow-y, 30%),
+            #6b2f5a 0%,
+            #4a2257 35%,
+            #2b1a52 70%,
+            #1b1440 100%
+        );
     }
 
     .text {
-        max-width: 42rem;
+        max-width: min(42rem, 100%);
         margin: clamp(1rem, 3vh, 2rem) 0 0;
         font-size: clamp(1rem, 1.5vw, 1.2rem);
         line-height: 1.625;
-        color: rgba(255, 255, 255, 0.85);
+        color: var(--home-muted);
     }
 
     .mail {
@@ -225,10 +307,10 @@ const pages = [
         margin-top: clamp(1.25rem, 3.5vh, 2.5rem);
         padding: 1rem 2.5rem;
         border-radius: 999px;
-        background: var(--home-pink); /* secondary button: pink + maroon */
-        color: var(--home-text);
+        background: var(--home-pink); /* secondary button: pink + ink */
+        color: var(--home-ink);
         font-size: 0.875rem;
-        font-weight: 700;
+        font-weight: 600;
         text-decoration: none;
         box-shadow:
             0 10px 15px -3px rgba(0, 0, 0, 0.1),
@@ -254,10 +336,10 @@ const pages = [
     .label {
         margin: 0 0 1rem;
         font-size: 0.75rem;
-        font-weight: 700;
+        font-weight: 600;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.72);
+        color: var(--home-muted);
     }
 
     .list {
@@ -278,50 +360,51 @@ const pages = [
     }
 
     .link:hover {
-        color: var(--home-pink);
+        color: var(--home-accent);
     }
 
-    /* ============ WORDMARK + BOTTOM ROW ============ */
-    /* The wrap carries the font size, so the creatures (sized in em) scale with the name.
-       It shrinks to the width of the name, so their % positions land on the letters. */
-    .wordmark-wrap {
-        position: relative;
-        width: fit-content;
-        margin-top: 0.3em; /* room for the creatures peeking over the letters */
-        font-size: clamp(3rem, min(13.5vw, 20vh), 15rem); /* the whole name fits the width */
-    }
-
-    .wordmark-wrap :global(.creature) {
-        position: absolute;
-        filter: drop-shadow(0 0.04em 0.06em rgba(0, 0, 0, 0.3));
-    }
-
-    /* Behind the letters: only what sticks out above or between them shows */
-    .wordmark-wrap :global(.behind) {
-        z-index: 0;
-    }
-
-    .wordmark-wrap :global(.front) {
-        z-index: 2;
-    }
-
-    .wordmark {
-        position: relative;
-        z-index: 1;
+    /* ============ "LET'S GROW WONDERFUL THINGS" ============ */
+    .grow {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.2rem 0.9rem;
         margin: 0;
-        font-family: var(--body-font);
-        font-size: 1em;
-        font-weight: 900;
-        line-height: 0.8;
-        letter-spacing: 0; /* outlines only: overlapping letters would cross each other */
-        text-transform: uppercase;
-        white-space: nowrap;
-        /* outline only, no fill */
-        color: transparent;
-        -webkit-text-stroke: max(3px, 0.012em) var(--home-pink);
-        user-select: none;
     }
 
+    .grow-line {
+        font-family: var(--heading-font);
+        font-style: italic;
+        font-size: clamp(1.4rem, 2.4vw, 2rem);
+        color: var(--home-accent);
+    }
+
+    .grow-how {
+        font-size: 0.85rem;
+        color: var(--home-muted);
+    }
+
+    .grow-touch {
+        display: none;
+    }
+
+    @media (hover: none) {
+        .grow-mouse {
+            display: none;
+        }
+
+        .grow-touch {
+            display: inline;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .grow-how {
+            display: none;
+        }
+    }
+
+    /* ============ BOTTOM ROW ============ */
     .bottom {
         display: flex;
         align-items: center;
@@ -329,12 +412,12 @@ const pages = [
         gap: 1rem;
         margin-top: clamp(1rem, 3vh, 2rem);
         padding-top: clamp(0.75rem, 2vh, 1.5rem);
-        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        border-top: 1px solid var(--border-soft);
         font-size: 0.75rem;
         font-weight: 500;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.72);
+        color: var(--home-muted);
     }
 
     /* Phones: the footer has to fit one screen, so skip what's already said elsewhere
@@ -342,6 +425,30 @@ const pages = [
     .bottom-tag,
     .columns > :nth-child(n + 3) {
         display: none;
+    }
+
+    /* Phones: only the download button (the preview would make the footer too tall) */
+    .side {
+        display: grid;
+        gap: clamp(1.5rem, 4vh, 2.5rem);
+    }
+
+    @media (max-width: 1023px) {
+        .footer-inner {
+            gap: 1.5rem;
+        }
+
+        .side {
+            gap: 1rem;
+        }
+
+        .side :global(.resume) {
+            width: auto;
+        }
+
+        .side :global(.resume-preview) {
+            display: none;
+        }
     }
 
     /* ============ TABLET + DESKTOP ============ */
@@ -362,15 +469,27 @@ const pages = [
 
     /* Desktop: the link columns sit next to the intro instead of under it */
     @media (min-width: 1024px) {
+        /* narrower, so the flower's stem runs down beside the text, not through it */
+        .text {
+            max-width: 34rem;
+        }
+
         .footer-inner {
             display: grid;
             grid-template-columns: minmax(0, 1fr) auto;
             align-content: space-between;
-            column-gap: 4rem;
+            column-gap: 3rem;
+        }
+
+        /* resume and link columns side by side, at the bottom of the intro */
+        .side {
+            display: flex;
+            align-items: flex-end;
+            gap: 2.75rem; /* room for the tilted preview */
+            align-self: end;
         }
 
         .columns {
-            align-self: end;
             grid-template-columns: repeat(2, auto);
             column-gap: 3rem;
         }
@@ -383,53 +502,42 @@ const pages = [
 
 <script>
     import "../scripts/footerReveal";
+    import "../scripts/footerMoments";
     import { gsap } from "../scripts/gsap";
 
-    // The creatures around my name fly in from the nearest side of the screen as the
-    // footer scrolls into view, with a little spin, and land in place when the name is
-    // fully visible. Scrubbed, so scrolling back up sends them off again.
-    function initFooterCreatures() {
-        const wrap = document.querySelector<HTMLElement>(".wordmark-wrap");
-        if (!wrap) return;
-        const creatures = gsap.utils.toArray<SVGSVGElement>(
-            "[data-creature]",
-            wrap,
-        );
+    let media: gsap.MatchMedia | undefined;
 
-        gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {
-            const fromSide = (el: Element) => {
-                const box = el.getBoundingClientRect();
-                const fromLeft =
-                    box.left + box.width / 2 < window.innerWidth / 2;
-                // Just past the edge of the screen on that side
-                return fromLeft
-                    ? -(box.right + 40)
-                    : window.innerWidth - box.left + 40;
-            };
+    // Parallax on the top edge: while the footer slides in, every layer starts lower and
+    // rises into place, the nearer the faster (far ridge a little, the clouds the most).
+    // Scrubbed, so scrolling back up lets them sink again.
+    function initFooterParallax() {
+        media?.revert();
+        const footer = document.getElementById("site-footer");
+        const mountains = footer?.querySelector<HTMLElement>("[data-mountains]");
+        if (!footer || !mountains) return;
+        const ridges = gsap.utils.toArray<SVGPathElement>("[data-ridge]", mountains);
+        const clouds = footer.querySelector("[data-clouds]");
+
+        media = gsap.matchMedia();
+        media.add("(prefers-reduced-motion: no-preference)", () => {
             const timeline = gsap.timeline({
+                defaults: { ease: "none" },
                 scrollTrigger: {
-                    trigger: wrap,
+                    trigger: mountains,
                     start: "top bottom",
-                    end: "bottom bottom-=40",
-                    scrub: 1,
+                    end: "bottom 45%",
+                    scrub: 1.2,
                     invalidateOnRefresh: true,
                 },
             });
-            creatures.forEach((creature, i) => {
-                timeline.from(
-                    creature,
-                    {
-                        x: () => fromSide(creature),
-                        y: () => gsap.utils.random(-60, 60),
-                        rotation: () => gsap.utils.random(-120, 120),
-                        ease: "back.out(1.4)",
-                        duration: 1,
-                    },
-                    i * 0.12, // one after the other
-                );
+            ridges.forEach((ridge) => {
+                timeline.from(ridge, { y: () => Number(ridge.dataset.depth) * 160 }, 0);
             });
+            if (clouds) timeline.from(clouds, { y: 220 }, 0);
         });
     }
 
-    initFooterCreatures();
+    initFooterParallax();
+    // Project pages use Astro's client router: re-run after every client-side navigation.
+    document.addEventListener("astro:page-load", initFooterParallax);
 </script>
