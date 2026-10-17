@@ -1,0 +1,239 @@
+---
+// "What makes my work different": why Digital Design & Development is such a strong
+// combination, and why authenticity matters. Rows: number, a soft colour blob with a line
+// icon, title + one-liner, the explanation and the tools. Used on /projects.
+const reasons = [
+	{
+		title: "Design & code in one",
+		line: "From the first sketch to the live website",
+		text: "At Devine I study Digital Design & Development, where design and code are taught as one craft. I don't hand over a design and hope for the best when it's developed. I know what's possible and efficient, I build it myself, and nothing gets lost in the translation process.",
+		tools: ["Figma", "HTML/CSS/JS", "Astro"],
+		blob: ["#ff8a5c", "#dccff5"],
+		icon: '<path d="M32 6 C34 22 42 30 58 32 C42 34 34 42 32 58 C30 42 22 34 6 32 C22 30 30 22 32 6 Z" />',
+	},
+	{
+		title: "Motion & interaction as the user's guide",
+		line: "Websites that feel alive",
+		text: "I use animation and scroll-based interaction to guide attention and tell the story, from subtle transitions to playful, meaningful moments.",
+		tools: ["GSAP", "JavaScript", "After Effects"],
+		blob: ["#9cc2ff", "#e5d3f7"],
+		icon: '<path d="M10 30 C18 28 24 34 26 48 C28 34 34 22 44 20" /><circle cx="50" cy="18" r="6" />',
+	},
+	{
+		title: "Illustration & visual identity",
+		line: "Personality built in",
+		text: "I started out drawing and painting, so I make my own illustrations, patterns and characters. Depending on what the needs are, I adapt my style accordingly. That gives a brand warmth and character that stock images can't.",
+		tools: ["Illustrator", "Photoshop", "InDesign"],
+		blob: ["#8fe07a", "#cfe0fb"],
+		icon: '<path d="M14 54 V34 A18 18 0 0 1 50 34 V54" /><path d="M24 54 V36 A8 8 0 0 1 40 36 V54" /><path d="M32 46 V54" />',
+	},
+	{
+		title: "Authenticity",
+		line: "Human first, never generic",
+		text: "I'm a people person at heart: I listen first and design for real humans, leaving room for character and a bit of imperfection. In an age of AI, being genuinely human is what makes work stand out. Templates are not a thing I rely on.",
+		tools: ["Research", "User testing"],
+		blob: ["#ffc93c", "#ffa2b6"],
+		icon: '<path d="M32 54 C14 42 8 32 8 23 A11 11 0 0 1 32 17 A11 11 0 0 1 56 23 C56 32 50 42 32 54 Z" />',
+	},
+];
+const pad = (n: number) => String(n).padStart(2, "0");
+---
+
+<section class="different" data-different aria-labelledby="different-heading">
+	<header class="different-intro">
+		<p class="different-kicker">Digital Design &amp; Development</p>
+		<h2 id="different-heading">What makes my work different.</h2>
+	</header>
+
+	<ol class="different-list">
+		{
+			reasons.map((reason, i) => (
+				<li class="different-row" data-reason>
+					<span class="different-number">{pad(i + 1)}</span>
+					<span class="different-blob" style={`--a: ${reason.blob[0]}; --b: ${reason.blob[1]}`} aria-hidden="true">
+						<svg viewBox="0 0 64 64" set:html={reason.icon} />
+					</span>
+					<div class="different-head">
+						<h3>{reason.title}</h3>
+						<p>{reason.line}</p>
+					</div>
+					<div class="different-body">
+						<p>{reason.text}</p>
+						<ul class="different-tools" aria-label="Tools">
+							{reason.tools.map((tool) => <li>{tool}</li>)}
+						</ul>
+					</div>
+				</li>
+			))
+		}
+	</ol>
+</section>
+
+<style>
+	.different {
+		margin-top: clamp(5rem, 12vw, 9rem);
+	}
+
+	.different-intro {
+		text-align: center;
+	}
+
+	.different-kicker {
+		margin: 0;
+		font-family: var(--heading-font);
+		font-size: 1.25rem;
+		color: var(--home-accent);
+		font-style: italic;
+	}
+
+	.different-intro h2 {
+		margin: 0.5rem 0 0;
+		font-family: var(--heading-font);
+		font-size: clamp(2.6rem, 6.4vw, 5.6rem);
+		font-weight: 400;
+		line-height: 1;
+		letter-spacing: -0.01em;
+		color: var(--home-text);
+	}
+
+	.different-list {
+		display: grid;
+		gap: clamp(3rem, 7vw, 5.5rem);
+		margin: clamp(3rem, 7vw, 5.5rem) 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	/* phones: number + blob on a line, then the texts */
+	.different-row {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		align-items: center;
+		gap: 1.25rem 1.5rem;
+		color: var(--home-text);
+	}
+
+	.different-head,
+	.different-body {
+		grid-column: 1 / -1;
+	}
+
+	.different-number {
+		font-size: 0.9rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		color: var(--home-muted);
+	}
+
+	/* A soft glowing blob of two colours, the icon drawn on top in ink */
+	.different-blob {
+		position: relative;
+		display: grid;
+		place-items: center;
+		width: clamp(6rem, 9vw, 8.5rem);
+		aspect-ratio: 1;
+	}
+
+	.different-blob::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		border-radius: 50%;
+		background: radial-gradient(circle at 40% 30%, var(--a), var(--b) 70%);
+		filter: blur(12px);
+		opacity: 0.9;
+	}
+
+	.different-blob svg {
+		position: relative;
+		width: 50%;
+		fill: none;
+		stroke: var(--home-text);
+		stroke-width: 2.2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.different-head h3 {
+		margin: 0;
+		font-family: var(--heading-font);
+		font-size: clamp(1.8rem, 2.8vw, 2.6rem);
+		font-weight: 400;
+		line-height: 1.05;
+		letter-spacing: 0;
+	}
+
+	.different-head p {
+		margin: 0.6rem 0 0;
+		font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+		line-height: 1.5;
+		color: var(--home-muted);
+	}
+
+	.different-body p {
+		margin: 0;
+		font-size: clamp(1rem, 1.3vw, 1.15rem);
+		line-height: 1.7;
+	}
+
+	.different-tools {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+		margin: 1.25rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.different-tools li {
+		padding: 0.35rem 0.9rem;
+		border: 1.5px solid var(--home-text);
+		border-radius: 999px;
+		font-size: 0.85rem;
+		font-weight: 500;
+	}
+
+	/* desktop: number | blob | title | text, like a table */
+	@media (min-width: 1024px) {
+		.different-row {
+			grid-template-columns: 4rem 9rem minmax(0, 1fr) minmax(0, 1.15fr);
+			align-items: start;
+			gap: 0 clamp(1.5rem, 3vw, 3rem);
+		}
+
+		.different-head,
+		.different-body {
+			grid-column: auto;
+		}
+
+		.different-number {
+			padding-top: 0.6rem;
+		}
+
+		.different-blob {
+			margin-top: -1.5rem;
+		}
+	}
+</style>
+
+<script>
+	import { gsap } from "../scripts/gsap";
+
+	// Each reason fades up as it scrolls into view, its blob swelling in just before it.
+	function initDifferent() {
+		const section = document.querySelector<HTMLElement>("[data-different]");
+		if (!section || section.dataset.ready) return;
+		section.dataset.ready = "true";
+
+		gsap.matchMedia().add("(prefers-reduced-motion: no-preference)", () => {
+			gsap.utils.toArray<HTMLElement>("[data-reason]", section).forEach((row) => {
+				gsap.timeline({ scrollTrigger: { trigger: row, start: "top 85%" } })
+					.from(row.querySelector(".different-blob"), { scale: 0.4, autoAlpha: 0, duration: 0.8, ease: "back.out(1.6)" })
+					.from(row.querySelectorAll(".different-head, .different-body"), { y: 40, autoAlpha: 0, duration: 0.7, stagger: 0.12, ease: "power2.out" }, 0.15);
+			});
+		});
+	}
+
+	initDifferent();
+	document.addEventListener("astro:page-load", initDifferent);
+</script>

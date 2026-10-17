@@ -1,7 +1,9 @@
 ---
 // Layout for project case studies written in Markdown (frontmatter: layout: ../../layouts/ProjectLayout.astro).
 // Header: hero photo (or video) on the left, title + concept + project info on the right.
-// Below it a split screen: the chapters stay in view on the left, the photos scroll by on the right.
+// Below it the chapters, one row each: the text stays in view on the left while that
+// chapter's own photos scroll by on the right, then moves on with them.
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { imageMetadata } from "astro/assets/utils";
@@ -23,6 +25,9 @@ interface GalleryImage {
     chapter?: number;
     /** A very tall image (like a whole brandboard): shown in a window you scroll through. */
     tall?: boolean;
+    /** What still has to go here: as long as the file at src doesn't exist, a dashed
+     *  "Add image" box with this text takes its place. */
+    placeholder?: string;
 }
 
 interface ProjectLink {
@@ -44,15 +49,22 @@ const {
     tags = [],
     heroImage,
     heroVideo,
+    heroPlaceholder,
     transitionId,
     gallery = [],
     links = [],
 } = frontmatter;
 
+const isVideo = (src: string) => /\.(mp4|webm|mov)$/i.test(src);
+const inPublic = (src: string) => join(process.cwd(), "public", decodeURIComponent(src));
+
 // Read each image's real size (from /public) so the page doesn't jump while photos load.
+// A file that isn't there yet is marked missing, and shows as a placeholder.
 async function withSize(image: GalleryImage) {
+    if (!image.src || !existsSync(inPublic(image.src))) return { ...image, missing: true };
+    if (isVideo(image.src)) return { ...image, width: undefined, height: undefined };
     try {
-        const file = await readFile(join(process.cwd(), "public", decodeURIComponent(image.src)));
+        const file = await readFile(inPublic(image.src));
         const { width, height } = await imageMetadata(file, image.src);
         return { ...image, width, height };
     } catch {
@@ -60,14 +72,49 @@ async function withSize(image: GalleryImage) {
     }
 }
 
-const isVideo = (src: string) => /\.(mp4|webm|mov)$/i.test(src);
-
-const hero = heroImage ? await withSize({ src: heroImage, alt: title }) : undefined;
+const sized = heroImage ? await withSize({ src: heroImage, alt: title }) : undefined;
+const hero = sized && !sized.missing ? sized : undefined;
+const showHeroPlaceholder = !hero && !heroVideo && heroPlaceholder;
 // Each photo carries on the chapter of the one before it, until one names another.
 let currentChapter: number | undefined;
 const photos = (await Promise.all((gallery as GalleryImage[]).map(withSize))).map((photo) => {
     currentChapter = photo.chapter ?? currentChapter;
     return { ...photo, chapter: currentChapter };
+});
+
+// The Markdown body, cut into chapters: each <details> becomes a plain chapter (always open)
+// with its title, and an <h3 class="chapter-group"> above it stays with it. Every chapter
+// gets its own row on the page, next to its own photos.
+const body = await Astro.slots.render("default");
+interface Row {
+    group?: string;
+    html: string;
+    photos: typeof photos;
+}
+const rows: Row[] = [];
+let intro = "";
+let group: string | undefined;
+for (const part of body.split(/(?=<h3 class="chapter-group")|(?=<details)/)) {
+    if (part.startsWith("<h3")) group = part.trim();
+    else if (part.startsWith("<details")) {
+        const html = part
+            .replace(/<details[^>]*>/, '<div class="chapter">')
+            .replace(/<\/details>/, "</div>")
+            .replace(/<summary>([\s\S]*?)<\/summary>/, '<h2 class="chapter-title">$1</h2>');
+        rows.push({ group, html, photos: [] });
+        group = undefined;
+    } else intro += part;
+}
+if (group) rows.push({ group, html: "", photos: [] });
+// Photos go to the chapter they name; without any chapter numbers they're spread evenly
+// over the chapters, in order.
+const numbered = photos.some((photo) => photo.chapter);
+photos.forEach((photo, i) => {
+    if (!rows.length) return;
+    const index = numbered
+        ? Math.min(rows.length, Math.max(1, photo.chapter ?? 1)) - 1
+        : Math.floor((i * rows.length) / photos.length);
+    rows[index].photos.push(photo);
 });
 
 // Same "01 / 04" counter as the carousel on /projects.
@@ -89,6 +136,7 @@ const meta = [
 
 // Share preview: the project's own image (npm run og) and its lead sentence without HTML.
 const slug = pathname.split("/").pop();
+const shareImage = existsSync(inPublic(`/og/${slug}.jpg`)) ? `/og/${slug}.jpg` : "/og/default.jpg";
 const shareText = String((concept as string[])[0] ?? subtitle ?? title).replace(/<[^>]+>/g, "");
 
 const isExternal = (href: string) => /^https?:\/\//.test(href);
@@ -99,10 +147,20 @@ const current = finished.findIndex((project) => project.href === pathname);
 const next = finished.length > 1 && current !== -1 ? finished[(current + 1) % finished.length] : undefined;
 ---
 
-<BaseLayout title={`${title} | Indi Watté`} description={shareText} image={`/og/${slug}.jpg`} viewTransitions>
+<BaseLayout title={`${title} | Indi Watté`} description={shareText} image={shareImage} viewTransitions>
     <main class="project" data-footer-overlap>
         <!-- ============ HEADER: PHOTO LEFT, TEXT RIGHT ============ -->
         <header class="project-header">
+            {
+                showHeroPlaceholder && (
+                    <div class="project-hero">
+                        <div class="project-placeholder project-placeholder--hero">
+                            <span class="project-placeholder-label">Add image</span>
+                            <p>{heroPlaceholder}</p>
+                        </div>
+                    </div>
+                )
+            }
             {
                 (hero || heroVideo) && (
                     <div class="project-hero">
@@ -179,14 +237,68 @@ const next = finished.length > 1 && current !== -1 ? finished[(current + 1) % fi
             </div>
         </header>
 
-        <div class="project-split">
-            <!-- ============ LEFT: CHAPTERS (sticky on desktop) ============ -->
-            <div class="project-info" data-project-info>
-                <!-- Markdown body: <details name="chapter"> chapters -->
-                <div class="project-description">
-                    <slot />
-                </div>
+        <!-- ============ CHAPTERS: one row each, its text (sticky) next to its photos ============ -->
+        <div class="project-chapters" data-project-chapters>
+            {intro.trim() && <div class="project-description chapter-intro" set:html={intro} />}
+            {
+                rows.map((row) => (
+                    <section class:list={["chapter-row", { "chapter-row--wide": row.photos.length === 0 }]} data-chapter-row>
+                        <div class="chapter-text project-description" data-chapter-text>
+                            {row.group && <Fragment set:html={row.group} />}
+                            <Fragment set:html={row.html} />
+                        </div>
+                        {row.photos.length > 0 && (
+                            <div class="project-gallery" data-project-gallery>
+                                {row.photos.map((photo) => (
+                                    <figure class="project-photo" data-size={photo.size ?? "full"}>
+                                        {photo.missing ? (
+                                            <div class="project-placeholder">
+                                                <span class="project-placeholder-label">Add image</span>
+                                                <p>{photo.placeholder ?? photo.alt}</p>
+                                            </div>
+                                        ) : isVideo(photo.src) ? (
+                                            <video
+                                                src={photo.src}
+                                                aria-label={photo.alt}
+                                                autoplay
+                                                muted
+                                                loop
+                                                playsinline
+                                                controls
+                                                preload="metadata"
+                                            />
+                                        ) : photo.tall ? (
+                                            <div class="project-photo-window" tabindex="0" role="region" aria-label={`${photo.alt ?? title}: scroll to see it all`}>
+                                                <img
+                                                    src={photo.src}
+                                                    alt={photo.alt ?? ""}
+                                                    width={photo.width}
+                                                    height={photo.height}
+                                                    loading="lazy"
+                                                    decoding="async"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <img
+                                                src={photo.src}
+                                                alt={photo.alt ?? ""}
+                                                width={photo.width}
+                                                height={photo.height}
+                                                loading="lazy"
+                                                decoding="async"
+                                            />
+                                        )}
+                                        {photo.caption && <figcaption>{photo.caption}</figcaption>}
+                                    </figure>
+                                ))}
+                            </div>
+                        )}
+                    </section>
+                ))
+            }
 
+            <!-- Links, next project and back to the overview -->
+            <div class="project-end">
                 {
                     links.some(({ href }: ProjectLink) => href) && (
                         <div class="project-actions">
@@ -213,49 +325,6 @@ const next = finished.length > 1 && current !== -1 ? finished[(current + 1) % fi
                     )
                 }
                 <a href="/projects" class="project-back"><span aria-hidden="true">←</span> All projects</a>
-            </div>
-
-            <!-- ============ RIGHT: PHOTO SCROLL ============ -->
-            <div class="project-gallery" data-project-gallery>
-                {
-                    photos.map((photo) => (
-                        <figure class="project-photo" data-size={photo.size ?? "full"} data-chapter={photo.chapter}>
-                            {isVideo(photo.src) ? (
-                                <video
-                                    src={photo.src}
-                                    aria-label={photo.alt}
-                                    autoplay
-                                    muted
-                                    loop
-                                    playsinline
-                                    controls
-                                    preload="metadata"
-                                />
-                            ) : photo.tall ? (
-                                <div class="project-photo-window" tabindex="0" role="region" aria-label={`${photo.alt ?? title}: scroll to see it all`}>
-                                    <img
-                                        src={photo.src}
-                                        alt={photo.alt ?? ""}
-                                        width={photo.width}
-                                        height={photo.height}
-                                        loading="lazy"
-                                        decoding="async"
-                                    />
-                                </div>
-                            ) : (
-                                <img
-                                    src={photo.src}
-                                    alt={photo.alt ?? ""}
-                                    width={photo.width}
-                                    height={photo.height}
-                                    loading="lazy"
-                                    decoding="async"
-                                />
-                            )}
-                            {photo.caption && <figcaption>{photo.caption}</figcaption>}
-                        </figure>
-                    ))
-                }
             </div>
         </div>
     </main>
