@@ -159,7 +159,7 @@ const PEGS = ["#ff8fb1", "#ffc93c", "#5868f0", "#c9a7f0"];
 	<!-- ============ PLAY: DRAWINGS & PAINTINGS ============ -->
 	<div class="play-wall">
 		<div class="play-header">
-			<h3>some other stuff</h3>
+			<h3>My playground</h3>
 			<p>
 				Where it all started: I still draw and paint next to my design
 				work.
@@ -367,24 +367,35 @@ const PEGS = ["#ff8fb1", "#ffc93c", "#5868f0", "#c9a7f0"];
 	}
 
 	/* Tags on the photo, flush in the top left corner */
+	/* All tags in one cobalt tab, flush in the top left corner of the photo, with a slanted
+	   right edge: white on cobalt (7:1), readable on any photo */
 	.case-pills {
 		position: absolute;
 		top: 0;
-		right: 0;
 		left: 0;
-		gap: 0.3rem;
+		max-width: calc(100% - 1rem);
+		gap: 0;
+		padding: 0.45rem 1.6rem 0.45rem 0.85rem;
+		background: #2a3be8;
+		clip-path: polygon(0 0, 100% 0, calc(100% - 0.75rem) 100%, 0 100%);
 	}
 
-	/* Solid tabs with a slanted right edge: white on cobalt (7:1), readable on any photo */
 	.case-pills li {
-		padding: 0.45rem 1.4rem 0.45rem 0.85rem;
+		padding: 0;
+		border: 0;
 		border-radius: 0;
-		background: #2a3be8;
+		background: none;
 		color: #fff;
 		font-size: 0.75rem;
 		font-weight: 700;
 		letter-spacing: 0.08em;
-		clip-path: polygon(0 0, 100% 0, calc(100% - 0.75rem) 100%, 0 100%);
+	}
+
+	/* a small dot between the tags */
+	.case-pills li + li::before {
+		content: "·";
+		margin: 0 0.55em;
+		opacity: 0.7;
 	}
 
 	.case:focus-visible {
