@@ -11,7 +11,7 @@ role: "Visual Design lead"
 # One line for cards (homepage): what it is.
 summary: "A website that turns Antwerp's live city data into music, for Visit Antwerp."
 # Tools / tech stack, shown as pills on the homepage card. Fill in, e.g. ["Figma", "Astro", "GSAP"]
-stack: ["Web Design, Visual Design, UI/UX"]
+stack: ["Web design", "Visual design", "UI/UX"]
 transitionId: "project-sounds-like-antwerp-hero"
 
 services:
@@ -184,7 +184,9 @@ Each neighbourhood has live readings from Antwerp's city sensors: **noise, traff
 
 In the sound builder you connect a sensor to an instrument (drums, bass guitar, electric guitar, synth lead or synth pad), and its live value drives that instrument. Gain, pitch and tempo (BPM) let you shape the result, so the soundtrack changes with where and when you listen.
 
-Built with: [fill in the tools, e.g. Web Audio API / Tone.js, p5.js, Webflow, and the city data source you used].
+During this project's development, we did not have access to real data, so we created an algorithm to simulate different sensor readings.
+
+**Built with:** Strudel and VS Code.
 
 </details>
 

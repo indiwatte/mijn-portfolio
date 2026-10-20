@@ -242,9 +242,6 @@ const PEGS = ["#ff8fb1", "#ffc93c", "#5868f0", "#c9a7f0"];
 												decoding="async"
 											/>
 										</span>
-										<figcaption>
-											{p.title} <span>· {p.desc}</span>
-										</figcaption>
 									</figure>
 								</div>
 							</div>
@@ -521,7 +518,7 @@ const PEGS = ["#ff8fb1", "#ffc93c", "#5868f0", "#c9a7f0"];
 		display: none;
 	}
 
-	/* The painting itself, unframed, with a soft shadow; its title underneath */
+	/* The painting itself, unframed, with a soft shadow */
 	.hang-frame {
 		margin: 0;
 	}
@@ -535,23 +532,5 @@ const PEGS = ["#ff8fb1", "#ffc93c", "#5868f0", "#c9a7f0"];
 		display: block;
 		width: 100%;
 		height: auto;
-	}
-
-	.hang-frame figcaption {
-		width: fit-content;
-		max-width: 92%;
-		margin: 0.7rem auto 0;
-		font-family: var(--body-font);
-		font-size: clamp(0.62rem, 0.75vw, 0.72rem);
-		font-weight: 600;
-		line-height: 1.3;
-		letter-spacing: 0.04em;
-		text-align: center;
-		color: var(--home-text);
-	}
-
-	.hang-frame figcaption span {
-		font-weight: 400;
-		color: var(--home-muted);
 	}
 </style>

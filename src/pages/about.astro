@@ -162,7 +162,7 @@ const experience: { title: string; items: ExperienceItem[] }[] = [
 			<div class="about-grid">
 				<!-- ============ TEXT ============ -->
 				<section class="about-text">
-					<p class="about-kicker">About me</p>
+					<p class="eyebrow about-kicker">About me</p>
 
 					<p class="about-lead">
 						I started out drawing and painting, then found digital
@@ -401,10 +401,6 @@ const experience: { title: string; items: ExperienceItem[] }[] = [
 
 	.about-kicker {
 		margin: 0 0 0.75rem;
-		font-family: var(--display-font);
-		font-style: italic;
-		font-size: 1.2rem;
-		color: var(--home-accent);
 	}
 
 	/* ============ HERO: big title that shrinks on scroll (heroTitle.ts) ============ */
@@ -701,17 +697,16 @@ const experience: { title: string; items: ExperienceItem[] }[] = [
 
 	/* Big and heavy, so the groups stand out. The serif has a single weight (no bold), so a thin
 	   stroke in the text's own colour thickens the letters instead of a faux bold. */
+	/* Bold and plain, so the sections read at a glance */
 	.experience-heading {
 		margin: 0;
-		font-family: var(--heading-font);
-		font-size: clamp(3.2rem, 7vw, 7rem);
-		font-weight: 400;
-		line-height: 0.9;
-		letter-spacing: -0.01em;
+		font-family: var(--body-font);
+		font-size: clamp(2.6rem, 5.5vw, 5.5rem);
+		font-weight: 800;
+		line-height: 0.95;
+		letter-spacing: -0.035em;
 		text-transform: uppercase;
 		color: var(--home-text);
-		-webkit-text-stroke: 0.028em currentColor;
-		paint-order: stroke fill;
 		transition: color 500ms ease;
 	}
 

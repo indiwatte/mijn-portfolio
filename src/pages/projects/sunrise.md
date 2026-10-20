@@ -12,7 +12,7 @@ role: "UX researcher"
 # One line for cards (homepage): what it is.
 summary: "A living archive and quiz app that keep a generation ship's critical knowledge from fading."
 # Tools / tech stack, shown as pills on the homepage card.
-stack: ["UX research, User tesing, Wireframing"]
+stack: ["UX research", "User testing", "Wireframing"]
 transitionId: "project-sunrise-hero"
 
 services:
@@ -24,7 +24,7 @@ services:
 tags:
   - UX research
   - User testing
-  - Wireframig
+  - Wireframing
 
 # Header text (right of the hero photo); the first paragraph is the lead. Inline HTML is allowed.
 concept:
@@ -36,7 +36,6 @@ heroImage: "/images/projects/sunrise/hero.webp"
 
 # Photo scroll (right column), top to bottom. size: full (default) | half | third
 # chapter: the chapter a photo belongs to (1 = the first); the photos after it follow along.
-# Drop each image in at its src path and the placeholder is replaced automatically.
 gallery:
   # 4. Personas
   - src: "/images/projects/sunrise/personas.webp"
@@ -49,48 +48,31 @@ gallery:
     alt: "Venn diagram of the three principles: attentive accessibility, learning should be active and soft-skill appreciation, overlapping in critical thinking, equitable standards and freedom of speech"
     caption: "The final principles and where they overlap."
   # 7. Shape the concept
-  - src: "/images/projects/sunrise/journey-map.webp"
-    chapter: 7
-    alt: "Emotional journey map from trigger to contribution, dipping lowest at the knowledge gap"
-    placeholder: "The emotional journey map: trigger, notification, test, gap, learning, contribution."
   - src: "/images/projects/sunrise/storyboard.webp"
+    chapter: 7
     alt: "Eleven storyboard panels: the archive detects a gap, a young crew member fails the test, finds Maya's entries and records a new one with her"
     caption: "The full storyboard, with the wireframes for each step. Scroll inside it to see it all."
     tall: true
   # 8. Goals, flows and architecture
   - src: "/images/projects/sunrise/user-flow.webp"
     chapter: 8
-    alt: "Final user flow covering the test, postpone, fail and archive paths"
-    placeholder: "Final user flow (the decision diagram covering test, postpone, fail and archive paths)."
-    size: half
+    alt: "Final user flow: from the archive running at all times, through emergencies, adding knowledge, the sensory cue, postponing and taking the five-minute test, to the score check that sends you back to the archive below 70%"
+    caption: "The final user flow: every path, from an emergency to a failed test. Scroll inside it to see it all."
+    tall: true
   - src: "/images/projects/sunrise/flowchart.webp"
-    alt: "Flowchart linking the quiz app to the archive"
-    placeholder: "Flowchart linking the quiz app (home → topic → quiz → result) to the archive (home → topic → detail)."
-    size: half
+    alt: "Flowchart of the quiz app (home, about topic, quiz, good, average or bad result) and the archive (home, contribute, topic, topic detail), with a bad result linking to the topic in the archive"
+    caption: "How the quiz app and the archive connect: a bad result leads straight to that topic in the archive."
   # 9. Prototype
   - src: "/images/projects/sunrise/lofi-sketches.webp"
     chapter: 9
     alt: "Lo-fi quiz screens and the annotated archive dashboard sketch, including the crossed-out grid version"
     caption: "First sketches of the quiz and the archive, annotated. Scroll inside it to see it all."
     tall: true
-  - src: "/images/projects/sunrise/ai-output.webp"
-    alt: "AI-generated dashboard screen made with Stitch or Lovable"
-    caption: "AI output"
-    placeholder: "One AI-generated screen (Stitch or Lovable), labelled \"AI output\"."
-    size: half
-  - src: "/images/projects/sunrise/own-design.webp"
-    alt: "Our own Figma screen for the same task"
-    caption: "Our own design"
-    placeholder: "Your own screen for the same task, side by side."
-    size: half
   # 10. Test
   - src: "/images/projects/sunrise/testing.webp"
     chapter: 10
     alt: "Paper prototypes of the quiz app and the archive, laid out on a table during a Wizard of Oz session"
     caption: "Round 2: the paper Wizard of Oz prototypes."
-  - src: "/images/projects/sunrise/heatmap.webp"
-    alt: "Eye-tracking heatmap from round 3"
-    placeholder: "One eye-tracking heatmap from round 3."
   # 11. What testing changed
   - src: "/images/projects/sunrise/iteration-1.webp"
     chapter: 11
@@ -118,10 +100,10 @@ gallery:
 # Buttons under the chapters. Paste the URLs between the quotes: a button only shows once
 # its link is filled in.
 links:
-  - label: "Open the prototype"
-    href: ""
-  - label: "View on Behance"
-    href: ""
+  - label: "Figma process"
+    href: "https://www.figma.com/board/mcZypDs6Ar1sRkuH5s2Ip9/XD4?node-id=0-1&t=ugFCb0zUnzybzqP5-1"
+  - label: "UX case on Behance"
+    href: "https://www.behance.net/gallery/249098227/UX-Generational-Spaceship-Sunrise"
 ---
 
 <h3 class="chapter-group">The brief</h3>
@@ -138,14 +120,9 @@ Our goal was a learning system that keeps essential knowledge alive in a way tha
 </details>
 
 <details name="chapter">
-<summary>What I did on this team</summary>
+<summary>My role</summary>
 
-[fill in: 3 to 5 bullets. Name the parts you led, not just took part in, with verbs like led, ran, designed, synthesised, facilitated. For example:]
-
-- Led the persona research and wrote [which persona(s)]
-- Ran [n] Wizard of Oz sessions and built the testing dashboard used to synthesise results
-- Designed the quiz app from lo-fi sketches through iteration 2
-- Facilitated the [Inversion / Bias] brainstorm
+In our team of three, we didn't split into fixed roles: all three of us worked as **UX researchers** through every phase together. From desk research and personas, the ethical lens and the design principles, through brainstorming and choosing a concept, to wireframes, prototypes, three rounds of testing and the iterations that followed.
 
 </details>
 
@@ -262,7 +239,7 @@ We wrote eight tasks, each with an explicit **success** and **failure** signal, 
 2. **Wizard of Oz, paper:** one tester at a time, logged in a per-tester dashboard and merged into a combined summary.
 3. **Wizard of Oz, digital + eye tracking:** Figma prototypes with heatmaps and fixation order per screen, focused on hierarchy, clarity and findability.
 
-[fill in: how many testers per round, who they were, and any task success rates, times or a quote that stuck with you.]
+Every round had **five testers**: fifteen test sessions in total.
 
 </details>
 
@@ -299,14 +276,12 @@ Two connected products: an **archive dashboard** where crew browse, search and c
 </details>
 
 <details name="chapter">
-<summary>What I'd take into the next project</summary>
+<summary>Conclusion</summary>
 
-[draft: rewrite in your own voice and keep what's true for you]
+Sunrise grew from a broad, speculative brief into a concrete system that keeps the knowledge of entire generations alive in space. It doesn't just store information: it keeps it alive by getting people to **learn, remember and share** their experiences and stories together. Accessibility, active learning, sensory cues and collective responsibility come together in one connected experience that supports both personal growth and the long-term survival of the ship.
 
-**What worked:** agreeing on principles early gave us a fast way to settle disagreements, like dropping the Earth course and the lockdown task. Writing success and failure criteria before testing made synthesis much quicker.
+The road there mattered as much as the result. At the start, the concept felt too broad and abstract to turn into realistic interactions, and that struggle pushed us to think harder about what people would actually need. We kept questioning our ideas, tested and adapted them based on feedback, and kept coming back to our design principles and the theory from class.
 
-**What I'd do differently:** test with people closer to our personas (nurses or shift workers in isolated jobs) instead of mostly classmates, measure task success and time per task so iterations can be compared with numbers, and test notification fatigue over several days instead of a single session.
-
-**The biggest lesson:** a polished interface isn't the same as a usable one. The AI prototypes showed that clearly. Our own, plainer screens worked better because every element could be traced back to a principle and a test.
+**The hardest part** was predicting how people will behave in a future nobody has lived in. That's why we walked every tester through the scenario in depth before they started. There were many iterations, discussions and uncertain moments, but whenever one path was blocked, we looked for another.
 
 </details>
