@@ -6,7 +6,7 @@ const reasons = [
 	{
 		title: "Design & code in one",
 		line: "From the first sketch to the live website",
-		text: "At Devine I study Digital Design & Development, where design and code are taught as one craft. I don't hand over a design and hope for the best when it's developed. I know what's possible and efficient, I build it myself, and nothing gets lost in the translation process.",
+		text: "Trained at Devine in Digital Design & Development, where design and code are taught as one craft. No design handed over in the hope it survives development: it's designed knowing what's possible and efficient, then built by the same hands, so nothing gets lost in translation.",
 		tools: ["Figma", "HTML/CSS/JS", "Astro"],
 		blob: ["#ff8a5c", "#dccff5"],
 		icon: '<path d="M32 6 C34 22 42 30 58 32 C42 34 34 42 32 58 C30 42 22 34 6 32 C22 30 30 22 32 6 Z" />',
@@ -14,7 +14,7 @@ const reasons = [
 	{
 		title: "Motion & interaction as the user's guide",
 		line: "Websites that feel alive",
-		text: "I use animation and scroll-based interaction to guide attention and tell the story, from subtle transitions to playful, meaningful moments.",
+		text: "Animation and scroll-based interaction that guide attention and tell the story, from subtle transitions to playful, meaningful moments.",
 		tools: ["GSAP", "JavaScript", "After Effects"],
 		blob: ["#9cc2ff", "#e5d3f7"],
 		icon: '<path d="M10 30 C18 28 24 34 26 48 C28 34 34 22 44 20" /><circle cx="50" cy="18" r="6" />',
@@ -22,7 +22,7 @@ const reasons = [
 	{
 		title: "Illustration & visual identity",
 		line: "Personality built in",
-		text: "I started out drawing and painting, so I make my own illustrations, patterns and characters. Depending on what the needs are, I adapt my style accordingly. That gives a brand warmth and character that stock images can't.",
+		text: "Custom illustrations, patterns and characters, rooted in years of drawing and painting, in a style that adapts to what the brand needs. Warmth and character that stock images can't give.",
 		tools: ["Illustrator", "Photoshop", "InDesign"],
 		blob: ["#8fe07a", "#cfe0fb"],
 		icon: '<path d="M14 54 V34 A18 18 0 0 1 50 34 V54" /><path d="M24 54 V36 A8 8 0 0 1 40 36 V54" /><path d="M32 46 V54" />',
@@ -30,7 +30,7 @@ const reasons = [
 	{
 		title: "Authenticity",
 		line: "Human first, never generic",
-		text: "I'm a people person at heart: I listen first and design for real humans, leaving room for character and a bit of imperfection. In an age of AI, being genuinely human is what makes work stand out. Templates are not a thing I rely on.",
+		text: "A people person at heart: listening first and designing for real humans, with room for character and a bit of imperfection. No templates. In an age of AI, genuinely human work is what stands out.",
 		tools: ["Research", "User testing"],
 		blob: ["#ffc93c", "#ffa2b6"],
 		icon: '<path d="M32 54 C14 42 8 32 8 23 A11 11 0 0 1 32 17 A11 11 0 0 1 56 23 C56 32 50 42 32 54 Z" />',
@@ -41,7 +41,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 <section class="different" data-different aria-labelledby="different-heading">
 	<header class="different-intro">
-		<p class="different-kicker">Digital Design &amp; Development</p>
+		<p class="eyebrow different-kicker">Digital Design &amp; Development</p>
 		<h2 id="different-heading">What makes my work different.</h2>
 	</header>
 
@@ -80,10 +80,6 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 	.different-kicker {
 		margin: 0;
-		font-family: var(--heading-font);
-		font-size: 1.25rem;
-		color: var(--home-accent);
-		font-style: italic;
 	}
 
 	.different-intro h2 {

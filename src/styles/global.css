@@ -8,6 +8,7 @@
     /* Two typefaces only: a calm serif for titles (regular + italic, never bold) and Poppins for text */
     --body-font: 'Poppins', sans-serif;
     --heading-font: 'Instrument Serif', Georgia, serif;
+    --hand-font: 'Caveat', 'Comic Sans MS', cursive; /* handwritten notes */
     --title-font: var(--heading-font);
     --display-font: var(--heading-font); /* kickers, captions: used in italic */
 
@@ -79,7 +80,8 @@ body {
     height: max(0px, calc(var(--footer-mountains-h) * 0.85 - 4rem));
 }
 
-/* Tag pills: the same on the project overview and on every project page */
+/* Tag pills: the same on the project overview and on every project page. Outlined in
+   cobalt, like the subtitles (.eyebrow) */
 .tag-pills {
     display: flex;
     flex-wrap: wrap;
@@ -91,9 +93,10 @@ body {
 
 .tag-pills li {
     padding: 0.3rem 0.7rem;
+    border: 1.5px solid var(--home-blue);
     border-radius: var(--radius-pill);
-    background: var(--home-sun);
-    color: var(--home-ink);
+    background: transparent;
+    color: var(--home-blue);
     font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.06em;
@@ -102,8 +105,21 @@ body {
 
 .tag-pills .tag-pill--year {
     background: transparent;
-    border: 1px solid rgba(23, 21, 58, 0.2);
+    border-color: rgba(23, 21, 58, 0.2);
     color: var(--home-muted);
+}
+
+/* Small line above (or under) a heading: "Hi, I'm Indi Watté", "The perfect combination",
+   "About me"… Plain bold capitals in cobalt; spacing comes from where it's used. */
+.eyebrow {
+    color: var(--home-blue);
+    font-family: var(--body-font);
+    font-size: clamp(0.8rem, 1.1vw, 1rem);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
 }
 
 /* No grain over the whole page any more: pages stay clean white. The grain is kept

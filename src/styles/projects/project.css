@@ -70,8 +70,9 @@
     color: var(--home-muted);
 }
 
-.project-counter span {
-    color: var(--home-accent);
+/* "01 / 06" in cobalt, like the subtitle under the title */
+.project-counter {
+    color: var(--home-blue);
 }
 
 .project-title {
@@ -86,12 +87,7 @@
 
 .project-subtitle {
     margin: 1rem 0 0;
-    font-family: var(--heading-font);
-    font-size: clamp(1.5rem, 1vw, 1.95rem);
-    line-height: 1.4;
-    color: var(--home-accent);
-    font-style: italic;
-  }
+}
 
 /* ---- Text: the concept in the header, and the chapters (Markdown body) below ---- */
 .project-description {
