@@ -235,10 +235,8 @@ A box of ingredients. A whole world to discover.
 </details>
 
 <details name="chapter">
-<summary>Results &amp; reflection</summary>
+<summary>Reflection</summary>
 
-**Feedback:** [Placeholder: what did your teachers, the client or users say about the result?]
-
-**What I learned:** [Placeholder: what did this project teach you, what are you proud of, and what would you do differently next time?]
+**What I learned:** Branding goes much further than a logo and colours. It's about positioning the brand and solving its problem: the strategy and the design have to go hand in hand, so that every visual choice tells the same story.
 
 </details>

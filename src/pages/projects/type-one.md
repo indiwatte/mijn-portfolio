@@ -66,8 +66,10 @@ gallery:
 # Buttons under the chapters. Paste the URL between the quotes: the button only shows
 # once its link is filled in.
 links:
-  - label: "See full prototype"
-    href: ""
+  - label: "Mobile prototype"
+    href: "https://www.figma.com/proto/z8q4CFKHUFakbDw5ZdO3U2/TYPE01?node-id=821-3367&viewport=-40%2C47%2C0.27&t=SCJqcYZKlWNuV09R-1&scaling=min-zoom&content-scaling=fixed&page-id=784%3A2879"
+  - label: "Desktop prototype"
+    href: "https://www.figma.com/proto/z8q4CFKHUFakbDw5ZdO3U2/TYPE01?node-id=784-1483&viewport=205%2C245%2C0.07&t=DFnphE3JS8o6E18i-1&scaling=min-zoom&content-scaling=fixed&page-id=265%3A860"
 ---
 
 <details name="chapter" open>
@@ -131,10 +133,8 @@ The same content, designed for two different moments:
 </details>
 
 <details name="chapter">
-<summary>Results &amp; reflection</summary>
+<summary>Reflection</summary>
 
-**Feedback:** [Placeholder: what did your teachers, the client or users say about the result?]
-
-**What I learned:** [Placeholder: what did this project teach you, what are you proud of, and what would you do differently next time?]
+**What I learned:** Designing for mobile and desktop isn't about squeezing the same layout onto a smaller screen. Both have a very different purpose: on a phone, visitors want to find the programme or buy a ticket quickly, while on desktop there's room to explore and to let the bold typography do the talking. So each one needs its own design decisions, not just the main layout principles carried over.
 
 </details>

@@ -86,10 +86,8 @@ ml5.js runs in the browser and uses the webcam and microphone, so your body and 
 </details>
 
 <details name="chapter">
-<summary>Results &amp; reflection</summary>
+<summary>Reflection</summary>
 
-**Feedback:** [Placeholder: what did your teachers, the client or users say about the result?]
-
-**What I learned:** [Placeholder: what did this project teach you, what are you proud of, and what would you do differently next time?]
+**What I learned:** A personal project with a lot of room to explore. I got to try out new technologies, like machine learning in the browser with ml5.js, and combine them into one experience. Figuring out how to make them work together was the most fun part.
 
 </details>

@@ -29,17 +29,20 @@ concept:
   - "Instead of a bottle on a plain background, the header shows the whole process in one playful diorama: <strong>the agave, the stone mill, the copper still and a shots machine</strong>, sketched, built, textured and animated in Blender."
 
 # Header photo (left); the card on /projects morphs into it.
-heroImage: "/images/projects/blender/header-crop.webp"
+heroImage: "/images/projects/blender/rooster-header.webp"
 
 # Photo scroll (right column, below the header), top to bottom. size: full (default) | half | third
 # chapter: the chapter a photo belongs to (1 = the first); the photos after it follow along.
 gallery:
   # 2. The goal
-  - src: "/images/projects/blender/header.webp"
+  - src: "/images/projects/blender/rooster-header.webp"
     chapter: 2
-    alt: "The Rooster Rojo website header: the title Rooster Rojo Tequila on a pink-to-orange sunset, next to a 3D factory with agave, a stone mill, a giant bottle wrapped in a copper coil, a still and a shots machine filling glasses with lime"
+    alt: "The Rooster Rojo website header: the title Rooster Rojo Tequila over a pink desert with dunes and cacti, next to a 3D factory with agave, a stone mill, a bottle wrapped in a glass coil, a copper still and a shots machine filling glasses with lime"
     caption: "The finished header: the factory right next to the story."
   # 3. Sketch & blockout
+  - src: "/images/projects/blender/sketch.webp"
+    chapter: 3
+    alt: "Sketch of the factory"
   - src: "/images/projects/blender/blockout.webp"
     chapter: 3
     alt: "White blockout of the factory in Blender: simple shapes for the mill, the agave, the bottle with a pipe and the row of shot glasses"
@@ -54,6 +57,14 @@ gallery:
     chapter: 5
     alt: "Clay render of the detailed factory in Blender: the stone mill with roasted agave hearts, the agave plant, the bottle with its coil, the copper still, the shots machine with a glowing sign and a conveyor belt with shot glasses"
     caption: "Every machine modelled in detail, before the textures and the light."
+  - src: "/images/projects/blender/iteration-1.webp"
+    alt: "First texture iteration in Blender: a gold-flecked bottle, a copper still, an orange shots machine and white shot glasses on a plain grey background"
+    caption: "Iteration 1: the first textures."
+    size: half
+  - src: "/images/projects/blender/iteration-2.webp"
+    alt: "Second texture iteration in Blender: a red bottle, glass shots with lime on a pink conveyor belt, a tiled floor and a sandy desert under a blue sky"
+    caption: "Iteration 2: colour, glass and the desert setting."
+    size: half
 ---
 
 <details name="chapter" open>
@@ -111,10 +122,8 @@ A header has to work on every screen. I made it **responsive for mobile**, so th
 </details>
 
 <details name="chapter">
-<summary>Results &amp; reflection</summary>
+<summary>Reflection</summary>
 
-**Feedback:** [Placeholder: what did your teachers or classmates say about the result?]
-
-**What I learned:** [Placeholder: what did this project teach you about 3D for the web, what are you proud of, and what would you do differently next time?]
+**What I learned:** This was my first Blender project. Modelling every object and creating its textures myself taught me the basic Blender skills, and gave me real insight into how the 3D world works: from the first blockout to light, materials and a finished render.
 
 </details>

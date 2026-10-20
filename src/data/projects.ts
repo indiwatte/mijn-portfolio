@@ -55,7 +55,7 @@ export const projects: Project[] = [
         category: "3D · Blender",
         year: "2026",
         description: "A 3D tequila factory in Blender, built as the header of Rooster Rojo's website.",
-        image: "/images/projects/blender/header-crop.webp",
+        image: "/images/projects/blender/rooster-header.webp",
         href: "/projects/rooster-rojo",
         tint: "#fde3e4",
         transitionName: "project-rooster-rojo-hero",
