@@ -1,7 +1,8 @@
 ---
-// Loading screen (like vogue.com): my face bobbing above "Loading..." until the page,
-// its images and fonts are in, then it slides away. On every full page load and reload.
-// Styles and script are inline so the screen is there from the very first paint.
+// Loading screen (like vogue.com): my face bobbing above a playful message until the page,
+// its images and fonts are in, then it slides away. Only for slow loads: it stays invisible
+// unless loading takes longer than DELAY, so quick page visits don't see it at all.
+// Styles and script are inline so it's ready from the very first paint.
 ---
 
 <div class="loader" data-loader role="status" aria-live="polite">
@@ -10,7 +11,7 @@
 		<span class="loader-shadow" aria-hidden="true"></span>
 	</div>
 	<p class="loader-text">
-		Loading<span aria-hidden="true"><i>.</i><i>.</i><i>.</i></span>
+		<span data-loader-text>Loading</span><span aria-hidden="true"><i>.</i><i>.</i><i>.</i></span>
 	</p>
 </div>
 
@@ -19,10 +20,40 @@
 		const loader = document.querySelector("[data-loader]");
 		if (!loader) return;
 		const root = document.documentElement;
-		root.style.overflow = "hidden";
-		const started = performance.now();
-		const MIN = 1100; // long enough to see the face, short enough not to annoy
+		const DELAY = 600; // only show up when loading takes longer than this
+		const MIN = 900; // once shown, stay long enough not to flash
 		const MAX = 8000; // never keep someone waiting on one slow image
+
+		// A random message, then the next one every so often while it takes long
+		const MESSAGES = [
+			"Mixing the colours",
+			"Sharpening my pencils",
+			"Waking up the bee",
+			"Pushing pixels into place",
+			"Kerning the letters",
+			"Letting the paint dry",
+			"Asking the sun to rise",
+			"Hanging the paintings",
+			"Polishing the mockups",
+			"Brewing fresh ideas",
+		];
+		const text = loader.querySelector("[data-loader-text]");
+		let message = Math.floor(Math.random() * MESSAGES.length);
+		let cycle;
+
+		let shownAt = 0;
+		const show = setTimeout(() => {
+			shownAt = performance.now();
+			loader.classList.add("is-shown");
+			root.style.overflow = "hidden";
+			if (text) {
+				text.textContent = MESSAGES[message];
+				cycle = setInterval(() => {
+					message = (message + 1) % MESSAGES.length;
+					text.textContent = MESSAGES[message];
+				}, 1600);
+			}
+		}, DELAY);
 
 		const pageLoaded = new Promise((resolve) => {
 			if (document.readyState === "complete") resolve();
@@ -34,8 +65,15 @@
 		const finish = () => {
 			if (done) return;
 			done = true;
-			const wait = Math.max(0, MIN - (performance.now() - started));
+			clearTimeout(show);
+			// Loaded before it showed up: just take it away, nobody saw it
+			if (!shownAt) {
+				loader.remove();
+				return;
+			}
+			const wait = Math.max(0, MIN - (performance.now() - shownAt));
 			setTimeout(() => {
+				clearInterval(cycle);
 				loader.classList.add("is-done");
 				root.style.overflow = "";
 				// "transitionend" can be skipped (hidden tab), so remove on a timer too.
@@ -65,7 +103,23 @@
 		gap: 1.6rem;
 		background: var(--home-bg);
 		color: var(--home-text);
-		transition: transform 800ms cubic-bezier(0.76, 0, 0.24, 1);
+		/* invisible until the load turns out to be slow (.is-shown, set by the script) */
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition:
+			opacity 250ms ease,
+			visibility 0s 250ms,
+			transform 800ms cubic-bezier(0.76, 0, 0.24, 1);
+	}
+
+	.loader.is-shown {
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+		transition:
+			opacity 250ms ease,
+			transform 800ms cubic-bezier(0.76, 0, 0.24, 1);
 	}
 
 	/* Leaving: the face hops up, then the whole screen slides up like a curtain */
@@ -181,7 +235,7 @@
 			transform: none;
 		}
 
-		.loader.is-done {
+		.loader.is-shown.is-done {
 			opacity: 0;
 		}
 
