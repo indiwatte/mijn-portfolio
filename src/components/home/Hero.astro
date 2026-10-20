@@ -40,12 +40,15 @@ const STARS = (() => {
 	<HeroCreatures />
 
 	<div class="hero-content">
-		<p class="home-eyebrow header-eyebrow">
+		<!-- The greeting and the title share a box as wide as "Designer who", so the
+		     greeting starts exactly above the D -->
+		<div class="hero-heading">
+		<p class="eyebrow hero-greeting">
 			Hi, I'm Indi Watté, a<!-- the bee (ScrollBird) starts right after this line -->
 			<span class="bee-anchor" data-bee-start>
 				<!-- What the bee is about: shown while it waits in the hero, gone once it flies -->
 				<span class="bee-bubble" data-bee-bubble aria-hidden="true"
-					><span class="bee-bubble-pop">Busy bee at work ☕</span
+					><span class="bee-bubble-pop">Busy bee</span
 					></span
 				>
 			</span>
@@ -82,6 +85,7 @@ const STARS = (() => {
 				</span>
 			</span>
 		</h1>
+		</div>
 
 		<p class="hero-subtitle">I build web experiences to remember.</p>
 	</div>
@@ -262,6 +266,24 @@ const STARS = (() => {
 	}
 
 	/* ============ TEXT: CENTRED ============ */
+	.hero-heading {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		max-width: 100%;
+	}
+
+	.hero-heading .hero-title {
+		align-self: stretch;
+	}
+
+	/* "Hi, I'm Indi Watté, a" (.eyebrow), above the D of "Designer" */
+	.hero-greeting {
+		margin: 0;
+		text-align: left;
+		color: white;
+	}
+
 	.hero-content {
 		position: relative;
 		z-index: 10;
@@ -278,16 +300,16 @@ const STARS = (() => {
 		color: #fff;
 	}
 
-	/* "Designer who" + pills + the rotating word */
+	/* "Designer who" + pills + the rotating word; the same serif, in normal case, as the
+	   other headings on the page */
 	.hero-title {
 		margin: 0.25em 0 0;
 		font-size: clamp(3rem, 9.5vw, 9.5rem);
 		font-family: var(--title-font);
 		font-style: normal;
 		font-weight: 400;
-		line-height: 0.9;
-		letter-spacing: -0.025em;
-		text-transform: uppercase;
+		line-height: 0.95;
+		letter-spacing: 0;
 		user-select: none;
 	}
 
@@ -359,15 +381,16 @@ const STARS = (() => {
 		object-fit: cover;
 	}
 
+	/* A handwritten note under the title, slightly tilted */
 	.hero-subtitle {
 		margin: clamp(0.8rem, 2vh, 1.3rem) 0 0;
-		font-family: var(--body-font);
-		font-size: clamp(1.05rem, 1.6vw, 1.4rem);
+		font-family: var(--hand-font);
+		font-size: clamp(1.8rem, 3vw, 2.8rem);
 		font-weight: 600;
+		line-height: 1.1;
 		color: white;
-		border: 1px solid white;
-		padding: 0.4rem 0.8rem;
-		border-radius: 999px; /* ink: readable on the light sky */
+		rotate: -3deg;
+
 	}
 
 	/* ============ PHONES ============ */
