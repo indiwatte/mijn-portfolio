@@ -1,6 +1,7 @@
 ---
-// My resume: a download button with a preview of the first page under it. The preview
-// opens the full PDF in a new tab. Used on the About page and in the homepage footer.
+// My resume: a "View resume" button with a preview of the first page under it. Both open
+// the resume page (/resume), where the PDF fills the screen. Used on the About page and in
+// the homepage footer.
 // To update: replace public/files/resume.pdf, then re-export resume-preview.webp next to it.
 interface Props {
 	/** "light" on pale backgrounds, "dark" on the blue footer. */
@@ -10,19 +11,19 @@ interface Props {
 }
 
 const { tone = "light", size = "18rem" } = Astro.props;
-const RESUME = "/files/resume.pdf";
+const RESUME_PAGE = "/resume";
 ---
 
 <div class:list={["resume", `resume--${tone}`]} style={`--resume-w: ${size}`}>
-	<a href={RESUME} class="resume-download" download="Indi-Watte-resume.pdf">
-		Download resume <span aria-hidden="true">↓</span>
+	<a href={RESUME_PAGE} class="resume-download">
+		View resume <span aria-hidden="true">→</span>
 	</a>
-	<a href={RESUME} class="resume-preview" target="_blank" rel="noopener noreferrer">
+	<a href={RESUME_PAGE} class="resume-preview" tabindex="-1" aria-hidden="true">
 		<img
 			src="/files/resume-preview.webp"
 			width="900"
 			height="1274"
-			alt="Preview of Indi Watté's resume: open the full PDF"
+			alt=""
 			loading="lazy"
 			decoding="async"
 		/>
@@ -66,7 +67,7 @@ const RESUME = "/files/resume.pdf";
 	}
 
 	.resume-download:hover span {
-		translate: 0 0.15rem;
+		translate: 0.2rem 0;
 	}
 
 	.resume--dark .resume-download {

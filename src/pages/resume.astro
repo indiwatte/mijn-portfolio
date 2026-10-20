@@ -1,0 +1,154 @@
+---
+// My resume, big: the PDF fills the page, with a slim bar to go back or download it.
+// Phones can't show a PDF inside a page reliably, so there the preview image opens the
+// PDF itself. To update: replace public/files/resume.pdf (and resume-preview.webp).
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const RESUME = "/files/resume.pdf";
+---
+
+<BaseLayout
+	title="Resume | Indi Watté"
+	description="The resume of Indi Watté, designer and front-end developer: education, experience and skills."
+	showFooter={false}
+>
+	<main class="resume-page">
+		<div class="resume-bar">
+			<a href="/about" class="resume-back"><span aria-hidden="true">←</span> Back</a>
+			<h1 class="eyebrow resume-title">Resume</h1>
+			<a href={RESUME} class="resume-button" download="Indi-Watte-resume.pdf">
+				Download <span aria-hidden="true">↓</span>
+			</a>
+		</div>
+
+		<!-- Tablet and desktop: the PDF itself, filling the rest of the screen -->
+		<object class="resume-pdf" data={`${RESUME}#page=1&navpanes=0&view=FitH,0`} type="application/pdf" aria-label="Resume of Indi Watté">
+			<a href={RESUME} class="resume-button">Open the PDF <span aria-hidden="true">↗</span></a>
+		</object>
+
+		<!-- Phones: the first page as an image, tap to open the PDF -->
+		<a href={RESUME} class="resume-mobile" target="_blank" rel="noopener noreferrer">
+			<img
+				src="/files/resume-preview.webp"
+				width="900"
+				height="1274"
+				alt="Resume of Indi Watté: tap to open the PDF"
+				decoding="async"
+			/>
+			<span class="resume-button">Open the PDF <span aria-hidden="true">↗</span></span>
+		</a>
+	</main>
+</BaseLayout>
+
+<style>
+	.resume-page {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		min-height: 100svh;
+		padding: clamp(5.5rem, 11svh, 6.5rem) clamp(1rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem);
+		box-sizing: border-box;
+		background: var(--home-bg);
+	}
+
+	.resume-bar {
+		width: 100%;
+		max-width: 64rem;
+		margin-inline: auto;
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.resume-title {
+		margin: 0;
+	}
+
+	.resume-back {
+		justify-self: start;
+		font-weight: 600;
+		color: var(--home-text);
+		text-decoration: none;
+	}
+
+	.resume-back span {
+		display: inline-block;
+		transition: translate 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+
+	.resume-back:hover span {
+		translate: -0.2rem 0;
+	}
+
+	.resume-bar .resume-button {
+		justify-self: end;
+	}
+
+	.resume-button {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.65rem 1.3rem;
+		border-radius: 999px;
+		background: var(--home-blue);
+		color: #fff;
+		font-size: 0.9rem;
+		font-weight: 600;
+		white-space: nowrap;
+		text-decoration: none;
+		transition: background 200ms ease;
+	}
+
+	.resume-button:hover {
+		background: var(--home-text);
+	}
+
+	/* As wide as a comfortable sheet of paper, centred; the PDF fits its width */
+	.resume-pdf {
+		display: block;
+		width: 100%;
+		max-width: 64rem;
+		margin-inline: auto;
+		/* a fixed height from the start (the rest of the screen under the bar): a frame that
+		   grows while loading makes Chrome's PDF viewer lose its place */
+		height: calc(100svh - clamp(5.5rem, 11svh, 6.5rem) - 6.5rem);
+		min-height: 24rem;
+		border: 1px solid var(--border-soft);
+		border-radius: var(--radius-md);
+		background: #fff;
+	}
+
+	.resume-mobile {
+		display: none;
+	}
+
+	/* Phones: the image instead of the embedded PDF */
+	@media (max-width: 767px) {
+		.resume-bar {
+			grid-template-columns: 1fr auto;
+		}
+
+		.resume-title {
+			display: none;
+		}
+
+		.resume-pdf {
+			display: none;
+		}
+
+		.resume-mobile {
+			display: grid;
+			justify-items: center;
+			gap: 1.25rem;
+			text-decoration: none;
+		}
+
+		.resume-mobile img {
+			display: block;
+			width: 100%;
+			height: auto;
+			box-shadow: 0 12px 30px rgba(23, 21, 58, 0.18);
+		}
+	}
+</style>
