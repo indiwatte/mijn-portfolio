@@ -192,9 +192,9 @@ const experience: { title: string; items: ExperienceItem[] }[] = [
 									>Say hi</a
 								>
 								<a
-									href="/files/resume.pdf"
+									href="/resume"
 									class="about-button about-button--ghost"
-									download="Indi-Watte-resume.pdf">Resume ↓</a
+									>Resume →</a
 								>
 								<a
 									href="https://github.com/indiwatte"
@@ -219,7 +219,7 @@ const experience: { title: string; items: ExperienceItem[] }[] = [
 						data-rotate="-2"
 					>
 						<img
-							src="/images/photo-me.jpg"
+							src="/images/indi.webp"
 							alt="Portrait of Indi"
 							draggable="false"
 							loading="lazy"
@@ -352,7 +352,7 @@ const experience: { title: string; items: ExperienceItem[] }[] = [
 					))
 				}
 
-				<!-- Resume: download button with a preview of the PDF -->
+				<!-- Resume: a button and a preview, both open /resume -->
 				<div class="experience-group about-resume">
 					<h2 class="experience-heading">Resume</h2>
 					<Resume size="22rem" />
@@ -460,7 +460,7 @@ const experience: { title: string; items: ExperienceItem[] }[] = [
 		}
 	}
 
-	.about-text p {
+	.about-text p:not(.eyebrow) {
 		margin: 0 0 1.1em;
 		font-size: 1rem;
 		font-weight: 400;

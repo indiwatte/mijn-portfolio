@@ -136,7 +136,7 @@ type Piece = ReturnType<typeof createPiece>;
 type Track = Pick<Piece, "root" | "line" | "cover" | "length" | "progress">;
 
 // The line is drawn by pulling back a cover stroke (stroke-dashoffset). The bird (a bee)
-// starts in the hero, right after the intro line ([data-bee-start]), and flies down to
+// starts in the hero, right after "remember." ([data-bee-start]), and flies down to
 // the start of the About line while the story section slides over the hero. After that
 // it is placed from the pieces' progress: on the footer piece once that has started,
 // else on the paintings' washing line once that has started, otherwise on the About
@@ -202,7 +202,7 @@ export function initScrollPath() {
             gsap.to(flip, { scaleY: upsideDown ? -1 : 1, duration: 0.35, ease: "power2.out" });
         };
 
-        // In the hero: right of the intro line, facing right. While flying down, an arc
+        // In the hero: right after "remember.", facing right. While flying down, an arc
         // that swings out a little, turning towards where it is heading.
         const toPage = (piece: Track, at: number) => {
             const point = piece.line.getPointAtLength(at);
@@ -211,10 +211,10 @@ export function initScrollPath() {
         };
         const heroSpot = () => {
             const box = start!.getBoundingClientRect();
-            const gap = window.innerWidth < 768 ? 60 : 90;
-            // a little above the intro line, so it never sits on "Designer who" below it
-            const lift = window.innerWidth < 768 ? 0 : 40;
-            // never past the right edge of the screen (the bee is ~110px wide)
+            const gap = window.innerWidth < 768 ? 40 : 58;
+            // level with the end of the line ("remember." tilts up a little)
+            const lift = window.innerWidth < 768 ? 4 : 10;
+            // never past the right edge of the screen (the bee is ~100px wide)
             const x = Math.min(box.right + gap, window.innerWidth - 60);
             return [x + window.scrollX, box.top + window.scrollY + box.height / 2 - lift];
         };

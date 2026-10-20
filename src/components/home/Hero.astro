@@ -44,14 +44,7 @@ const STARS = (() => {
 		     greeting starts exactly above the D -->
 		<div class="hero-heading">
 		<p class="eyebrow hero-greeting">
-			Hi, I'm Indi Watté, a<!-- the bee (ScrollBird) starts right after this line -->
-			<span class="bee-anchor" data-bee-start>
-				<!-- What the bee is about: shown while it waits in the hero, gone once it flies -->
-				<span class="bee-bubble" data-bee-bubble aria-hidden="true"
-					><span class="bee-bubble-pop">Busy bee</span
-					></span
-				>
-			</span>
+			Hi, I'm Indi Watté, a
 		</p>
 
 		<!-- Centred title. Pills inside the sentence: one of my mockups between "Designer" and
@@ -73,7 +66,7 @@ const STARS = (() => {
 			<span class="hero-line hero-line--word">
 				<span class="hero-pill hero-pill--me">
 					<img
-						src="/images/selfie-pill.webp"
+						src="/images/indi-pill.webp"
 						width="520"
 						height="400"
 						alt="Indi Watté"
@@ -87,7 +80,17 @@ const STARS = (() => {
 		</h1>
 		</div>
 
-		<p class="hero-subtitle">I build web experiences to remember.</p>
+		<p class="hero-subtitle">
+			I build web experiences to remember.<!-- the bee (ScrollBird) starts right after "remember." --><span
+				class="bee-anchor"
+				data-bee-start
+				><!-- What the bee is about: shown while it waits in the hero, gone once it flies --><span
+					class="bee-bubble"
+					data-bee-bubble
+					aria-hidden="true"><span class="bee-bubble-pop">Busy bee</span></span
+				></span
+			>
+		</p>
 	</div>
 </section>
 
@@ -222,10 +225,8 @@ const STARS = (() => {
 	/* Outer: placed + faded on scroll (script); inner: pops in once (CSS) */
 	.bee-bubble {
 		position: absolute;
-		left: 7.5rem;
-		bottom: calc(
-			1.6rem + 40px
-		); /* follows the bee, lifted above the intro line */
+		left: 4.2rem;
+		bottom: 2.6rem; /* above the bee, which sits right after "remember." */
 	}
 
 	.bee-bubble-pop {
@@ -237,6 +238,8 @@ const STARS = (() => {
 		font-family: var(--body-font);
 		font-size: 0.8rem;
 		font-weight: 600;
+		line-height: 1.2;
+		text-shadow: none;
 		white-space: nowrap;
 		box-shadow: 0 10px 24px rgba(23, 21, 58, 0.2);
 		transform-origin: 0 100%;
@@ -251,17 +254,14 @@ const STARS = (() => {
 	}
 
 	@media (max-width: 767px) {
-		/* Phones: no room on the right, so it sits to the left of the bee, above the intro line */
+		/* Phones: just above the bee, clear of the text */
 		.bee-bubble {
-			left: auto;
-			right: 0.4rem;
-			bottom: 1.5rem;
+			left: 2.6rem;
+			bottom: 4.2rem;
 		}
 
 		.bee-bubble-pop {
 			font-size: 0.7rem;
-			border-radius: 1rem 1rem 0.2rem 1rem;
-			transform-origin: 100% 100%;
 		}
 	}
 
