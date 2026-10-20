@@ -1,5 +1,5 @@
 ---
-// Loading screen (like vogue.com): my face bobbing above a playful message until the page,
+// Loading screen (like vogue.com): my face bobbing above "Almost there..." until the page,
 // its images and fonts are in, then it slides away. Only for slow loads: it stays invisible
 // unless loading takes longer than DELAY, so quick page visits don't see it at all.
 // Styles and script are inline so it's ready from the very first paint.
@@ -11,7 +11,7 @@
 		<span class="loader-shadow" aria-hidden="true"></span>
 	</div>
 	<p class="loader-text">
-		<span data-loader-text>Loading</span><span aria-hidden="true"><i>.</i><i>.</i><i>.</i></span>
+		Almost there<span aria-hidden="true"><i>.</i><i>.</i><i>.</i></span>
 	</p>
 </div>
 
@@ -24,35 +24,11 @@
 		const MIN = 900; // once shown, stay long enough not to flash
 		const MAX = 8000; // never keep someone waiting on one slow image
 
-		// A random message, then the next one every so often while it takes long
-		const MESSAGES = [
-			"Mixing the colours",
-			"Sharpening my pencils",
-			"Waking up the bee",
-			"Pushing pixels into place",
-			"Kerning the letters",
-			"Letting the paint dry",
-			"Asking the sun to rise",
-			"Hanging the paintings",
-			"Polishing the mockups",
-			"Brewing fresh ideas",
-		];
-		const text = loader.querySelector("[data-loader-text]");
-		let message = Math.floor(Math.random() * MESSAGES.length);
-		let cycle;
-
 		let shownAt = 0;
 		const show = setTimeout(() => {
 			shownAt = performance.now();
 			loader.classList.add("is-shown");
 			root.style.overflow = "hidden";
-			if (text) {
-				text.textContent = MESSAGES[message];
-				cycle = setInterval(() => {
-					message = (message + 1) % MESSAGES.length;
-					text.textContent = MESSAGES[message];
-				}, 1600);
-			}
 		}, DELAY);
 
 		const pageLoaded = new Promise((resolve) => {
@@ -73,7 +49,6 @@
 			}
 			const wait = Math.max(0, MIN - (performance.now() - shownAt));
 			setTimeout(() => {
-				clearInterval(cycle);
 				loader.classList.add("is-done");
 				root.style.overflow = "";
 				// "transitionend" can be skipped (hidden tab), so remove on a timer too.
@@ -131,7 +106,7 @@
 
 	.loader-face {
 		position: relative;
-		width: clamp(7.5rem, 22vw, 10rem);
+		width: clamp(5.5rem, 16vw, 7.5rem);
 	}
 
 	.loader-face img {
